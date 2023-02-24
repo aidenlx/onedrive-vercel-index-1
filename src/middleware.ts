@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { get } from '@vercel/edge-config'
 
-const pattern = /^\/api\/\w+(?=\/|$)/
+export const config = {
+  matcher: ['/api/:path*', '/((?!api|_next|favicon.ico|assets|icons|players|images).*)'],
+}
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    return apiRewrite(request)
+  } else {
+    return intl(request)
+  }
+}
+
+const pattern = /^\/api\/\w+(?=\/|$)/
+
+export async function apiRewrite(request: NextRequest) {
   const original = request.nextUrl
 
   let { pathname } = original
@@ -12,7 +24,7 @@ export async function middleware(request: NextRequest) {
     pathname = '/api/index/'
   }
 
-  const edgeRuntimeEnabled =  process.env.EDGE_CONFIG && (await get<boolean>('edge_runtime'))
+  const edgeRuntimeEnabled = process.env.EDGE_CONFIG && (await get<boolean>('edge_runtime'))
   if (!edgeRuntimeEnabled) {
     pathname = pathname.replace(pattern, m => `${m}-v1`)
   } else {
@@ -25,7 +37,11 @@ export async function middleware(request: NextRequest) {
   return NextResponse.rewrite(rewritten)
 }
 
-// See "Matching Paths" below to learn more
-export const config = {
-  matcher: '/api/:path*',
-}
+import createIntlMiddleware from 'next-intl/middleware'
+import { locales, defaultLocale } from './locale'
+
+const intl = createIntlMiddleware({
+  locales: locales as unknown as string[],
+  defaultLocale,
+  alternateLinks: true,
+})

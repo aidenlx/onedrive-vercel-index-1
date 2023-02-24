@@ -21,14 +21,27 @@
     "incremental": true,
     "baseUrl": "src",
     "paths": {
-      "@/*": ["./*"],
-      "@cfg/*": ["../config/*"]
-    }
+      "@/*": [
+        "./*"
+      ],
+      "@i18n": [
+        "./i18n.ts"
+      ],
+      "@cfg/*": [
+        "../config/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -1,0 +1,30 @@
+{
+  "layout": {
+    "basic": {
+      "Email": "Email",
+      "Home": "Home",
+      "Loading": "Loading ..."
+    },
+    "search": {
+      "Search": "Search ...",
+      "Nothing here": "Nothing here.",
+      "Error: ": "Error: "
+    },
+    "token": {
+      "Clear all": "Clear all",
+      "Clear all tokens?": "Clear all tokens?",
+      "Cleared all tokens": "Cleared all tokens",
+      "Logout": "Logout",
+      "These tokens are used to authenticate yourself into password protected folders, ": "These tokens are used to authenticate yourself into password protected folders, ",
+      "Cancel": "Cancel",
+      "clearing them means that you will need to re-enter the passwords again": "clearing them means that you will need to re-enter the passwords again."
+    },
+    "links": {
+      "Weibo": "Weibo"
+    },
+    "layouts": {
+      "Grid": "Grid",
+      "List": "List"
+    }
+  }
+}

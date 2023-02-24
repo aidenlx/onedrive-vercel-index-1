@@ -1,43 +1,33 @@
+'use client'
+
 import { Fragment } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Menu, Transition } from '@headlessui/react'
 
-import { useRouter } from 'next/router'
-import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Link } from 'next-intl'
+import { usePathname } from 'next-intl/client'
 import { useCookies, withCookies } from 'react-cookie'
+import { locales } from '@/locale'
 
-// https://headlessui.dev/react/menu#integrating-with-next-js
-const CustomLink = ({ href, children, as, locale, ...props }): JSX.Element => {
-  return (
-    <Link href={href} as={as} locale={locale} {...props}>
-      {children}
-    </Link>
-  )
+const localeLabels: Record<(typeof locales)[number], string> = {
+  'en': '🇬🇧 English',
+  'es': '🇪🇸 Español',
+  'zh-CN': '🇨🇳 简体中文',
+  'hi': '🇮🇳 हिन्दी',
+  'tr-TR': '🇹🇷 Türkçe',
+  'zh-TW': '🇹🇼 繁體中文'
 }
 
 const localeText = (locale: string): string => {
-  switch (locale) {
-    case 'en':
-      return '🇬🇧 English'
-    case 'es':
-      return '🇪🇸 Español'
-    case 'zh-CN':
-      return '🇨🇳 简体中文'
-    case 'hi':
-      return '🇮🇳 हिन्दी'
-    case 'tr-TR':
-      return '🇹🇷 Türkçe'
-    case 'zh-TW':
-      return '🇹🇼 繁體中文'
-    default:
-      return '🇬🇧 English'
-  }
+  return localeLabels[locale] || localeLabels.en
 }
 
 const SwitchLang = () => {
-  const { locales, pathname, query, asPath } = useRouter()
+  const query = useSearchParams().toString(),
+    pathname = usePathname()
 
-  const [_, setCookie] = useCookies(['NEXT_LOCALE'])
+  const [, setCookie] = useCookies(['NEXT_LOCALE'])
 
   return (
     <div className="relative">
@@ -57,19 +47,18 @@ const SwitchLang = () => {
           leaveTo="transform scale-95 opacity-0"
         >
           <Menu.Items className="absolute top-0 right-0 z-20 mt-8 w-28 divide-y divide-gray-900 overflow-auto rounded border border-gray-900/10 bg-white py-1 shadow-lg focus:outline-none dark:border-gray-500/30 dark:bg-gray-900 dark:text-white">
-            {locales!.map(locale => (
+            {Object.keys(localeLabels).map(locale => (
               <Menu.Item key={locale}>
-                <CustomLink
+                <Link
                   key={locale}
                   href={{ pathname, query }}
-                  as={asPath}
                   locale={locale}
                   onClick={() => setCookie('NEXT_LOCALE', locale, { path: '/' })}
                 >
                   <div className="m-1 cursor-pointer rounded px-2 py-1 text-left text-sm font-medium hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-600/10 dark:hover:text-blue-400">
                     {localeText(locale)}
                   </div>
-                </CustomLink>
+                </Link>
               </Menu.Item>
             ))}
           </Menu.Items>

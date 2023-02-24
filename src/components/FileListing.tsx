@@ -2,7 +2,7 @@ import type { OdFileObject, OdFolderChildren, OdFolderObject } from '../types'
 import { ParsedUrlQuery } from 'querystring'
 import { FC, MouseEventHandler, SetStateAction, useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import emojiRegex from 'emoji-regex'
 
 import dynamic from 'next/dynamic'
@@ -21,7 +21,7 @@ import {
   traverseFolder,
 } from './MultiFileDownloader'
 
-import { layouts } from './SwitchLayout'
+import { layouts } from './layout/SwitchLayout'
 import Loading, { LoadingIcon } from './Loading'
 import FourOhFour from './FourOhFour'
 import Auth from './Auth'
@@ -51,14 +51,10 @@ const EPUBPreview = dynamic(() => import('./previews/EPUBPreview'), {
  * @param query Url query property
  * @returns Path string
  */
-const queryToPath = (query?: ParsedUrlQuery) => {
-  if (query) {
-    const { path } = query
-    if (!path) return '/'
-    if (typeof path === 'string') return `/${encodeURIComponent(path)}`
-    return `/${path.map(p => encodeURIComponent(p)).join('/')}`
-  }
-  return '/'
+const queryToPath = (paths?: string[]) => {
+  if (!paths) return '/'
+  if (typeof paths === 'string') return `/${encodeURIComponent(paths)}`
+  return `/${paths.map(p => encodeURIComponent(p)).join('/')}`
 }
 
 // Render the icon of a folder child (may be a file or a folder), use emoji if the name of the child contains emoji
@@ -146,7 +142,7 @@ export const Downloading: FC<{ title: string; style: string }> = ({ title, style
   )
 }
 
-const FileListing: FC<{ query?: ParsedUrlQuery }> = ({ query }) => {
+const FileListing = ({ paths }: { paths: string[] }) => {
   const [selected, setSelected] = useState<{ [key: string]: boolean }>({})
   const [totalSelected, setTotalSelected] = useState<0 | 1 | 2>(0)
   const [totalGenerating, setTotalGenerating] = useState<boolean>(false)
@@ -160,7 +156,7 @@ const FileListing: FC<{ query?: ParsedUrlQuery }> = ({ query }) => {
 
   const { t } = useTranslation()
 
-  const path = queryToPath(query)
+  const path = queryToPath(paths)
 
   const { data, error, size, setSize } = useProtectedSWRInfinite(path)
 
@@ -341,8 +337,6 @@ const FileListing: FC<{ query?: ParsedUrlQuery }> = ({ query }) => {
 
     return (
       <>
-        <Toaster />
-
         {layout.name === 'Grid' ? <FolderGridLayout {...folderProps} /> : <FolderListLayout {...folderProps} />}
 
         {!onlyOnePage && (

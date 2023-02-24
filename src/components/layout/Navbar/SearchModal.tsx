@@ -1,21 +1,23 @@
+'use client'
+
 import axios from 'axios'
 import useSWR, { SWRResponse } from 'swr'
-import { Dispatch, Fragment, SetStateAction, useState } from 'react'
+import { Fragment, useState } from 'react'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
-import { useTranslation } from 'next-i18next'
 
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, Transition } from '@headlessui/react'
 
-import type { OdDriveItem, OdSearchResult } from '../types'
-import { LoadingIcon } from './Loading'
+import type { OdDriveItem, OdSearchResult } from '../../../types'
+import { LoadingIcon } from '../../Loading'
 
-import { getFileIcon } from '../utils/getFileIcon'
-import { fetcher } from '../utils/fetchWithSWR'
+import { getFileIcon } from '@/utils/getFileIcon'
+import { fetcher } from '@/utils/fetchWithSWR'
 import siteConfig from '@cfg/site.config'
+import { useTranslations } from 'next-intl'
 
 /**
  * Extract the searched item's path in field 'parentReference' and convert it to the
@@ -112,13 +114,11 @@ function SearchResultItemTemplate({
   )
 }
 
-function SearchResultItemLoadRemote({ result }: { result: OdSearchResult[number] }) {
+function SearchResultItemLoadRemote({ result, label }: { result: OdSearchResult[number]; label: { loading: string } }) {
   const { data, error }: SWRResponse<OdDriveItem, { status: number; message: any }> = useSWR(
     [`/api/item/?id=${result.id}`],
     fetcher
   )
-
-  const { t } = useTranslation()
 
   if (error) {
     return (
@@ -132,12 +132,7 @@ function SearchResultItemLoadRemote({ result }: { result: OdSearchResult[number]
   }
   if (!data) {
     return (
-      <SearchResultItemTemplate
-        driveItem={result}
-        driveItemPath={''}
-        itemDescription={t('Loading ...')}
-        disabled={true}
-      />
+      <SearchResultItemTemplate driveItem={result} driveItemPath={''} itemDescription={label.loading} disabled={true} />
     )
   }
 
@@ -152,10 +147,10 @@ function SearchResultItemLoadRemote({ result }: { result: OdSearchResult[number]
   )
 }
 
-function SearchResultItem({ result }: { result: OdSearchResult[number] }) {
+function SearchResultItem({ result, label }: { result: OdSearchResult[number]; label: { loading: string } }) {
   if (result.path === '') {
     // path is empty, which means we need to fetch the parentReference to get the path
-    return <SearchResultItemLoadRemote result={result} />
+    return <SearchResultItemLoadRemote result={result} label={label} />
   } else {
     // path is not an empty string in the search result, such that we can directly render the component as is
     const driveItemPath = decodeURIComponent(result.path)
@@ -170,19 +165,21 @@ function SearchResultItem({ result }: { result: OdSearchResult[number] }) {
   }
 }
 
+export type SearchModalLabels = Record<'searchFor' | 'loading' | 'NothingHere' | 'error', string>
+
 export default function SearchModal({
+  label,
   searchOpen,
-  setSearchOpen,
+  onClose,
 }: {
+  label: SearchModalLabels
   searchOpen: boolean
-  setSearchOpen: Dispatch<SetStateAction<boolean>>
+  onClose: () => void
 }) {
   const { query, setQuery, results } = useDriveItemSearch()
 
-  const { t } = useTranslation()
-
   const closeSearchBox = () => {
-    setSearchOpen(false)
+    onClose()
     setQuery('')
   }
 
@@ -221,7 +218,7 @@ export default function SearchModal({
                   type="text"
                   id="search-box"
                   className="w-full bg-transparent focus:outline-none focus-visible:outline-none"
-                  placeholder={t('Search ...')}
+                  placeholder={label.searchFor}
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                 />
@@ -234,20 +231,20 @@ export default function SearchModal({
                 {results.loading && (
                   <div className="px-4 py-12 text-center text-sm font-medium">
                     <LoadingIcon className="svg-inline--fa mr-2 inline-block h-4 w-4 animate-spin" />
-                    <span>{t('Loading ...')}</span>
+                    <span>{label.loading}</span>
                   </div>
                 )}
                 {results.error && (
                   <div className="px-4 py-12 text-center text-sm font-medium">
-                    {t('Error: {{message}}', { message: results.error.message })}
+                    {`${label.error} ${results.error.message}`}
                   </div>
                 )}
                 {results.result && (
                   <>
                     {results.result.length === 0 ? (
-                      <div className="px-4 py-12 text-center text-sm font-medium">{t('Nothing here.')}</div>
+                      <div className="px-4 py-12 text-center text-sm font-medium">{label.NothingHere}</div>
                     ) : (
-                      results.result.map(result => <SearchResultItem key={result.id} result={result} />)
+                      results.result.map(result => <SearchResultItem key={result.id} result={result} label={label} />)
                     )}
                   </>
                 )}
