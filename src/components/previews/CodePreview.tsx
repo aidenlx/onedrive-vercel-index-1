@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { useTranslation } from 'next-i18next'
+
 import useSystemTheme from 'react-use-system-theme'
 import { useRouter } from 'next/router'
 
@@ -8,7 +8,7 @@ import { tomorrowNightEighties, tomorrow } from 'react-syntax-highlighter/dist/c
 
 import useFileContent from '../../utils/fetchOnMount'
 import { getLanguageByFileName } from '../../utils/getPreviewType'
-import FourOhFour from '../FourOhFour'
+import FourOhFour from '../page/FourOhFour'
 import Loading from '../Loading'
 import DownloadButtonGroup from '../DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from './Containers'

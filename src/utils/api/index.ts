@@ -15,6 +15,7 @@ import {
 import { handleRaw } from './raw'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
+import type { Drive, DriveItem } from '@microsoft/microsoft-graph-types'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   // If method is POST, then the API is called by the client to store acquired tokens
@@ -94,7 +95,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   try {
     const identityUrl = new URL(requestUrl)
     setSelectProps(identityUrl)
-    const identityData = await fetch(requestUrl, {
+    const identityData: DriveItem = await fetch(requestUrl, {
       headers: { Authorization: `Bearer ${accessToken}` },
     }).then(res => (res.ok ? res.json() : Promise.reject(res)))
 
@@ -106,12 +107,11 @@ export default async function handler(kv: Redis, req: NextRequest) {
     if (next) childUrl.searchParams.set('$skipToken', next)
     if (sort) childUrl.searchParams.set('$orderby', sort)
 
-    const folderData = await fetch(childUrl, {
+    const folderData: DriveItem['children'] = await fetch(childUrl, {
       headers: { Authorization: `Bearer ${accessToken}` },
     }).then(res => (res.ok ? res.json() : Promise.reject(res)))
 
-    // Extract next page token from full @odata.nextLink
-    const nextPage = folderData['@odata.nextLink'] ? folderData['@odata.nextLink'].match(/&\$skiptoken=(.+)/i)[1] : null
+    const nextPage = getSkipToken(folderData)
 
     // Return paging token if specified
     return ResponseCompat.json({ folder: folderData, next: nextPage ? nextPage : undefined }, { status: 200, headers })
@@ -119,4 +119,11 @@ export default async function handler(kv: Redis, req: NextRequest) {
     const { data, status } = await handleResponseError(error)
     return ResponseCompat.json(data, { status, headers })
   }
+}
+
+/**
+ * Extract next page token from full @odata.nextLink
+ */
+function getSkipToken(folderData: any) {
+  return folderData['@odata.nextLink']?.match(/&\$skiptoken=(.+)/i)[1] ?? null
 }

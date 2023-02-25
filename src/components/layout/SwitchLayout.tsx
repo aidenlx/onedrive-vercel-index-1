@@ -5,23 +5,27 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Listbox, Transition } from '@headlessui/react'
 
-import useLocalStorage from '@/utils/useLocalStorage'
+import { useLocalStorageValue } from '@react-hookz/web'
 
 export const layouts: Array<{ id: number; name: 'Grid' | 'List'; icon: IconProp }> = [
   { id: 1, name: 'List', icon: 'th-list' },
   { id: 2, name: 'Grid', icon: 'th' },
 ]
 
-type LayoutMessage = Record<keyof IntlMessages["layout"]["layouts"], string>
+type LayoutMessage = Record<keyof IntlMessages['layout']['layouts'], string>
 
 const SwitchLayout = ({ msg }: { msg: LayoutMessage }) => {
-  const [preferredLayout, setPreferredLayout] = useLocalStorage('preferredLayout', layouts[0])
+  const layout = useLocalStorageValue('preferredLayout', {
+    defaultValue: layouts[0],
+    initializeWithValue: false,
+  })
+  const preferredLayout = layout.value ?? layouts[0]
 
   const tLayout = (key: string) => msg[key] ?? key
 
   return (
     <div className="relative w-24 flex-shrink-0 text-sm text-gray-600 dark:text-gray-300 md:w-28">
-      <Listbox value={preferredLayout} onChange={setPreferredLayout}>
+      <Listbox value={preferredLayout} onChange={val => layout.set(val)}>
         <Listbox.Button className="relative w-full cursor-pointer rounded pl-4">
           <span className="pointer-events-none flex items-center">
             <FontAwesomeIcon className="mr-2 h-3 w-3" icon={preferredLayout.icon} />

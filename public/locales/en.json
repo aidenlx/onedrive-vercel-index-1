@@ -1,4 +1,39 @@
 {
+  "file": {
+    "Cannot preview {{path}}": "Cannot preview {path}"
+  },
+  "folder": {
+    "loadMore": {
+      "- showing {size} page(s) of {total} file(s) -": "- showing {size, plural, one {# page} other {# pages}} of {total, plural, =-1 {...} one {# file} other {# files} } -",
+      "Loading": "Loading ...",
+      "No more files": "No more files",
+      "Load more": "Load more"
+    },
+    "list": {
+      "Name": "Name",
+      "Last Modified": "Last Modified",
+      "Size": "Size",
+      "Actions": "Actions"
+    },
+    "grid": {
+      "{{count}} item(s)": "{count} {count, plural, one {# item} other {# items} }"
+    },
+    "actions": {
+      "Copy selected files permalink": "Copy selected files permalink",
+      "Copied selected files permalink": "Copied selected files permalink.",
+      "Copy folder permalink": "Copy folder permalink",
+      "Copied folder permalink": "Copied folder permalink.",
+      "Copy raw file permalink": "Copy raw file permalink",
+      "Copied raw file permalink": "Copied raw file permalink.",
+      "Download file": "Download file",
+      "Download folder": "Download folder",
+      "Download selected files": "Download selected files",
+      "Downloading folder, refresh page to cancel": "Downloading folder, refresh page to cancel",
+      "Downloading selected files, refresh page to cancel": "Downloading selected files, refresh page to cancel",
+      "Select file": "Select file",
+      "Select files": "Select files"
+    }
+  },
   "layout": {
     "basic": {
       "Email": "Email",

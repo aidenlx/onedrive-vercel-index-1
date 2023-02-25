@@ -6,7 +6,7 @@ export default function LoadingPage() {
   const t = useTranslations('layout.basic')
   return (
     <PreviewContainer>
-    <Loading loadingText={t('Loading')} />
+      <Loading loadingText={t('Loading')} />
     </PreviewContainer>
   )
 }

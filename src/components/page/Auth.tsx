@@ -1,21 +1,23 @@
+'use client'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
-import { useTranslation } from 'next-i18next'
 
-import { matchProtectedRoute } from '../utils/protectedRouteHandler'
-import useLocalStorage from '../utils/useLocalStorage'
+
+import { matchProtectedRoute } from '@/utils/protectedRouteHandler'
+import { useTranslations } from 'next-intl'
 
 const Auth: FC<{ redirect: string }> = ({ redirect }) => {
   const authTokenPath = matchProtectedRoute(redirect)
 
   const router = useRouter()
   const [token, setToken] = useState('')
-  const [_, setPersistedToken] = useLocalStorage(authTokenPath, '')
+  // const [_, setPersistedToken] = useLocalStorage(authTokenPath, '')
 
-  const { t } = useTranslation()
+  const t = useTranslations()
 
   return (
     <div className="mx-auto flex max-w-sm flex-col space-y-4 md:my-10">

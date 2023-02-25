@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 
-import FourOhFour from '../FourOhFour'
+
+import FourOhFour from '../page/FourOhFour'
 import Loading from '../Loading'
 import { DownloadButton } from '../DownloadBtnGtoup'
 import useFileContent from '../../utils/fetchOnMount'

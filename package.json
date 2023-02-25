@@ -18,10 +18,12 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.8",
     "@mobily/ts-belt": "^4.0.0-rc.5",
+    "@react-hookz/web": "^22.0.0",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@upstash/redis": "^1.20.0",
     "@vercel/edge-config": "^0.1.1",
     "accept-language": "^3.0.18",
+    "assert-never": "^1.2.1",
     "awesome-debounce-promise": "^2.1.0",
     "axios": "^1.2.6",
     "cors": "^2.8.5",
@@ -60,11 +62,14 @@
     "rehype-raw": "^6.0.0",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
+    "server-only": "^0.0.1",
     "swr": "^2.0.3",
     "use-clipboard-copy": "^0.2.0",
-    "use-constant": "^1.1.1"
+    "use-constant": "^1.1.1",
+    "zustand": "^4.3.3"
   },
   "devDependencies": {
+    "@microsoft/microsoft-graph-types": "^2.26.0",
     "@types/cors": "^2.8.13",
     "@types/crypto-js": "^4.0.2",
     "@types/node": "18.13.0",

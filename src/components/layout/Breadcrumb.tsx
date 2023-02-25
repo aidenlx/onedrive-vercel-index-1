@@ -33,14 +33,13 @@ const Breadcrumb = ({ paths }: { paths: string[] }) => {
             <Link
               href={`/${paths
                 .slice(0, paths.length - i)
-                .map(p => encodeURIComponent(p))
                 .join('/')}`}
               passHref
               className={`ml-1 transition-all duration-75 hover:opacity-70 md:ml-3 ${
                 i == 0 && 'pointer-events-none opacity-80'
               }`}
             >
-              {p}
+              {decodeURIComponent(p)}
             </Link>
           </li>
         ))}

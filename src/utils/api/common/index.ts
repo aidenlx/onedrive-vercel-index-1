@@ -3,12 +3,13 @@ import siteConfig from '@cfg/site.config'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, getOdAuthTokens, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 import { compareHashedToken } from '@/utils/protectedRouteHandler'
-import pathPosix from 'path-browserify'
+
 import { NextRequest, NextResponse } from 'next/server'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Response as NodeResponse } from 'node-fetch'
+import { join, resolveRoot } from '@/utils/path'
 
-const basePath = pathPosix.resolve('/', siteConfig.baseDirectory)
+const basePath = resolveRoot(siteConfig.baseDirectory)
 const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
 
 /**
@@ -17,13 +18,13 @@ const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
  * @param path Relative path of the file to the base directory
  * @returns Absolute path of the file inside OneDrive
  */
-export function encodePath(path: string): string {
-  let encodedPath = pathPosix.join(basePath, path)
+export function encodePath(path: string, urlEncode = true): string {
+  let encodedPath = join(basePath, path)
   if (encodedPath === '/' || encodedPath === '') {
     return ''
   }
   encodedPath = encodedPath.replace(/\/$/, '')
-  return `:${encodeURIComponent(encodedPath)}`
+  return `:${urlEncode ? encodeURIComponent(encodedPath) : encodedPath}`
 }
 
 /**
@@ -36,13 +37,13 @@ export async function getAccessToken(kv: Redis): Promise<string> {
 
   // Return in storage access token if it is still valid
   if (typeof accessToken === 'string') {
-    console.log('Fetch access token from storage.')
+    console.debug('Fetch access token from storage.')
     return accessToken
   }
 
   // Return empty string if no refresh token is stored, which requires the application to be re-authenticated
   if (typeof refreshToken !== 'string') {
-    console.log('No refresh token, return empty access token.')
+    console.debug('No refresh token, return empty access token.')
     return ''
   }
 
@@ -187,7 +188,7 @@ export async function handleResponseError(error: unknown) {
   let output: { data: { error: string }; status: number }
   if (error instanceof Response) {
     output = { data: { error: (await error.json()) ?? error.statusText }, status: error.status }
-    console.error(output)
+    console.debug(output)
   } else {
     output = { data: { error: 'Internal server error.' }, status: 500 }
     console.error('Error while handling response:', error)

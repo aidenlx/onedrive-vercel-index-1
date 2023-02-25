@@ -35,7 +35,7 @@ async function set(key: string, value: string, expiry?: number) {
       body: JSON.stringify({ items }),
     })
     const result = await updateEdgeConfig.json()
-    console.log(result)
+    console.debug(result)
   } catch (error) {
     console.error(error)
   }

@@ -1,10 +1,11 @@
-import { NextRouter } from 'next/router'
+'use client'
+
 import toast from 'react-hot-toast'
 import JSZip from 'jszip'
-import { useTranslation } from 'next-i18next'
 
 import { fetcher } from '../utils/fetchWithSWR'
 import { getStoredToken } from '../utils/protectedRouteHandler'
+import { useRouter } from 'next/navigation'
 
 /**
  * A loading toast component with file download progress support
@@ -12,13 +13,18 @@ import { getStoredToken } from '../utils/protectedRouteHandler'
  * @param props.router Next router instance, used for reloading the page
  * @param props.progress Current downloading and compression progress (returned by jszip metadata)
  */
-export function DownloadingToast({ router, progress }: { router: NextRouter; progress?: string }) {
-  const { t } = useTranslation()
-
+export function DownloadingToast({
+  progress,
+  label,
+}: {
+  progress?: string
+  label: { progress: string; cancel: string }
+}) {
+  const router = useRouter()
   return (
     <div className="flex items-center space-x-2">
       <div className="w-56">
-        <span>{progress ? t('Downloading {{progress}}%', { progress }) : t('Downloading selected files...')}</span>
+        <span>{label.progress}</span>
 
         <div className="relative mt-2">
           <div className="flex h-1 overflow-hidden rounded bg-gray-100">
@@ -28,9 +34,9 @@ export function DownloadingToast({ router, progress }: { router: NextRouter; pro
       </div>
       <button
         className="rounded bg-red-500 p-2 text-white hover:bg-red-400 focus:outline-none focus:ring focus:ring-red-300"
-        onClick={() => router.reload()}
+        onClick={() => router.refresh()}
       >
-        {t('Cancel')}
+        {label.cancel}
       </button>
     </div>
   )
@@ -60,12 +66,10 @@ export function downloadBlob({ blob, name }: { blob: Blob; name: string }) {
  */
 export async function downloadMultipleFiles({
   toastId,
-  router,
   files,
   folder,
 }: {
   toastId: string
-  router: NextRouter
   files: { name: string; url: string }[]
   folder?: string
 }): Promise<void> {
@@ -84,9 +88,11 @@ export async function downloadMultipleFiles({
 
   // Create zip file and download it
   const b = await zip.generateAsync({ type: 'blob' }, metadata => {
-    toast.loading(<DownloadingToast router={router} progress={metadata.percent.toFixed(0)} />, {
-      id: toastId,
-    })
+    toast.loading(
+      // TODO i18n
+      <DownloadingToast progress={metadata.percent.toFixed(0)} label={{ cancel: 'Cancel', progress: 'Downloading' }} />,
+      { id: toastId }
+    )
   })
   downloadBlob({ blob: b, name: folder ? folder + '.zip' : 'download.zip' })
 }
@@ -104,13 +110,11 @@ export async function downloadMultipleFiles({
  */
 export async function downloadTreelikeMultipleFiles({
   toastId,
-  router,
   files,
   basePath,
   folder,
 }: {
   toastId: string
-  router: NextRouter
   files: AsyncGenerator<{
     name: string
     url?: string
@@ -152,9 +156,11 @@ export async function downloadTreelikeMultipleFiles({
 
   // Create zip file and download it
   const b = await zip.generateAsync({ type: 'blob' }, metadata => {
-    toast.loading(<DownloadingToast router={router} progress={metadata.percent.toFixed(0)} />, {
-      id: toastId,
-    })
+    toast.loading(
+      // TODO i18n
+      <DownloadingToast progress={metadata.percent.toFixed(0)} label={{ cancel: 'Cancel', progress: 'Downloading' }} />,
+      { id: toastId, }
+    )
   })
   downloadBlob({ blob: b, name: folder ? folder + '.zip' : 'download.zip' })
 }
