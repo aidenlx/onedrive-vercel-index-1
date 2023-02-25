@@ -15,5 +15,6 @@ module.exports = withNextIntl({
   trailingSlash: true,
   experimental: {
     appDir: true,
+    fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
   },
 })

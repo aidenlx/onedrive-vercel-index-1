@@ -24,20 +24,18 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: [`"${siteConfig.googleFontSans}"`, '"Noto Sans SC"', ...defaultTheme.fontFamily.sans],
-        mono: [`"${siteConfig.googleFontMono}"`, ...defaultTheme.fontFamily.mono]
+        sans: ['var(--font-sans)', '"Noto Sans SC"', ...defaultTheme.fontFamily.sans],
+        mono: ['var(--font-mono)', ...defaultTheme.fontFamily.mono],
       },
       colors: {
         gray: {
-          850: '#222226'
-        }
+          850: '#222226',
+        },
       },
       animation: {
         'spin-slow': 'spin 5s linear infinite',
-      }
-    }
+      },
+    },
   },
-  plugins: [
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [require('@tailwindcss/line-clamp')],
 }
