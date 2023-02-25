@@ -5,35 +5,16 @@ import { Dialog, Transition } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
 import { useRouter } from 'next/navigation'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState, useTransition } from 'react'
 
-import siteConfig from '@cfg/site.config'
-
-function useTokenPresent() {
-  const [tokenPresent, setTokenPresent] = useState(false)
-
-  useEffect(() => {
-    const storedToken = () => {
-      for (const r of siteConfig.protectedRoutes) {
-        if (localStorage.hasOwnProperty(r)) {
-          return true
-        }
-      }
-      return false
-    }
-    setTokenPresent(storedToken())
-  }, [])
-  return tokenPresent
-}
+import { protectedRoutes } from '@cfg/site.config'
+import { useClearAllToken } from '@/utils/useStoredToken'
 
 type TokenLabels = Record<keyof IntlMessages['layout']['token'], string>
 
 export function TokenPresent({ label }: { label: TokenLabels }) {
-  const tokenPresent = useTokenPresent()
   const [open, setOpen] = useState(false)
   const t = (key: keyof TokenLabels) => label[key]
-
-  if (!tokenPresent) return null
   return (
     <>
       <button className="flex items-center space-x-2 hover:opacity-80 dark:text-white" onClick={() => setOpen(true)}>
@@ -49,17 +30,16 @@ export function ClearTokenModal({ open, onClose, label }: { onClose: () => void;
   const router = useRouter()
   const t = (key: keyof TokenLabels) => label[key]
 
+  const removeAll = useClearAllToken()
+  const [_, startTransition] = useTransition()
+
   const clearTokens = () => {
     onClose()
-
-    siteConfig.protectedRoutes.forEach(r => {
-      localStorage.removeItem(r)
-    })
-
+    removeAll()
     toast.success(t('Cleared all tokens'))
-    setTimeout(() => {
+    startTransition(() => {
       router.refresh()
-    }, 1000)
+    })
   }
   return (
     <Transition appear show={open} as={Fragment}>
@@ -102,7 +82,7 @@ export function ClearTokenModal({ open, onClose, label }: { onClose: () => void;
               </div>
 
               <div className="mt-4 max-h-32 overflow-y-scroll font-mono text-sm dark:text-gray-100">
-                {siteConfig.protectedRoutes.map((r, i) => (
+                {protectedRoutes.map((r, i) => (
                   <div key={i} className="flex items-center space-x-1">
                     <FontAwesomeIcon icon="key" />
                     <span className="truncate">{r}</span>

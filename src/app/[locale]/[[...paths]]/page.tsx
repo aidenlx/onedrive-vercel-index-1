@@ -8,6 +8,8 @@ import { kv } from '@/utils/kv/edge'
 import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
 // import FilePreview from '@/components/page/FilePreview'
+import { useToken } from '@/utils/useToken'
+import { protectedToken } from '@/utils/cookie'
 import { cookies } from 'next/headers'
 
 // export function generateStaticParams() {
@@ -25,9 +27,7 @@ export default async function Page({
   const path = queryToPath(params.paths),
     size = toInt(searchParams?.size, 0)
 
-  // const t = useTranslations('file')
-
-  const hashedToken = cookies().get('od-protected-token')?.value ?? null
+  const hashedToken = useToken(decodeURIComponent(path))
 
   const data = await getPageData(path, size, { kv, token: hashedToken }).catch(
     error => ({ type: 'error', error } as const)
@@ -43,7 +43,7 @@ export default async function Page({
       return (
         <PreviewContainer>
           {
-            error instanceof NoAuthError ? <Auth redirect={path} /> : null
+            error instanceof NoAuthError ? <AuthWarpper redirect={path} /> : null
             // <FourOhFour errorMsg={JSON.stringify(error instanceof Error ? error.message : error)} />
           }
         </PreviewContainer>
@@ -69,4 +69,20 @@ function toInt(str: string | string[] | undefined, fallback: number) {
   if (Array.isArray(str)) str = str[0]
   const num = parseInt(str, 10)
   return Number.isNaN(num) ? fallback : num
+}
+
+function AuthWarpper({ redirect }: { redirect: string }) {
+  const t = useTranslations('layout.auth')
+  return (
+    <Auth
+      redirect={redirect}
+      label={{
+        'Enter Password': t('Enter Password'),
+        'If you know the password, please enter it below': t('If you know the password, please enter it below'),
+        'This route (the folder itself and the files inside) is password protected': t(
+          'This route (the folder itself and the files inside) is password protected'
+        ),
+      }}
+    />
+  )
 }

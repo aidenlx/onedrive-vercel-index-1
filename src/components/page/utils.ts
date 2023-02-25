@@ -1,3 +1,4 @@
+import { DriveItem } from '@/utils/api/type'
 import emojiRegex from 'emoji-regex'
 
 /**
@@ -24,3 +25,5 @@ export const itemPathGetter = (path: string) =>
   function getItemPath(name: string) {
     return `${path === '/' ? '' : path}/${encodeURIComponent(name)}`
   }
+
+export const getFiles = (folderChildren: DriveItem[]) => folderChildren.filter(c => !c.folder && c.name !== '.password')

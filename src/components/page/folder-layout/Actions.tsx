@@ -2,10 +2,10 @@
 
 import { DriveItem } from '@/utils/api/type'
 import { getBaseUrl } from '@/utils/getBaseUrl'
-import { getStoredToken } from '@/utils/protectedRouteHandler'
+import { useStoredToken } from '@/utils/useStoredToken'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
-import { itemPathGetter } from '../utils'
+import { getFiles, itemPathGetter } from '../utils'
 import Checkbox from './Checkbox'
 import Downloading from './Downloading'
 import { useClipboard } from 'use-clipboard-copy'
@@ -52,9 +52,8 @@ export function BatchAction({
 
   const clipboard = useClipboard()
   const getItemPath = itemPathGetter(path)
-  const hashedToken = getStoredToken(path)
+  const hashedToken = useStoredToken(path)
 
-  const getFiles = () => folderChildren.filter(c => !c.folder && c.name !== '.password')
 
   return (
     <>
@@ -65,7 +64,7 @@ export function BatchAction({
         disabled={totalSelected === 0}
         onClick={() => {
           clipboard.copy(
-            getFiles()
+            getFiles(folderChildren)
               .filter(v => selected.has(v.name))
               .map(v => toPermLink(getItemPath(v.name), hashedToken))
               .join('\n')
@@ -147,7 +146,7 @@ export interface FileActionLabels {
 }
 
 export function FileAction({ c, label, path }: { c: DriveItem; path: string; label: FileActionLabels }) {
-  const hashedToken = getStoredToken(path)
+  const hashedToken = useStoredToken(path)
   const getItemPath = itemPathGetter(path)
   const clipboard = useClipboard()
 

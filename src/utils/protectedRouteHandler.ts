@@ -2,15 +2,8 @@ import sha256 from 'crypto-js/sha256'
 import siteConfig from '@cfg/site.config'
 
 // Hash password token with SHA256
-function encryptToken(token: string): string {
+export function encryptToken(token: string): string {
   return sha256(token).toString()
-}
-
-// Fetch stored token from localStorage and encrypt with SHA256
-export function getStoredToken(path: string): string | null {
-  const storedToken =
-    typeof window !== 'undefined' ? JSON.parse(localStorage.getItem(matchProtectedRoute(path)) as string) : ''
-  return storedToken ? encryptToken(storedToken) : null
 }
 
 /**
@@ -40,18 +33,9 @@ export function matchProtectedRoute(route: string): string {
 
   for (const r of protectedRoutes) {
     // protected route array could be empty
-    if (r) {
-      if (
-        route.startsWith(
-          r
-            .split('/')
-            .map(p => encodeURIComponent(p))
-            .join('/')
-        )
-      ) {
-        authTokenPath = r
-        break
-      }
+    if (r && route.startsWith(r)) {
+      authTokenPath = r
+      break
     }
   }
   return authTokenPath
