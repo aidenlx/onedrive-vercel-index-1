@@ -2,15 +2,13 @@ import { redirect } from 'next-intl/server'
 import { PreviewContainer } from '@/components/previews/Containers'
 import Auth from '@/components/page/Auth'
 import { getPageData, NoAccessTokenError, NoAuthError } from './fetch'
-// import FourOhFour from '@/components/page/FourOhFour'
+import FourOhFour from '@/components/FourOhFour'
 import { queryToPath } from '@/components/page/utils'
 import { kv } from '@/utils/kv/edge'
 import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
-// import FilePreview from '@/components/page/FilePreview'
+import FilePreview from '@/components/page/FilePreview'
 import { useToken } from '@/utils/useToken'
-import { protectedToken } from '@/utils/cookie'
-import { cookies } from 'next/headers'
 
 // export function generateStaticParams() {
 //   // statically render home page
@@ -42,26 +40,30 @@ export default async function Page({
       }
       return (
         <PreviewContainer>
-          {
-            error instanceof NoAuthError ? <AuthWarpper redirect={path} /> : null
-            // <FourOhFour errorMsg={JSON.stringify(error instanceof Error ? error.message : error)} />
-          }
+          {error instanceof NoAuthError ? (
+            <AuthWarpper redirect={path} />
+          ) : (
+            <FourOhFour>{JSON.stringify(error instanceof Error ? error.message : error)}</FourOhFour>
+          )}
         </PreviewContainer>
       )
     }
     case 'file':
-      // return <FilePreview {...data} path={path} />
-      return <span>file</span>
+      return <FilePreview {...data} path={path} />
     case 'folder':
       return <FolderView {...data} size={size} path={path} token={hashedToken} />
     default:
-      return (
-        <PreviewContainer>
-          <span>cant preview</span>
-          {/* <FourOhFour errorMsg={t('Cannot preview {{path}}', { path })} /> */}
-        </PreviewContainer>
-      )
+      return <Fallback path={path} />
   }
+}
+
+function Fallback({ path }: { path: string }) {
+  const t = useTranslations('file.fallback')
+  return (
+    <PreviewContainer>
+      <FourOhFour>{t('Cannot preview {{path}}', { path })}</FourOhFour>
+    </PreviewContainer>
+  )
 }
 
 function toInt(str: string | string[] | undefined, fallback: number) {

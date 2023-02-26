@@ -10,7 +10,7 @@ import siteConfig from '@cfg/site.config'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import { LoadingIcon } from '../../components/Loading'
-import { extractAuthCodeFromRedirected, generateAuthorisationUrl } from '../../utils/oAuthHandler'
+import { extractAuthCodeFromRedirected, generateAuthorisationUrl } from '@/utils/oAuthHandler'
 
 export default function OAuthStep2() {
   const router = useRouter()

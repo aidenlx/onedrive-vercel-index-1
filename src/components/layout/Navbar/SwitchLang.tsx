@@ -24,7 +24,7 @@ const localeText = (locale: string): string => {
 }
 
 const SwitchLang = () => {
-  const query = useSearchParams().toString(),
+  const query = useSearchParams()?.toString(),
     pathname = usePathname()
 
   const [, setCookie] = useCookies(['NEXT_LOCALE'])

@@ -1,11 +1,12 @@
-import { useRouter } from 'next/router'
-
-
-import FourOhFour from '../page/FourOhFour'
+import FourOhFour from '../FourOhFour'
 import Loading from '../Loading'
-import { DownloadButton } from '../DownloadBtnGtoup'
-import useFileContent from '../../utils/fetchOnMount'
+import { DownloadButton } from '../DownloadButton'
 import { DownloadBtnContainer, PreviewContainer } from './Containers'
+import { useTranslations } from 'next-intl'
+import { Suspense } from 'react'
+import { EmptyTextFile } from './TextPreviews/TextPreviewBase'
+import { useToken } from '@/utils/useToken'
+import { toPermLink } from "@/utils/permlink-server"
 
 const parseDotUrl = (content: string): string | undefined => {
   return content
@@ -14,37 +15,35 @@ const parseDotUrl = (content: string): string | undefined => {
     ?.split('=')[1]
 }
 
-const TextPreview = ({ file }) => {
-  const { asPath } = useRouter()
-  const { t } = useTranslation()
+async function URLPreviewContent({ path }: { path: string }) {
+  const hashedToken = useToken(path)
 
-  const { response: content, error, validating } = useFileContent(`/api/raw/?path=${asPath}`, asPath)
-  if (error) {
+  try {
+    const content = await fetch(toPermLink(path, hashedToken)).then(res =>
+      res.ok ? res.text() : Promise.reject(new Error(res.statusText))
+    )
+    if (!content) {
+      return (
+        <PreviewContainer>
+          <EmptyTextFile />
+        </PreviewContainer>
+      )
+    }
+    return <URLPreviewMainContent content={content} />
+  } catch (error) {
     return (
       <PreviewContainer>
-        <FourOhFour errorMsg={error} />
+        <FourOhFour>{error instanceof Error ? error.message : JSON.stringify(error)}</FourOhFour>
       </PreviewContainer>
     )
   }
+}
 
-  if (validating) {
-    return (
-      <PreviewContainer>
-        <Loading loadingText={t('Loading file content...')} />
-      </PreviewContainer>
-    )
-  }
-
-  if (!content) {
-    return (
-      <PreviewContainer>
-        <FourOhFour errorMsg={t('File is empty.')} />
-      </PreviewContainer>
-    )
-  }
+function URLPreviewMainContent({ content }: { content: string }) {
+  const t = useTranslations('file.url')
 
   return (
-    <div>
+    <>
       <PreviewContainer>
         <pre className="overflow-x-scroll p-0 text-sm md:p-3">{content}</pre>
       </PreviewContainer>
@@ -59,8 +58,22 @@ const TextPreview = ({ file }) => {
           />
         </div>
       </DownloadBtnContainer>
-    </div>
+    </>
   )
 }
 
-export default TextPreview
+export default function URLPreview({ path }: { path: string }) {
+  const t = useTranslations('file.text')
+  return (
+    <Suspense
+      fallback={
+        <PreviewContainer>
+          <Loading loadingText={t('Loading file content')} />
+        </PreviewContainer>
+      }
+    >
+      {/* @ts-expect-error server component */}
+      <URLPreviewContent path={path} />
+    </Suspense>
+  )
+}

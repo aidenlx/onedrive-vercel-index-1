@@ -1,30 +1,33 @@
-import type { OdFileObject } from '../../types'
-
-import { FC } from 'react'
-import { useRouter } from 'next/router'
-
 import { PreviewContainer, DownloadBtnContainer } from './Containers'
 import DownloadButtonGroup from '../DownloadBtnGtoup'
-import { getStoredToken } from '../../utils/protectedRouteHandler'
+import { useToken } from '@/utils/useToken'
+import { toPermLink } from "@/utils/permlink-server"
+import { DriveItem } from '@/utils/api/type'
+import Image from 'next/image'
 
-const ImagePreview: FC<{ file: OdFileObject }> = ({ file }) => {
-  const { asPath } = useRouter()
-  const hashedToken = getStoredToken(asPath)
+const ImagePreview = ({ file, path }: { file: DriveItem; path: string }) => {
+  const hashedToken = useToken(path)
+
+  if (!file.image) return null
 
   return (
     <>
       <PreviewContainer>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="mx-auto"
-          src={`/api/raw/?path=${asPath}${hashedToken ? `&odpt=${hashedToken}` : ''}`}
-          alt={file.name}
-          width={file.image?.width}
-          height={file.image?.height}
-        />
+        {file.image.height && file.image.width ? (
+          <Image
+            className="mx-auto"
+            src={toPermLink(path, hashedToken)}
+            alt={file.name}
+            width={file.image.width}
+            height={file.image.height}
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="mx-auto" src={toPermLink(path, hashedToken)} alt={file.name} />
+        )}
       </PreviewContainer>
       <DownloadBtnContainer>
-        <DownloadButtonGroup />
+        <DownloadButtonGroup path={path} />
       </DownloadBtnContainer>
     </>
   )

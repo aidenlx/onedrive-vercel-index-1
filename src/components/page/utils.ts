@@ -27,3 +27,5 @@ export const itemPathGetter = (path: string) =>
   }
 
 export const getFiles = (folderChildren: DriveItem[]) => folderChildren.filter(c => !c.folder && c.name !== '.password')
+
+

@@ -10,7 +10,7 @@ import siteConfig from '@cfg/site.config'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 
-import { getAuthPersonInfo, requestTokenWithAuthCode, sendTokenToServer } from '../../utils/oAuthHandler'
+import { getAuthPersonInfo, requestTokenWithAuthCode, sendTokenToServer } from '@/utils/oAuthHandler'
 import { LoadingIcon } from '../../components/Loading'
 
 export default function OAuthStep3({ accessToken, expiryTime, refreshToken, error, description, errorUri }) {

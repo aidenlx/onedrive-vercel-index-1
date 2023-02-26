@@ -46,7 +46,7 @@ function useLoadMore(size: number) {
     startTransition(() => {
       // Refresh the current route and fetch new data from the server without
       // losing client-side browser or React state.
-      const newSearch = new URLSearchParams(search)
+      const newSearch = new URLSearchParams(search ?? undefined)
       newSearch.set('size', String(size + 1))
       router.push(`${path}?${newSearch.toString()}`)
     })

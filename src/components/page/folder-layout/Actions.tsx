@@ -6,6 +6,7 @@ import { useStoredToken } from '@/utils/useStoredToken'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
 import { getFiles, itemPathGetter } from '../utils'
+import { toPermLink } from "@/utils/permlink"
 import Checkbox from './Checkbox'
 import Downloading from './Downloading'
 import { useClipboard } from 'use-clipboard-copy'
@@ -135,9 +136,7 @@ export function FolderAction({ c, label, path }: { c: DriveItem; path: string; l
   )
 }
 
-function toPermLink(path: string, hashedToken: string | null) {
-  return `${getBaseUrl()}/api/raw/?path=${path}${hashedToken ? `&odpt=${hashedToken}` : ''}`
-}
+
 
 export interface FileActionLabels {
   copyFile: string

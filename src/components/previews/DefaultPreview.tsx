@@ -1,17 +1,15 @@
-import type { OdFileObject } from '../../types'
-import { FC } from 'react'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-
-import { getFileIcon } from '../../utils/getFileIcon'
-import { formatModifiedDateTime, humanFileSize } from '../../utils/fileDetails'
+import { getFileIcon } from '@/utils/getFileIcon'
+import { formatModifiedDateTime, humanFileSize } from '@/utils/fileDetails'
 
 import DownloadButtonGroup from '../DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from './Containers'
+import { useTranslations } from 'next-intl'
+import { DriveItem } from '@/utils/api/type'
 
-const DefaultPreview: FC<{ file: OdFileObject }> = ({ file }) => {
-  const { t } = useTranslation()
+export default function DefaultPreview({ file, path }: { file: DriveItem; path: string }) {
+  const t = useTranslations('file.fallback')
 
   return (
     <div>
@@ -73,10 +71,8 @@ const DefaultPreview: FC<{ file: OdFileObject }> = ({ file }) => {
         </div>
       </PreviewContainer>
       <DownloadBtnContainer>
-        <DownloadButtonGroup />
+        <DownloadButtonGroup path={path} />
       </DownloadBtnContainer>
     </div>
   )
 }
-
-export default DefaultPreview

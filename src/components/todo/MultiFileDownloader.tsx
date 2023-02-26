@@ -3,8 +3,8 @@
 import toast from 'react-hot-toast'
 import JSZip from 'jszip'
 
-import { fetcher } from '../utils/fetchWithSWR'
-import { getStoredToken } from '../utils/protectedRouteHandler'
+import { fetcher } from '../../utils/fetchWithSWR'
+import { useStoredToken } from '../../utils/useStoredToken'
 import { useRouter } from 'next/navigation'
 
 /**
@@ -187,7 +187,7 @@ interface TraverseItem {
  * Error key in the item will contain the error when there is a handleable error.
  */
 export async function* traverseFolder(path: string): AsyncGenerator<TraverseItem, void, undefined> {
-  const hashedToken = getStoredToken(path)
+  const hashedToken = useStoredToken(path)
 
   // Generate the task passed to Promise.race to request a folder
   const genTask = async (i: number, path: string, next?: string) => {

@@ -1,6 +1,52 @@
 {
+  "fof": {
+    "Oops, that's a <1>four-oh-four</1>": "Oops, that's a <fof>four-oh-four</fof>.",
+    "Press <2>F12</2> and open devtools for more details, or seek help at <6>onedrive-vercel-index discussions</6>": "Press <kbd>F12</kbd> and open devtools for more details, or seek help at <link>onedrive-vercel-index discussions</link>."
+  },
   "file": {
-    "Cannot preview {{path}}": "Cannot preview {path}"
+    "fallback": {
+      "Cannot preview {{path}}": "Cannot preview {path}",
+      "Last modified": "Last modified",
+      "File size": "File size",
+      "MIME type": "MIME type",
+      "Unavailable": "Unavailable",
+      "Hashes": "Hashes"
+    },
+    "text": {
+      "Loading file content": "Loading file content...",
+      "File is empty": "File is empty."
+    },
+    "url": {
+      "Open URL": "Open URL",
+      "Open URL{{url}}": "Open URL {url}"
+    },
+    "video": {
+      "Loading FLV extension": "Loading FLV extension..."
+    },
+    "audio": {
+      "Last modified: ": "Last modified: {datetime}"
+    },
+    "epub": {
+      "Loading EPUB": "Loading EPUB ..."
+    }
+  },
+  "customLink": {
+    "Customised": "Customised",
+    "Customised and encoded": "Customised and encoded",
+    "Customise direct link": "Customise direct link",
+    "What is this?": "What is this?",
+    "URL encoded": "URL encoded",
+    "Change the raw file direct link to a URL ending with the extension of the file": "Change the raw file direct link to a URL ending with the extension of the file.",
+    "Filename": "Filename",
+    "Default": "Default"
+  },
+  "downloadBtn": {
+    "Download": "Download",
+    "Download the file directly through OneDrive": "Download the file directly through OneDrive",
+    "Copied direct link to clipboard": "Copied direct link to clipboard.",
+    "Copy direct link": "Copy direct link",
+    "Copy the permalink to the file to the clipboard": "Copy the permalink to the file to the clipboard",
+    "Customise link": "Customise link"
   },
   "folder": {
     "loadMore": {
