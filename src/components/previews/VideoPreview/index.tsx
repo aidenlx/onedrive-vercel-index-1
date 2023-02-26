@@ -1,10 +1,10 @@
-import { toPermLink } from "@/utils/permlink-server"
+import { toPermLink } from '@/utils/permlink-server'
 import { DriveItem } from '@/utils/api/type'
 import { getExtension } from '@/utils/getFileIcon'
 import { useToken } from '@/utils/useToken'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
-import { OpenInPlayers, VideoPlayerWarpper } from './client'
+import VideoPlayer, { OpenInPlayers } from './lazy'
 import { useTranslations } from 'next-intl'
 
 export default function VideoPreview({ file, path }: { file: DriveItem; path: string }) {
@@ -37,7 +37,7 @@ export default function VideoPreview({ file, path }: { file: DriveItem; path: st
   return (
     <>
       <PreviewContainer>
-        <VideoPlayerWarpper label={{ 'Loading FLV extension': t('Loading FLV extension') }} {...props} />
+        <VideoPlayer label={{ 'Loading FLV extension': t('Loading FLV extension') }} {...props} />
       </PreviewContainer>
       <DownloadBtnContainer>
         <DownloadButtonGroup path={path}>

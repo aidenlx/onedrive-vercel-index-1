@@ -12,11 +12,11 @@ import { locales } from '@/locale'
 
 const localeLabels: Record<(typeof locales)[number], string> = {
   'en': '🇬🇧 English',
-  'es': '🇪🇸 Español',
-  'zh-CN': '🇨🇳 简体中文',
-  'hi': '🇮🇳 हिन्दी',
-  'tr-TR': '🇹🇷 Türkçe',
-  'zh-TW': '🇹🇼 繁體中文'
+  // 'es': '🇪🇸 Español',
+  // 'zh-CN': '🇨🇳 简体中文',
+  // 'hi': '🇮🇳 हिन्दी',
+  // 'tr-TR': '🇹🇷 Türkçe',
+  // 'zh-TW': '🇹🇼 繁體中文'
 }
 
 const localeText = (locale: string): string => {

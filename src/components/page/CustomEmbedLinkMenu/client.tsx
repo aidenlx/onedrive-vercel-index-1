@@ -6,7 +6,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useClipboard } from 'use-clipboard-copy'
 
-import { customisedPermLinkFromParams, permLinkFromParams } from "@/utils/permlink"
+import { customisedPermLinkFromParams, permLinkFromParams } from '@/utils/permlink'
 import type { CustomEmbedLinkMenuLabels } from './server'
 
 function LinkContainer({ title, value }: { title: string; value: string }) {
@@ -21,7 +21,7 @@ function LinkContainer({ title, value }: { title: string; value: string }) {
   )
 }
 
-export function CopyButton({ value }: { value: string }) {
+function CopyButton({ value }: { value: string }) {
   const clipboard = useClipboard({ copiedTimeout: 1000 })
 
   return (
@@ -34,7 +34,7 @@ export function CopyButton({ value }: { value: string }) {
   )
 }
 
-export function Main({
+export default function CustomEmbedLinkMenu({
   menuOpen,
   setMenuOpen,
   children,
@@ -50,7 +50,9 @@ export function Main({
   const focusInputRef = useRef<HTMLInputElement>(null)
   const closeMenu = () => setMenuOpen(false)
 
-  const [name, setName] = useState(() => new URLSearchParams(permLinkParams.encoded).get('path')?.split('/').pop() ?? '')
+  const [name, setName] = useState(
+    () => new URLSearchParams(permLinkParams.encoded).get('path')?.split('/').pop() ?? ''
+  )
 
   return (
     <Transition appear show={menuOpen} as={Fragment}>

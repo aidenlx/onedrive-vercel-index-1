@@ -4,7 +4,14 @@ import Loading from '@/components/LoadingClient'
 import { useState, useRef, useEffect } from 'react'
 import { ReactReader } from 'react-reader'
 
-export function EPUBViewer({ src, label }: { src: string; label: { loadingEPUB: string } }) {
+export interface Props {
+  src: string;
+  label: {
+    loadingEPUB: string;
+  };
+}
+
+export default function EPUBViewer({ src, label }: Props) {
   const [epubContainerWidth, setEpubContainerWidth] = useState(400)
   const epubContainer = useRef<HTMLDivElement>(null)
 

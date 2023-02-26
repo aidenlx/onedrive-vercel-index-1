@@ -9,11 +9,14 @@ import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
 import { useToken } from '@/utils/useToken'
+import { locales } from '@/locale'
 
 // export function generateStaticParams() {
 //   // statically render home page
-//   return [{ locale: 'en', paths: [] }]
+//   return locales.map(locale => ({ locale, paths: [] }))
 // }
+
+export const revalidate = 1800
 
 export default async function Page({
   params,

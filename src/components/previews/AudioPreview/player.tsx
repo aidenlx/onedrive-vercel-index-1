@@ -12,17 +12,14 @@ enum PlayerState {
   Paused,
 }
 
-export function AudioPlayer({
-  fileName,
-  thumbnail,
-  src,
-  lastModified,
-}: {
+export interface Props {
   fileName?: string
   thumbnail: string
   src: string
   lastModified: string
-}) {
+}
+
+export default function AudioPlayer({ fileName, thumbnail, src, lastModified }: Props) {
   const rapRef = useRef<ReactAudioPlayer>(null)
   const [playerStatus, setPlayerStatus] = useState(PlayerState.Loading)
   const [playerVolume, setPlayerVolume] = useState(1)

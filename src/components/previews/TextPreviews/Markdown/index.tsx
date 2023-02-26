@@ -1,6 +1,7 @@
-import TextPreviewBase from './TextPreviewBase'
+import { Suspense } from 'react'
+import TextPreviewBase from '../TextPreviewBase'
 
-import Viewer from './MarkdownClient'
+import Viewer from './lazy'
 
 export default function CodePreview({ path, standalone }: { path: string; standalone?: boolean }) {
   return (

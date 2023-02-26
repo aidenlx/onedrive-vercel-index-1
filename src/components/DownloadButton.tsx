@@ -6,8 +6,9 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import Image from 'next/image'
 import { useClipboard } from 'use-clipboard-copy'
 import { toast } from 'react-hot-toast'
-import { CustomEmbedLinkMenuLabels, Main as CustomEmbedLinkMenu } from './page/CustomEmbedLinkMenu'
-import { permLinkFromParams } from "@/utils/permlink"
+import type { CustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
+import CustomEmbedLinkMenu from './page/CustomEmbedLinkMenu'
+import { permLinkFromParams } from '@/utils/permlink'
 import { Dialog } from '@headlessui/react'
 
 const btnStyleMap = (btnColor?: string) => {
@@ -79,7 +80,7 @@ export function DownloadActions({
 }>) {
   const clipboard = useClipboard()
   const [menuOpen, setMenuOpen] = useState(false)
-  const rawUrl = permLinkFromParams(permLinkParams.readable)
+  const getRawUrl = () => permLinkFromParams(permLinkParams.readable)
 
   return (
     <>
@@ -100,7 +101,7 @@ export function DownloadActions({
         </Dialog.Description>
       </CustomEmbedLinkMenu>
       <DownloadButton
-        onClickCallback={() => window.open(rawUrl)}
+        onClickCallback={() => window.open(getRawUrl())}
         btnColor="blue"
         btnText={label['Download']}
         btnIcon="file-download"
@@ -108,7 +109,7 @@ export function DownloadActions({
       />
       <DownloadButton
         onClickCallback={() => {
-          clipboard.copy(rawUrl)
+          clipboard.copy(getRawUrl())
           toast.success(label['Copied direct link to clipboard'])
         }}
         btnColor="pink"

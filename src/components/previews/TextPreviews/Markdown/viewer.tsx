@@ -12,15 +12,13 @@ import { tomorrowNight } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
 
 import 'katex/dist/katex.min.css'
 
-function MarkdownPreview({
-  path,
-  standalone = true,
-  content,
-}: {
+export interface Props {
   path: string
   standalone?: boolean
   content: string
-}) {
+}
+
+export default function MarkdownViewer({ path, standalone = true, content }: Props) {
   // Th parent folder of the markdown file, which is also the relative image folder
   const parentPath = standalone ? path.substring(0, path.lastIndexOf('/')) : path
 
@@ -85,8 +83,8 @@ function MarkdownPreview({
   }
 
   return (
+    /* Using rehypeRaw to render HTML inside Markdown is potentially dangerous, use under safe environments. (#18) */
     <div className="markdown-body">
-      {/* Using rehypeRaw to render HTML inside Markdown is potentially dangerous, use under safe environments. (#18) */}
       <ReactMarkdown
         // @ts-ignore
         remarkPlugins={[remarkGfm, remarkMath]}
@@ -98,9 +96,7 @@ function MarkdownPreview({
         components={customRenderer}
       >
         {content}
-      </ReactMarkdown>
+      </ReactMarkdown>{' '}
     </div>
   )
 }
-
-export default MarkdownPreview

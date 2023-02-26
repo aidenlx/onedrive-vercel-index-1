@@ -35,9 +35,7 @@ export async function getPageData(
   }
 
   // Querying current path identity (file or folder) and follow up query childrens in folder
-  const identityData: DriveItem = await get(requestUrl, {
-    next: { revalidate: 60 },
-  })
+  const identityData: DriveItem = await get(requestUrl)
 
   if (!identityData.folder) return { type: 'file', value: identityData }
 
@@ -51,9 +49,7 @@ export async function getPageData(
     if (next) childUrl.searchParams.set('$skipToken', next)
     if (opts.sort) childUrl.searchParams.set('$orderby', opts.sort)
 
-    const data: { value: DriveItem[] } = await get(childUrl, {
-      next: { revalidate: 60 },
-    })
+    const data: { value: DriveItem[] } = await get(childUrl)
 
     // reached the end of the collection
     if (data.value.length === 0 || (level > 0 && !next)) return [prevData, false]

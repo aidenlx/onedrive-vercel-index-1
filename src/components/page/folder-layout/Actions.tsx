@@ -6,7 +6,7 @@ import { useStoredToken } from '@/utils/useStoredToken'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
 import { getFiles, itemPathGetter } from '../utils'
-import { toPermLink } from "@/utils/permlink"
+import { toPermLink, usePermLink } from "@/utils/permlink"
 import Checkbox from './Checkbox'
 import Downloading from './Downloading'
 import { useClipboard } from 'use-clipboard-copy'
@@ -149,7 +149,7 @@ export function FileAction({ c, label, path }: { c: DriveItem; path: string; lab
   const getItemPath = itemPathGetter(path)
   const clipboard = useClipboard()
 
-  const permlink = toPermLink(getItemPath(c.name), hashedToken)
+  const permlink = usePermLink(getItemPath(c.name), hashedToken)
 
   return (
     <>

@@ -3,7 +3,11 @@
 import Preview from 'preview-office-docs'
 import { useState, useRef, useEffect } from 'react'
 
-export function OfficeViewer({ src }: { src: string }) {
+export interface Props {
+  src: string
+}
+
+export default function OfficeViewer({ src }: Props) {
   const docContainer = useRef<HTMLDivElement>(null)
   const [docContainerWidth, setDocContainerWidth] = useState(600)
 

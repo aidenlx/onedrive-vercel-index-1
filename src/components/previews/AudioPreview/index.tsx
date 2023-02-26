@@ -4,7 +4,7 @@ import { DownloadBtnContainer, PreviewContainer } from '../Containers'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { formatModifiedDateTime } from '@/utils/fileDetails'
 import { useTranslations } from 'next-intl'
-import { AudioPlayer } from './client'
+import AudioPlayer from './lazy'
 import { toPermLink } from "@/utils/permlink-server"
 
 export default function AudioPreview({ file, path }: { file: DriveItem; path: string }) {

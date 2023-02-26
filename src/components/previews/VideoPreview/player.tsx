@@ -1,47 +1,19 @@
 'use client'
 
-import { DownloadButton } from '@/components/DownloadButton'
 import FourOhFour from '@/components/FourOhFourClient'
 import Loading from '@/components/Loading'
-import { getBaseUrl } from '@/utils/getBaseUrl'
 import Plyr from 'plyr-react'
 import { useEffect } from 'react'
 import { useAsync } from 'react-async-hook'
 
 import 'plyr-react/plyr.css'
 
-export function OpenInPlayers({ videoUrl }: { videoUrl: string }) {
-  return (
-    <>
-      <DownloadButton
-        onClickCallback={() => window.open(`iina://weblink?url=${getBaseUrl()}${videoUrl}`)}
-        btnText="IINA"
-        btnImage="/players/iina.png"
-      />
-      <DownloadButton
-        onClickCallback={() => window.open(`vlc://${getBaseUrl()}${videoUrl}`)}
-        btnText="VLC"
-        btnImage="/players/vlc.png"
-      />
-      <DownloadButton
-        onClickCallback={() => window.open(`potplayer://${getBaseUrl()}${videoUrl}`)}
-        btnText="PotPlayer"
-        btnImage="/players/potplayer.png"
-      />
-      <DownloadButton
-        onClickCallback={() => window.open(`nplayer-http://${window?.location.hostname ?? ''}${videoUrl}`)}
-        btnText="nPlayer"
-        btnImage="/players/nplayer.png"
-      />
-    </>
-  )
-}
+export type VideoPlayerProps = { isFlv: boolean; label: { 'Loading FLV extension': string } } & Omit<
+  VideoPlayerProps0,
+  'mpegts'
+>
 
-export function VideoPlayerWarpper({
-  isFlv,
-  label,
-  ...props
-}: { isFlv: boolean; label: { 'Loading FLV extension': string } } & Omit<VideoPlayerProps, 'mpegts'>) {
+export default function VideoPlayerWarpper({ isFlv, label, ...props }: VideoPlayerProps) {
   const {
     loading,
     error,
@@ -60,7 +32,7 @@ export function VideoPlayerWarpper({
   return <VideoPlayer mpegts={mpegts} isFlv={isFlv} {...props} />
 }
 
-interface VideoPlayerProps {
+interface VideoPlayerProps0 {
   videoName: string
   videoUrl: string
   width?: number
@@ -71,7 +43,7 @@ interface VideoPlayerProps {
   mpegts: any
 }
 
-function VideoPlayer({ videoName, videoUrl, width, height, thumbnail, subtitle, isFlv, mpegts }: VideoPlayerProps) {
+function VideoPlayer({ videoName, videoUrl, width, height, thumbnail, subtitle, isFlv, mpegts }: VideoPlayerProps0) {
   useSubtitle(subtitle)
   useFlv(videoUrl, isFlv, mpegts)
   // Common plyr configs, including the video source and plyr options

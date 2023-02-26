@@ -2,7 +2,7 @@ import FourOhFour from '@/components/FourOhFour'
 import Loading from '@/components/Loading'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
-import { toPermLink } from "@/utils/permlink-server"
+import { toPermLink } from '@/utils/permlink-server'
 import { useToken } from '@/utils/useToken'
 import { useTranslations } from 'next-intl'
 import { ReactNode, Suspense } from 'react'
@@ -23,8 +23,8 @@ async function TextPreviewContent({ path, children: renderContent }: TextPreview
       return <EmptyTextFile />
     }
     return renderContent(content)
-    // <pre className="overflow-x-scroll p-0 text-sm md:p-3">{content}</pre>
   } catch (error) {
+    console.error(error)
     return <FourOhFour>{error instanceof Error ? error.message : JSON.stringify(error)}</FourOhFour>
   }
 }
