@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
 import { EmptyTextFile } from './TextPreviews/TextPreviewBase'
 import { useToken } from '@/utils/useToken'
-import { toPermLink } from "@/utils/permlink-server"
+import { toPermLink } from '@/utils/permlink-server'
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 
 const parseDotUrl = (content: string): string | undefined => {
   return content
@@ -53,7 +54,7 @@ function URLPreviewMainContent({ content }: { content: string }) {
             onClickCallback={() => window.open(parseDotUrl(content) ?? '')}
             btnColor="blue"
             btnText={t('Open URL')}
-            btnIcon="external-link-alt"
+            btnIcon={faExternalLinkAlt}
             btnTitle={t('Open URL{{url}}', { url: ' ' + parseDotUrl(content) ?? '' })}
           />
         </div>

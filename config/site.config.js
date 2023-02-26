@@ -51,11 +51,12 @@ module.exports = {
   email: 'mailto:spencer.wushangbo@gmail.com',
 
   // [OPTIONAL] This is an array of names and links for setting your social information and links.
-  // In the latest update, all brand icons inside font awesome is supported and the icon to render is based on the name
-  // you provide. See the documentation for details.
+  // In the latest update, you need to import the icon you want to use from @fortawesome/free-brands-svg-icons and pass it
+  // to the icon property for better performance. You can find the icon names at https://fontawesome.com/icons?d=gallery&s=brands.
   links: [
     {
       name: 'GitHub',
+      icon: require('@fortawesome/free-brands-svg-icons').faGithub,
       link: 'https://github.com/spencerwooo/onedrive-vercel-index',
     },
   ],

@@ -1,6 +1,7 @@
 'use client'
 
 import { LoadingIcon } from '@/components/LoadingClient'
+import { faMusic } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useRef, useState } from 'react'
 import ReactAudioPlayer from 'react-audio-player'
@@ -73,7 +74,7 @@ function Thumbnail({ src, alt, status }: { src: string; alt?: string; status: Pl
     return (
       <FontAwesomeIcon
         className={`z-10 h-5 w-5 ${status === PlayerState.Playing ? 'animate-spin' : ''}`}
-        icon="music"
+        icon={faMusic}
         size="2x"
       />
     )

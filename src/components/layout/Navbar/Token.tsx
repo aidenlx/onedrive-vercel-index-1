@@ -9,6 +9,8 @@ import { Fragment, useState, useTransition } from 'react'
 
 import { protectedRoutes } from '@cfg/site.config'
 import { useClearAllToken } from '@/utils/useStoredToken'
+import { faKey, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
 type TokenLabels = Record<keyof IntlMessages['layout']['token'], string>
 
@@ -19,7 +21,7 @@ export function TokenPresent({ label }: { label: TokenLabels }) {
     <>
       <button className="flex items-center space-x-2 hover:opacity-80 dark:text-white" onClick={() => setOpen(true)}>
         <span className="hidden text-sm font-medium md:inline-block">{t('Logout')}</span>
-        <FontAwesomeIcon icon="sign-out-alt" />
+        <FontAwesomeIcon icon={faSignOutAlt} />
       </button>
       <ClearTokenModal open={open} onClose={() => setOpen(false)} label={label} />
     </>
@@ -84,7 +86,7 @@ export function ClearTokenModal({ open, onClose, label }: { onClose: () => void;
               <div className="mt-4 max-h-32 overflow-y-scroll font-mono text-sm dark:text-gray-100">
                 {protectedRoutes.map((r, i) => (
                   <div key={i} className="flex items-center space-x-1">
-                    <FontAwesomeIcon icon="key" />
+                    <FontAwesomeIcon icon={faKey} />
                     <span className="truncate">{r}</span>
                   </div>
                 ))}
@@ -101,7 +103,7 @@ export function ClearTokenModal({ open, onClose, label }: { onClose: () => void;
                   className="inline-flex items-center justify-center space-x-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-400 focus:outline-none focus:ring focus:ring-red-300"
                   onClick={() => clearTokens()}
                 >
-                  <FontAwesomeIcon icon={['far', 'trash-alt']} />
+                  <FontAwesomeIcon icon={faTrashAlt} />
                   <span>{t('Clear all')}</span>
                 </button>
               </div>

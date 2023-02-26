@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import SearchModal from './SearchModal'
 import type { SearchModalLabels } from './SearchModal'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 export function OpenSearch({ label }: { label: SearchModalLabels }) {
   const os = useDeviceOS()
@@ -26,7 +27,7 @@ export function OpenSearch({ label }: { label: SearchModalLabels }) {
         onClick={onOpen}
       >
         <div className="flex items-center space-x-2">
-          <FontAwesomeIcon className="h-4 w-4" icon="search" />
+          <FontAwesomeIcon className="h-4 w-4" icon={faSearch} />
           <span className="truncate text-sm font-medium">{label.searchFor}</span>
         </div>
 

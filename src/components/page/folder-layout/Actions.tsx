@@ -12,6 +12,7 @@ import Downloading from './Downloading'
 import { useClipboard } from 'use-clipboard-copy'
 import toast from 'react-hot-toast'
 import { useEffect } from 'react'
+import { faArrowAltCircleDown, faCopy } from '@fortawesome/free-regular-svg-icons'
 // import {
 //   DownloadingToast,
 //   downloadMultipleFiles,
@@ -73,7 +74,7 @@ export function BatchAction({
           toast.success(label.cpSelectedDone)
         }}
       >
-        <FontAwesomeIcon icon={['far', 'copy']} size="lg" />
+        <FontAwesomeIcon icon={faCopy} size="lg" />
       </button>
       {totalGenerating ? (
         <Downloading title={label.dlSelectedPending} style="p-1.5" />
@@ -87,7 +88,7 @@ export function BatchAction({
             // handleSelectedDownload()
           }}
         >
-          <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} size="lg" />
+          <FontAwesomeIcon icon={faArrowAltCircleDown} size="lg" />
         </button>
       )}
     </>
@@ -116,7 +117,7 @@ export function FolderAction({ c, label, path }: { c: DriveItem; path: string; l
           toast(label.cpFolderDone, { icon: '👌' })
         }}
       >
-        <FontAwesomeIcon icon={['far', 'copy']} />
+        <FontAwesomeIcon icon={faCopy} />
       </span>
       {folderGenerating ? (
         <Downloading title={label.dlFolderPending} style="px-1.5 py-1" />
@@ -129,7 +130,7 @@ export function FolderAction({ c, label, path }: { c: DriveItem; path: string; l
             // handleFolderDownload(getItemPath(c.name), c.id, c.name)()
           }}
         >
-          <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
+          <FontAwesomeIcon icon={faArrowAltCircleDown} />
         </span>
       )}
     </>
@@ -161,14 +162,14 @@ export function FileAction({ c, label, path }: { c: DriveItem; path: string; lab
           toast.success(label.cpFileDone)
         }}
       >
-        <FontAwesomeIcon icon={['far', 'copy']} />
+        <FontAwesomeIcon icon={faCopy} />
       </span>
       <a
         title={label.downloadFile}
         className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
         href={permlink}
       >
-        <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
+        <FontAwesomeIcon icon={faArrowAltCircleDown} />
       </a>
     </>
   )

@@ -5,7 +5,6 @@ import '../../styles/markdown-github.css'
 
 import { useLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
-import FontAwesomeLoader from './fa'
 import { Inter as Sans, Fira_Mono as Mono } from 'next/font/google'
 
 import type { Metadata } from 'next'
@@ -35,7 +34,6 @@ export default function RootLayout({ children, params }: { children: React.React
   }
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
-      <FontAwesomeLoader />
       <body>{children}</body>
     </html>
   )

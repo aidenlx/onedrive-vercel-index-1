@@ -1,6 +1,7 @@
 'use client'
 
 import { LoadingIcon } from '@/components/Loading'
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
@@ -90,7 +91,7 @@ function LoadMoreButton({
       ) : (
         <>
           <span>{label.loadMore}</span>
-          <FontAwesomeIcon icon="chevron-circle-down" />
+          <FontAwesomeIcon icon={faChevronDown} />
         </>
       )}
     </button>

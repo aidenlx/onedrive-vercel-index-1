@@ -10,6 +10,8 @@ import type { CustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
 import CustomEmbedLinkMenu from './page/CustomEmbedLinkMenu'
 import { permLinkFromParams } from '@/utils/permlink'
 import { Dialog } from '@headlessui/react'
+import { faFileDownload, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faCopy } from '@fortawesome/free-regular-svg-icons'
 
 const btnStyleMap = (btnColor?: string) => {
   const colorMap = {
@@ -104,7 +106,7 @@ export function DownloadActions({
         onClickCallback={() => window.open(getRawUrl())}
         btnColor="blue"
         btnText={label['Download']}
-        btnIcon="file-download"
+        btnIcon={faFileDownload}
         btnTitle={label['Download the file directly through OneDrive']}
       />
       <DownloadButton
@@ -114,14 +116,14 @@ export function DownloadActions({
         }}
         btnColor="pink"
         btnText={label['Copy direct link']}
-        btnIcon="copy"
+        btnIcon={faCopy}
         btnTitle={label['Copy the permalink to the file to the clipboard']}
       />
       <DownloadButton
         onClickCallback={() => setMenuOpen(true)}
         btnColor="teal"
         btnText={label['Customise link']}
-        btnIcon="pen"
+        btnIcon={faPen}
       />
       {children}
     </>

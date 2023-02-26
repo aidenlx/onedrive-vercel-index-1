@@ -18,6 +18,8 @@ import { getFileIcon } from '@/utils/getFileIcon'
 import { fetcher } from '@/utils/fetchWithSWR'
 import siteConfig from '@cfg/site.config'
 import { useTranslations } from 'next-intl'
+import { faFolder } from '@fortawesome/free-regular-svg-icons'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 /**
  * Extract the searched item's path in field 'parentReference' and convert it to the
@@ -99,7 +101,7 @@ function SearchResultItemTemplate({
         disabled ? 'pointer-events-none cursor-not-allowed' : 'cursor-pointer'
       }`}
     >
-      <FontAwesomeIcon icon={driveItem.file ? getFileIcon(driveItem.name) : ['far', 'folder']} />
+      <FontAwesomeIcon icon={driveItem.file ? getFileIcon(driveItem.name) : faFolder} />
       <div>
         <div className="text-sm font-medium leading-8">{driveItem.name}</div>
         <div
@@ -213,7 +215,7 @@ export default function SearchModal({
                 as="h3"
                 className="flex items-center space-x-4 border-b border-gray-400/30 bg-gray-50 p-4 dark:bg-gray-800 dark:text-white"
               >
-                <FontAwesomeIcon icon="search" className="h-4 w-4" />
+                <FontAwesomeIcon icon={faSearch} className="h-4 w-4" />
                 <input
                   type="text"
                   id="search-box"

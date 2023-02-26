@@ -1,13 +1,15 @@
 import { Link } from 'next-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useTranslations } from 'next-intl'
+import { faFlag } from '@fortawesome/free-regular-svg-icons'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 const HomeCrumb = () => {
   const t = useTranslations('layout.basic')
 
   return (
     <Link href="/" className="flex items-center">
-      <FontAwesomeIcon className="h-3 w-3" icon={['far', 'flag']} />
+      <FontAwesomeIcon className="h-3 w-3" icon={faFlag} />
       <span className="ml-2 font-medium">{t('Home')}</span>
     </Link>
   )
@@ -29,7 +31,7 @@ const Breadcrumb = ({ paths }: { paths: string[] }) => {
         .reverse()
         .map((p: string, i: number) => (
           <li key={i} className="flex flex-shrink-0 items-center">
-            <FontAwesomeIcon className="h-3 w-3" icon="angle-right" />
+            <FontAwesomeIcon className="h-3 w-3" icon={faAngleRight} />
             <Link
               href={`/${paths
                 .slice(0, paths.length - i)

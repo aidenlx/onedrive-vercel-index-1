@@ -9,6 +9,7 @@ import apiConfig from '@cfg/api.config'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRight, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 export default function OAuthStep1() {
   const router = useRouter()
@@ -37,7 +38,7 @@ export default function OAuthStep1() {
 
             <p className="py-1 text-sm font-medium text-yellow-400">
               <Trans>
-                <FontAwesomeIcon icon="exclamation-triangle" className="mr-1" /> If you have not specified a REDIS_URL
+                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" /> If you have not specified a REDIS_URL
                 inside your Vercel env variable, go initialise one at{' '}
                 <a href="https://upstash.com/" target="_blank" rel="noopener noreferrer" className="underline">
                   Upstash
@@ -122,7 +123,7 @@ export default function OAuthStep1() {
 
             <p className="py-1 text-sm font-medium">
               <Trans>
-                <FontAwesomeIcon icon="exclamation-triangle" className="mr-1 text-yellow-400" /> If you see anything
+                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1 text-yellow-400" /> If you see anything
                 missing or incorrect, you need to reconfigure{' '}
                 <code className="font-mono text-xs">/config/api.config.js</code> and redeploy this instance.
               </Trans>
@@ -135,7 +136,7 @@ export default function OAuthStep1() {
                   router.push('/onedrive-vercel-index-oauth/step-2')
                 }}
               >
-                <span>{t('Proceed to OAuth')}</span> <FontAwesomeIcon icon="arrow-right" />
+                <span>{t('Proceed to OAuth')}</span> <FontAwesomeIcon icon={faArrowRight} />
               </button>
             </div>
           </div>

@@ -8,6 +8,8 @@ import { useClipboard } from 'use-clipboard-copy'
 
 import { customisedPermLinkFromParams, permLinkFromParams } from '@/utils/permlink'
 import type { CustomEmbedLinkMenuLabels } from './server'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCopy } from '@fortawesome/free-regular-svg-icons'
 
 function LinkContainer({ title, value }: { title: string; value: string }) {
   return (
@@ -29,7 +31,7 @@ function CopyButton({ value }: { value: string }) {
       onClick={() => clipboard.copy(value)}
       className="absolute top-[0.2rem] right-[0.2rem] w-8 rounded border border-gray-400/40 bg-gray-100 py-1.5 opacity-0 transition-all duration-100 hover:bg-gray-200 group-hover:opacity-100 dark:bg-gray-850 dark:hover:bg-gray-700"
     >
-      {clipboard.copied ? <FontAwesomeIcon icon="check" /> : <FontAwesomeIcon icon="copy" />}
+      {clipboard.copied ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faCopy} />}
     </button>
   )
 }

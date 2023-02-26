@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useSetPersistedToken } from '@/utils/useStoredToken'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
 interface AuthLabels {
   'This route (the folder itself and the files inside) is password protected': string
@@ -59,7 +60,7 @@ export default function Auth({ redirect, label }: { redirect: string; label: Aut
           className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-400"
           onClick={applyToken}
         >
-          <FontAwesomeIcon icon="arrow-right" />
+          <FontAwesomeIcon icon={faArrowRight} />
         </button>
       </div>
     </div>

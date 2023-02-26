@@ -9,6 +9,7 @@ import { Link } from 'next-intl'
 import { usePathname } from 'next-intl/client'
 import { useCookies, withCookies } from 'react-cookie'
 import { locales } from '@/locale'
+import { faChevronDown, faLanguage } from '@fortawesome/free-solid-svg-icons'
 
 const localeLabels: Record<(typeof locales)[number], string> = {
   'en': '🇬🇧 English',
@@ -33,8 +34,8 @@ const SwitchLang = () => {
     <div className="relative">
       <Menu>
         <Menu.Button className="flex items-center space-x-1.5 hover:opacity-80 dark:text-white">
-          <FontAwesomeIcon className="h-4 w-4" icon="language" />
-          <FontAwesomeIcon className="h-3 w-3" icon="chevron-down" />
+          <FontAwesomeIcon className="h-4 w-4" icon={faLanguage} />
+          <FontAwesomeIcon className="h-3 w-3" icon={faChevronDown} />
         </Menu.Button>
 
         <Transition

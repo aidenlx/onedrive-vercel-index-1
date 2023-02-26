@@ -11,6 +11,7 @@ import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import { LoadingIcon } from '../../components/Loading'
 import { extractAuthCodeFromRedirected, generateAuthorisationUrl } from '@/utils/oAuthHandler'
+import { faArrowRight, faExclamationCircle, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 
 export default function OAuthStep2() {
   const router = useRouter()
@@ -51,8 +52,8 @@ export default function OAuthStep2() {
 
             <p className="py-1 text-sm font-medium text-red-400">
               <Trans>
-                <FontAwesomeIcon icon="exclamation-circle" className="mr-1" /> If you are not the owner of this website,
-                stop now, as continuing with this process may expose your personal files in OneDrive.
+                <FontAwesomeIcon icon={faExclamationCircle} className="mr-1" /> If you are not the owner of this
+                website, stop now, as continuing with this process may expose your personal files in OneDrive.
               </Trans>
             </p>
 
@@ -63,7 +64,7 @@ export default function OAuthStep2() {
               }}
             >
               <div className="absolute top-0 right-0 p-1 opacity-60">
-                <FontAwesomeIcon icon="external-link-alt" />
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
               </div>
               <pre className="overflow-x-auto whitespace-pre-wrap p-2">
                 <code>{oAuthUrl}</code>
@@ -127,7 +128,7 @@ export default function OAuthStep2() {
                   </>
                 ) : (
                   <>
-                    <span>{t('Get tokens')}</span> <FontAwesomeIcon icon="arrow-right" />
+                    <span>{t('Get tokens')}</span> <FontAwesomeIcon icon={faArrowRight} />
                   </>
                 )}
               </button>
