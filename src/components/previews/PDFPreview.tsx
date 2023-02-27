@@ -1,10 +1,9 @@
-import { useToken } from '@/utils/useToken'
 import DownloadButtonGroup from '../DownloadBtnGtoup'
 import { toPermLink } from "@/utils/permlink-server"
 import { DownloadBtnContainer } from './Containers'
 
 export default function PDFEmbedPreview({ path }: { path: string }) {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
 
   const url = new URL('https://mozilla.github.io/pdf.js/web/viewer.html')
   url.searchParams.append('file', toPermLink(path, hashedToken))

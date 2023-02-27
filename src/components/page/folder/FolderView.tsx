@@ -1,19 +1,20 @@
 import { FolderData } from '@/utils/api/type'
 import LoadMore from './LoadMore'
 import { useTranslations } from 'next-intl'
-// import MarkdownPreview from '@/components/previews/MarkdownPreview'
+import MarkdownPreview from '@/components/previews/TextPreviews/Markdown'
 import FolderLayout from './FolderLayout'
 import FolderListLayout from '../folder-layout/FolderListLayout'
 import FolderGridLayout from '../folder-layout/FolderGridLayout'
 import { ActionLabels } from '../folder-layout/Actions'
+import { join } from '@/utils/path'
+import { Suspense } from 'react'
 
 export default function FolderView({
   value: folderChildren,
   canLoadMore,
   size,
   path,
-  token,
-}: FolderData & { size: number; path: string; token: string | null }) {
+}: FolderData & { size: number; path: string }) {
   const onlyOnePage = size === 0 && !canLoadMore
 
   // Find README.md file to render
@@ -41,14 +42,11 @@ export default function FolderView({
     <>
       <FolderLayout
         list={<FolderListLayout folderChildren={folderChildren} path={path} label={actionLabels} />}
-        grid={<FolderGridLayout folderChildren={folderChildren} path={path} token={token} label={actionLabels} />}
+        grid={<FolderGridLayout folderChildren={folderChildren} path={path} label={actionLabels} />}
       />
       {!onlyOnePage && <LoadMoreWarpper canLoadMore={canLoadMore} size={size} total={folderChildren.length} />}
       {readmeFile && (
-        <div className="mt-4">
-          markdown file
-          {/* <MarkdownPreview file={readmeFile} path={path} standalone={false} /> */}
-        </div>
+        <div className="mt-4">{<MarkdownPreview path={join(path, readmeFile.name)} standalone={false} />}</div>
       )}
     </>
   )
@@ -57,16 +55,18 @@ export default function FolderView({
 function LoadMoreWarpper({ size, total, canLoadMore }: { size: number; total: number; canLoadMore: boolean }) {
   const t = useTranslations('folder.loadMore')
   return (
-    <LoadMore
-      label={{
-        count: t('- showing {size} page(s) of {total} file(s) -', { size: size + 1, total }),
-        countLoading: t('- showing {size} page(s) of {total} file(s) -', { size: size + 2, total: -1 }),
-        loading: t('Loading'),
-        loadMore: t('Load more'),
-        noMore: t('No more files'),
-      }}
-      size={size}
-      canLoadMore={canLoadMore}
-    />
+    <Suspense>
+      <LoadMore
+        label={{
+          count: t('- showing {size} page(s) of {total} file(s) -', { size: size + 1, total }),
+          countLoading: t('- showing {size} page(s) of {total} file(s) -', { size: size + 2, total: -1 }),
+          loading: t('Loading'),
+          loadMore: t('Load more'),
+          noMore: t('No more files'),
+        }}
+        size={size}
+        canLoadMore={canLoadMore}
+      />
+    </Suspense>
   )
 }

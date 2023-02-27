@@ -1,74 +1,50 @@
 import Breadcrumb from '@/components/layout/Breadcrumb'
-import Footer from '@/components/layout/Footer'
-import Navbar from '@/components/layout/Navbar'
-import { OpenSearch } from '@/components/layout/Navbar/OpenSearch'
-import SwitchLang from '@/components/layout/Navbar/SwitchLang'
-import { TokenPresent } from '@/components/layout/Navbar/Token'
 import SwitchLayout from '@/components/layout/SwitchLayout'
-import { Toaster } from '@/components/layout/Toaster'
-import { fromPairs } from '@/utils/fromPair'
-import { useTokenPresent } from '@/utils/useToken'
+import { Auth } from '@/components/Auth'
+import { queryToPath } from '@/components/page/utils'
+import { PreviewContainer } from '@/components/previews/Containers'
+import { authRoute } from '@/utils/auth/const'
 import { useTranslations } from 'next-intl'
+import { Suspense } from 'react'
+import Loading from '@/components/Loading'
 
 export default function Layout({ children, params }: { children: React.ReactNode; params: { paths?: string[] } }) {
-  const tBasic = useTranslations('layout.basic'),
-    tLinks = useTranslations('layout.links'),
-    tToken = useTranslations('layout.token'),
-    tLayouts = useTranslations('layout.layouts'),
-    tSearch = useTranslations('layout.search')
+  const t = useTranslations('layout.layouts')
 
-  const tokenPresent = useTokenPresent()
+  const paths = params.paths ?? []
+  if (paths[0] === authRoute) {
+    paths.shift()
+    children = (
+      <PreviewContainer>
+        <AuthWarpper redirect={queryToPath(paths)} />
+      </PreviewContainer>
+    )
+  }
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-gray-900">
-      <main className="flex w-full flex-1 flex-col bg-gray-50 dark:bg-gray-800">
-        <Navbar
-          label={{ email: tBasic('Email') }}
-          msgLink={{ Weibo: tLinks('Weibo') }}
-          right={
-            tokenPresent && (
-              <TokenPresent
-                label={fromPairs(
-                  (
-                    [
-                      'Clear all tokens?',
-                      'Clear all',
-                      'Cleared all tokens',
-                      'clearing them means that you will need to re-enter the passwords again',
-                      'These tokens are used to authenticate yourself into password protected folders, ',
-                      'Logout',
-                      'Cancel',
-                    ] as const
-                  ).map(x => [x, tToken(x)] as const)
-                )}
-              />
-            )
-          }
-        >
-          <Toaster />
-          <OpenSearch
-            label={{
-              searchFor: tSearch('Search'),
-              error: tSearch('Error: '),
-              loading: tBasic('Loading'),
-              NothingHere: tSearch('Nothing here'),
-            }}
-          />
-          <SwitchLang />
-        </Navbar>
-        <div className="mx-auto w-full max-w-5xl py-4 sm:p-4">
-          <nav className="mb-4 flex items-center justify-between space-x-3 px-4 sm:px-0 sm:pl-1">
-            <Breadcrumb paths={params.paths ?? []} />
-            <SwitchLayout
-              msg={{
-                Grid: tLayouts('Grid'),
-                List: tLayouts('List'),
-              }}
-            />
-          </nav>
-          {children}
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <>
+      <nav className="mb-4 flex items-center justify-between space-x-3 px-4 sm:px-0 sm:pl-1">
+        <Breadcrumb paths={paths} />
+        <SwitchLayout msg={{ Grid: t('Grid'), List: t('List') }} />
+      </nav>
+      {children}
+    </>
+  )
+}
+
+function AuthWarpper({ redirect }: { redirect: string }) {
+  const t = useTranslations('layout.auth')
+  return (
+    <Suspense fallback={<Loading loadingText="loading login page" />}>
+      <Auth
+        redirect={redirect}
+        label={{
+          'Enter Password': t('Enter Password'),
+          'If you know the password, please enter it below': t('If you know the password, please enter it below'),
+          'This route (the folder itself and the files inside) is password protected': t(
+            'This route (the folder itself and the files inside) is password protected'
+          ),
+        }}
+      />
+    </Suspense>
   )
 }

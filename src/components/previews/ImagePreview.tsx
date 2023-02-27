@@ -1,12 +1,11 @@
 import { PreviewContainer, DownloadBtnContainer } from './Containers'
 import DownloadButtonGroup from '../DownloadBtnGtoup'
-import { useToken } from '@/utils/useToken'
 import { toPermLink } from "@/utils/permlink-server"
 import { DriveItem } from '@/utils/api/type'
 import Image from 'next/image'
 
 const ImagePreview = ({ file, path }: { file: DriveItem; path: string }) => {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
 
   if (!file.image) return null
 

@@ -1,14 +1,12 @@
 import { redirect } from 'next-intl/server'
 import { PreviewContainer } from '@/components/previews/Containers'
-import Auth from '@/components/page/Auth'
-import { getPageData, NoAccessTokenError, NoAuthError } from './fetch'
+import { getPageData, NoAccessTokenError } from './fetch'
 import FourOhFour from '@/components/FourOhFour'
 import { queryToPath } from '@/components/page/utils'
 import { kv } from '@/utils/kv/edge'
 import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
-import { useToken } from '@/utils/useToken'
 import { locales } from '@/locale'
 
 // export function generateStaticParams() {
@@ -28,11 +26,7 @@ export default async function Page({
   const path = queryToPath(params.paths),
     size = toInt(searchParams?.size, 0)
 
-  const hashedToken = useToken(decodeURIComponent(path))
-
-  const data = await getPageData(path, size, { kv, token: hashedToken }).catch(
-    error => ({ type: 'error', error } as const)
-  )
+  const data = await getPageData(path, size, { kv }).catch(error => ({ type: 'error', error } as const))
 
   switch (data.type) {
     case 'error': {
@@ -43,18 +37,14 @@ export default async function Page({
       }
       return (
         <PreviewContainer>
-          {error instanceof NoAuthError ? (
-            <AuthWarpper redirect={path} />
-          ) : (
-            <FourOhFour>{JSON.stringify(error instanceof Error ? error.message : error)}</FourOhFour>
-          )}
+          <FourOhFour>{JSON.stringify(error instanceof Error ? error.message : error)}</FourOhFour>
         </PreviewContainer>
       )
     }
     case 'file':
       return <FilePreview {...data} path={path} />
     case 'folder':
-      return <FolderView {...data} size={size} path={path} token={hashedToken} />
+      return <FolderView {...data} size={size} path={path} />
     default:
       return <Fallback path={path} />
   }
@@ -74,20 +64,4 @@ function toInt(str: string | string[] | undefined, fallback: number) {
   if (Array.isArray(str)) str = str[0]
   const num = parseInt(str, 10)
   return Number.isNaN(num) ? fallback : num
-}
-
-function AuthWarpper({ redirect }: { redirect: string }) {
-  const t = useTranslations('layout.auth')
-  return (
-    <Auth
-      redirect={redirect}
-      label={{
-        'Enter Password': t('Enter Password'),
-        'If you know the password, please enter it below': t('If you know the password, please enter it below'),
-        'This route (the folder itself and the files inside) is password protected': t(
-          'This route (the folder itself and the files inside) is password protected'
-        ),
-      }}
-    />
-  )
 }

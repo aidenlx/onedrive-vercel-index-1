@@ -2,7 +2,6 @@
 
 import { DriveItem } from '@/utils/api/type'
 import { getBaseUrl } from '@/utils/getBaseUrl'
-import { useStoredToken } from '@/utils/useStoredToken'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
 import { getFiles, itemPathGetter } from '../utils'
@@ -54,7 +53,7 @@ export function BatchAction({
 
   const clipboard = useClipboard()
   const getItemPath = itemPathGetter(path)
-  const hashedToken = useStoredToken(path)
+  const hashedToken = ''
 
 
   return (
@@ -146,7 +145,7 @@ export interface FileActionLabels {
 }
 
 export function FileAction({ c, label, path }: { c: DriveItem; path: string; label: FileActionLabels }) {
-  const hashedToken = useStoredToken(path)
+  const hashedToken = ''
   const getItemPath = itemPathGetter(path)
   const clipboard = useClipboard()
 

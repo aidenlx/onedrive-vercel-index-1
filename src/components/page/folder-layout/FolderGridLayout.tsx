@@ -8,12 +8,10 @@ import { itemPathGetter } from '../utils'
 export default function FolderGridLayout({
   path,
   folderChildren,
-  token,
   label,
 }: {
   path: string
   folderChildren: DriveItem[]
-  token: string | null
   label: ActionLabels
 }) {
   const t = useTranslations('folder.grid')
@@ -45,7 +43,7 @@ export default function FolderGridLayout({
             </div>
             <ItemSelectionGrid c={c} label={label} />
             <Link href={getItemPath(c.name)} passHref>
-              <GridItem c={c} path={getItemPath(c.name)} token={token} />
+              <GridItem c={c} path={getItemPath(c.name)} />
             </Link>
           </div>
         ))}

@@ -34,7 +34,69 @@ export default function RootLayout({ children, params }: { children: React.React
   }
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Layout>{children}</Layout>
+      </body>
     </html>
+  )
+}
+
+import Footer from '@/components/layout/Footer'
+import Navbar from '@/components/layout/Navbar'
+import { OpenSearch } from '@/components/layout/Navbar/OpenSearch'
+import SwitchLang from '@/components/layout/Navbar/SwitchLang'
+import { TokenPresent } from '@/components/Auth'
+import { Toaster } from '@/components/layout/Toaster'
+import { fromPairs } from '@/utils/fromPair'
+import { useTranslations } from 'next-intl'
+import { Suspense } from 'react'
+
+function Layout({ children }: { children: React.ReactNode }) {
+  const tBasic = useTranslations('layout.basic'),
+    tLinks = useTranslations('layout.links'),
+    tToken = useTranslations('layout.token'),
+    tSearch = useTranslations('layout.search')
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-gray-900">
+      <main className="flex w-full flex-1 flex-col bg-gray-50 dark:bg-gray-800">
+        <Navbar
+          label={{ email: tBasic('Email') }}
+          msgLink={{ Weibo: tLinks('Weibo') }}
+          right={
+            <TokenPresent
+              label={fromPairs(
+                (
+                  [
+                    'Clear all tokens?',
+                    'Clear all',
+                    'Cleared all tokens',
+                    'clearing them means that you will need to re-enter the passwords again',
+                    'These tokens are used to authenticate yourself into password protected folders, ',
+                    'Logout',
+                    'Cancel',
+                  ] as const
+                ).map(x => [x, tToken(x)] as const)
+              )}
+            />
+          }
+        >
+          <Toaster />
+          <OpenSearch
+            label={{
+              searchFor: tSearch('Search'),
+              error: tSearch('Error: '),
+              loading: tBasic('Loading'),
+              NothingHere: tSearch('Nothing here'),
+            }}
+          />
+          <Suspense>
+            <SwitchLang />
+          </Suspense>
+        </Navbar>
+        <div className="mx-auto w-full max-w-5xl py-4 sm:p-4">{children}</div>
+      </main>
+      <Footer />
+    </div>
   )
 }

@@ -6,13 +6,13 @@ import { DriveItem } from '@/utils/api/type'
 import ChildIcon from './ChildIcon'
 import ChildName from './ChildName'
 
-export default function GridItem({ c, path, token }: { c: DriveItem; path: string; token: string | null }) {
+export default function GridItem({ c, path }: { c: DriveItem; path: string }) {
   // We use the generated medium thumbnail for rendering preview images (excluding folders)
 
   const params = new URLSearchParams()
   params.append('path', path)
   params.append('size', 'medium')
-  if (token) params.append('odpt', token)
+  // if (token) params.append('odpt', token)
   const thumbnailUrl = 'folder' in c ? null : `/api/thumbnail/?${params.toString()}`
 
   // Some thumbnails are broken, so we check for onerror event in the image component

@@ -1,13 +1,12 @@
 import { toPermLink } from "@/utils/permlink-server"
 import { DriveItem } from '@/utils/api/type'
-import { useToken } from '@/utils/useToken'
 import { DownloadBtnContainer } from '../Containers'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import Viewer from './lazy'
 import { useTranslations } from 'next-intl'
 
 export default function EPUBPreview({ path }: { file: DriveItem; path: string }) {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
   const t = useTranslations('file.epub')
   return (
     <div>

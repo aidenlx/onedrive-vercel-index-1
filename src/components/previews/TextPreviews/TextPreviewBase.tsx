@@ -3,7 +3,6 @@ import Loading from '@/components/Loading'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
 import { toPermLink } from '@/utils/permlink-server'
-import { useToken } from '@/utils/useToken'
 import { useTranslations } from 'next-intl'
 import { ReactNode, Suspense } from 'react'
 
@@ -13,7 +12,7 @@ export interface TextPreviewContentProps {
 }
 
 async function TextPreviewContent({ path, children: renderContent }: TextPreviewContentProps) {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
 
   try {
     const content = await fetch(toPermLink(path, hashedToken)).then(res =>

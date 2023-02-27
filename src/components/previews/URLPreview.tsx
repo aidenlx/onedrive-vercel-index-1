@@ -5,7 +5,6 @@ import { DownloadBtnContainer, PreviewContainer } from './Containers'
 import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
 import { EmptyTextFile } from './TextPreviews/TextPreviewBase'
-import { useToken } from '@/utils/useToken'
 import { toPermLink } from '@/utils/permlink-server'
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 
@@ -17,7 +16,7 @@ const parseDotUrl = (content: string): string | undefined => {
 }
 
 async function URLPreviewContent({ path }: { path: string }) {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
 
   try {
     const content = await fetch(toPermLink(path, hashedToken)).then(res =>

@@ -1,14 +1,13 @@
 import { toPermLink } from '@/utils/permlink-server'
 import { DriveItem } from '@/utils/api/type'
 import { getExtension } from '@/utils/getFileIcon'
-import { useToken } from '@/utils/useToken'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import VideoPlayer, { OpenInPlayers } from './lazy'
 import { useTranslations } from 'next-intl'
 
 export default function VideoPreview({ file, path }: { file: DriveItem; path: string }) {
-  const hashedToken = useToken(path)
+  const hashedToken = ''
 
   // OneDrive generates thumbnails for its video files, we pick the thumbnail with the highest resolution
   const thumbnail = `/api/thumbnail/?path=${path}&size=large${hashedToken ? `&odpt=${hashedToken}` : ''}`

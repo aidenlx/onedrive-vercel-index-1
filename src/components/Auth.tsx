@@ -1,14 +1,87 @@
 'use client'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Dialog, Transition } from '@headlessui/react'
-import toast from 'react-hot-toast'
 
-import { useRouter } from 'next/navigation'
-import { Fragment, useState, useTransition } from 'react'
+import Image from 'next/image'
+
+import { useState, useTransition } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from '@/utils/auth/useAuth'
+import { toast } from 'react-hot-toast'
+
+interface AuthLabels {
+  'This route (the folder itself and the files inside) is password protected': string
+  'If you know the password, please enter it below': string
+  'Enter Password': string
+}
+
+export function Auth({ redirect, label }: { label: AuthLabels; redirect: string }) {
+  const router = useRouter()
+  const { mutate } = useAuth()
+
+  const protectedRoute = useSearchParams()?.get('route')
+  const [_, startTransition] = useTransition()
+
+  const [token, setToken] = useState('')
+
+  const setPersistedToken = async (token: string) => {
+    if (!protectedRoute) {
+      toast('No route to unlock', { icon: '🤔' })
+      return
+    }
+    await fetch('/api/auth', { method: 'POST', body: JSON.stringify({ [protectedRoute]: token }) })
+    await mutate()
+  }
+
+  async function applyToken() {
+    await setPersistedToken(token)
+    startTransition(() => {
+      router.push(redirect)
+    })
+  }
+
+  return (
+    <div className="mx-auto flex max-w-sm flex-col space-y-4 md:my-10">
+      <div className="mx-auto w-3/4 md:w-5/6">
+        <Image src={'/images/fabulous-wapmire-weekdays.png'} alt="authenticate" width={912} height={912} priority />
+      </div>
+      <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{label['Enter Password']}</div>
+
+      <p className="text-sm font-medium text-gray-500">
+        {label['This route (the folder itself and the files inside) is password protected'] +
+          label['If you know the password, please enter it below']}
+      </p>
+
+      <div className="flex items-center space-x-2">
+        <input
+          className="flex-1 rounded border border-gray-600/10 p-2 font-mono focus:outline-none focus:ring focus:ring-blue-300 dark:bg-gray-600 dark:text-white dark:focus:ring-blue-700"
+          autoFocus
+          type="password"
+          placeholder="************"
+          value={token}
+          onChange={e => setToken(e.target.value)}
+          onKeyUp={e => {
+            if (e.key === 'Enter' || e.key === 'NumpadEnter') {
+              applyToken()
+            }
+          }}
+        />
+        <button
+          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-400"
+          onClick={applyToken}
+        >
+          <FontAwesomeIcon icon={faArrowRight} />
+        </button>
+      </div>
+    </div>
+  )
+}
+import { Dialog, Transition } from '@headlessui/react'
+
+import { Fragment } from 'react'
 
 import { protectedRoutes } from '@cfg/site.config'
-import { useClearAllToken } from '@/utils/useStoredToken'
 import { faKey, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
@@ -16,6 +89,11 @@ type TokenLabels = Record<keyof IntlMessages['layout']['token'], string>
 
 export function TokenPresent({ label }: { label: TokenLabels }) {
   const [open, setOpen] = useState(false)
+
+  const { data } = useAuth()
+
+  const tokenPresent = data && data.authenticated.length > 0
+  if (!tokenPresent) return null
   const t = (key: keyof TokenLabels) => label[key]
   return (
     <>
@@ -28,21 +106,27 @@ export function TokenPresent({ label }: { label: TokenLabels }) {
   )
 }
 
-export function ClearTokenModal({ open, onClose, label }: { onClose: () => void; open: boolean; label: TokenLabels }) {
+function ClearTokenModal({ open, onClose, label }: { onClose: () => void; open: boolean; label: TokenLabels }) {
   const router = useRouter()
-  const t = (key: keyof TokenLabels) => label[key]
 
-  const removeAll = useClearAllToken()
   const [_, startTransition] = useTransition()
 
-  const clearTokens = () => {
+  const { mutate } = useAuth()
+
+  const removeAll = async () => {
+    await fetch('/api/auth', { method: 'DELETE' })
+    await mutate()
+  }
+  const clearTokens = async () => {
     onClose()
-    removeAll()
+    await removeAll()
     toast.success(t('Cleared all tokens'))
     startTransition(() => {
       router.refresh()
     })
   }
+
+  const t = (key: keyof TokenLabels) => label[key]
   return (
     <Transition appear show={open} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={open} onClose={onClose}>

@@ -1,9 +1,7 @@
 import 'server-only'
 
-import { cookies } from 'next/headers'
-import { checkAuthRoute, encodePath, getAccessToken, handleResponseError } from '@/utils/api/common'
+import { encodePath, getAccessToken } from '@/utils/api/common'
 import { Redis } from '@/utils/odAuthTokenStore'
-import { assertNever } from 'assert-never'
 import { resolveRoot } from '@/utils/path'
 import { driveApi } from '@cfg/api.config'
 import { maxItems } from '@cfg/site.config'
@@ -12,14 +10,12 @@ import { FileData, FolderData, select, DriveItem } from '@/utils/api/type'
 export async function getPageData(
   path = '',
   size = 0,
-  opts: Partial<{ sort: string }> & { kv: Redis; token: string | null }
+  opts: Partial<{ sort: string }> & { kv: Redis }
 ): Promise<FileData | FolderData> {
   path = resolveRoot(path)
 
   const accessToken = await getAccessToken(opts.kv)
   if (!accessToken) throw new NoAccessTokenError()
-
-  await authProtectedRoute(path, accessToken, opts.token)
 
   const requestPath = encodePath(path, false),
     requestUrl = `${driveApi}/root${requestPath}`,
@@ -79,37 +75,5 @@ function getSkipToken(data: Record<string, any>): string | null {
 export class NoAccessTokenError extends Error {
   constructor() {
     super('No access token')
-  }
-}
-
-export class NoAuthError extends Error {
-  constructor() {
-    super('Password required')
-  }
-}
-
-export class PasswordNotSetError extends Error {
-  constructor() {
-    super("You didn't set a password")
-  }
-}
-
-/**
- * Handle protected routes authentication
- */
-async function authProtectedRoute(path: string, accessToken: string, hashedToken: string | null) {
-  const { code, message } = await checkAuthRoute(path, accessToken, hashedToken ?? '')
-  // Status code other than 200 means user has not authenticated yet
-  switch (code) {
-    case 200:
-      return
-    case 401:
-      throw new NoAuthError()
-    case 404:
-      throw new PasswordNotSetError()
-    case 500:
-      throw new Error(message)
-    default:
-      assertNever(code)
   }
 }

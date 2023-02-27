@@ -2,7 +2,6 @@ import { useCustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
 import { useTranslations } from 'next-intl'
 import { DownloadActions } from './DownloadButton'
 import { permLinkParams } from "../utils/permlink-server"
-import { useToken } from '@/utils/useToken'
 import { getReadablePath } from '@/utils/getReadablePath'
 import { PropsWithChildren } from 'react'
 
@@ -10,7 +9,7 @@ const DownloadButtonGroup = ({ path, children }: PropsWithChildren<{ path: strin
   const t = useTranslations('downloadBtn'),
     labels = useCustomEmbedLinkMenuLabels()
 
-  const hashedToken = useToken(path)
+  const hashedToken = ''
   return (
     <div className="flex flex-wrap justify-center gap-2">
       <DownloadActions
