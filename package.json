@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dl-static": "curl -sL https://github.com/mozilla/pdf.js/releases/download/v3.4.120/pdfjs-3.4.120-dist.zip --output pdfjs.zip && mkdir -p public/assets && unzip -q pdfjs.zip -d public/assets/pdfjs && rm pdfjs.zip",
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm dl-static && next build",
+    "build-fast": "next build",
     "build-analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
@@ -19,6 +21,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.8",
     "@mobily/ts-belt": "^4.0.0-rc.5",
+    "@next/font": "^13.2.1",
     "@react-hookz/web": "^22.0.0",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@upstash/redis": "^1.20.0",
@@ -39,7 +42,7 @@
     "iron-session": "^6.3.1",
     "jszip": "^3.10.1",
     "mpegts.js": "^1.7.2",
-    "next": "^13.2.0",
+    "next": "13.1.6",
     "next-i18next": "^13.0.3",
     "next-intl": "2.11.0-beta.15",
     "nextjs-progressbar": "^0.0.16",
@@ -83,6 +86,7 @@
     "@types/react-pdf": "^6.2.0",
     "@types/react-syntax-highlighter": "^15.5.6",
     "autoprefixer": "^10.4.13",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
     "eslint-config-prettier": "^8.6.0",
@@ -108,5 +112,10 @@
       "next/core-web-vitals",
       "prettier"
     ]
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next-intl@2.11.0-beta.15": "patches/next-intl@2.11.0-beta.15.patch"
+    }
   }
 }

@@ -8,10 +8,11 @@ import { useClipboard } from 'use-clipboard-copy'
 import { toast } from 'react-hot-toast'
 import type { CustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
 import CustomEmbedLinkMenu from './page/CustomEmbedLinkMenu'
-import { permLinkFromParams } from '@/utils/permlink'
+import { permLinkFromParams, toPermLink } from '@/utils/permlink'
 import { Dialog } from '@headlessui/react'
 import { faFileDownload, faPen } from '@fortawesome/free-solid-svg-icons'
 import { faCopy } from '@fortawesome/free-regular-svg-icons'
+import { useCanCopy } from '@/utils/auth/useAuth'
 
 const btnStyleMap = (btnColor?: string) => {
   const colorMap = {
@@ -40,6 +41,7 @@ export const DownloadButton = ({
   btnIcon,
   btnImage,
   btnTitle,
+  disabled,
 }: {
   onClickCallback: MouseEventHandler<HTMLButtonElement>
   btnColor?: string
@@ -47,14 +49,16 @@ export const DownloadButton = ({
   btnIcon?: IconProp
   btnImage?: string
   btnTitle?: string
+  disabled?: boolean
 }) => {
   return (
     <button
-      className={`flex items-center space-x-2 rounded-lg border bg-white py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-100/10 focus:z-10 focus:ring-2 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-900 ${btnStyleMap(
+      className={`flex items-center space-x-2 rounded-lg border bg-white py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-100/10 focus:z-10 focus:ring-2 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-900 ${btnStyleMap(
         btnColor
       )}`}
       title={btnTitle}
       onClick={onClickCallback}
+      disabled={disabled}
     >
       {btnIcon && <FontAwesomeIcon icon={btnIcon} />}
       {btnImage && <Image src={btnImage} alt={btnImage} width={20} height={20} priority />}
@@ -74,36 +78,40 @@ interface DownloadActionLabels {
 
 export function DownloadActions({
   label,
-  permLinkParams,
+  path,
   children,
 }: PropsWithChildren<{
   label: DownloadActionLabels & CustomEmbedLinkMenuLabels
-  permLinkParams: Record<'encoded' | 'readable', string>
+  path: string
 }>) {
   const clipboard = useClipboard()
   const [menuOpen, setMenuOpen] = useState(false)
-  const getRawUrl = () => permLinkFromParams(permLinkParams.readable)
+
+  // can copy if not in protected route
+  const canCopy = useCanCopy(path)
 
   return (
     <>
-      <CustomEmbedLinkMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} label={label} permLinkParams={permLinkParams}>
-        <Dialog.Title as="h3" className="py-2 text-xl font-bold">
-          {label['Customise direct link']}
-        </Dialog.Title>
-        <Dialog.Description as="p" className="py-2 opacity-80">
-          {label['Change the raw file direct link to a URL ending with the extension of the file.']}
-          <a
-            href="https://ovi.swo.moe/docs/features/customise-direct-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-400 underline"
-          >
-            {label['What is this?']}
-          </a>
-        </Dialog.Description>
-      </CustomEmbedLinkMenu>
+      {canCopy && (
+        <CustomEmbedLinkMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} label={label} path={path}>
+          <Dialog.Title as="h3" className="py-2 text-xl font-bold">
+            {label['Customise direct link']}
+          </Dialog.Title>
+          <Dialog.Description as="p" className="py-2 opacity-80">
+            {label['Change the raw file direct link to a URL ending with the extension of the file.']}
+            <a
+              href="https://ovi.swo.moe/docs/features/customise-direct-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 underline"
+            >
+              {label['What is this?']}
+            </a>
+          </Dialog.Description>
+        </CustomEmbedLinkMenu>
+      )}
       <DownloadButton
-        onClickCallback={() => window.open(getRawUrl())}
+        onClickCallback={() => window.open(toPermLink(path))}
         btnColor="blue"
         btnText={label['Download']}
         btnIcon={faFileDownload}
@@ -111,19 +119,21 @@ export function DownloadActions({
       />
       <DownloadButton
         onClickCallback={() => {
-          clipboard.copy(getRawUrl())
+          clipboard.copy(toPermLink(path))
           toast.success(label['Copied direct link to clipboard'])
         }}
         btnColor="pink"
         btnText={label['Copy direct link']}
         btnIcon={faCopy}
         btnTitle={label['Copy the permalink to the file to the clipboard']}
+        disabled={!canCopy}
       />
       <DownloadButton
         onClickCallback={() => setMenuOpen(true)}
         btnColor="teal"
         btnText={label['Customise link']}
         btnIcon={faPen}
+        disabled={!canCopy}
       />
       {children}
     </>

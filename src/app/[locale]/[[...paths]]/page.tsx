@@ -9,22 +9,25 @@ import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
 import { locales } from '@/locale'
 
-// export function generateStaticParams() {
-//   // statically render home page
-//   return locales.map(locale => ({ locale, paths: [] }))
-// }
+export function generateStaticParams() {
+  // statically render home page
+  return locales.map(locale => ({ locale, paths: [] }))
+}
 
 export const revalidate = 1800
 
 export default async function Page({
   params,
-  searchParams,
+  // searchParams,
 }: {
   params: { paths?: string[] }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  // searchParams?: { [key: string]: string | string[] | undefined }
 }) {
-  const path = queryToPath(params.paths),
-    size = toInt(searchParams?.size, 0)
+  const path = queryToPath(params.paths)
+
+  const size = 0
+  // this will cause static generation to fail
+  // const size = toInt(searchParams?.size, 0)
 
   const data = await getPageData(path, size, { kv }).catch(error => ({ type: 'error', error } as const))
 

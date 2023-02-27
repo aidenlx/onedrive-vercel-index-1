@@ -17,7 +17,6 @@ import { LoadingIcon } from '../../Loading'
 import { getFileIcon } from '@/utils/getFileIcon'
 import { fetcher } from '@/utils/fetchWithSWR'
 import siteConfig from '@cfg/site.config'
-import { useTranslations } from 'next-intl'
 import { faFolder } from '@fortawesome/free-regular-svg-icons'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
@@ -118,7 +117,7 @@ function SearchResultItemTemplate({
 
 function SearchResultItemLoadRemote({ result, label }: { result: OdSearchResult[number]; label: { loading: string } }) {
   const { data, error }: SWRResponse<OdDriveItem, { status: number; message: any }> = useSWR(
-    [`/api/item/?id=${result.id}`],
+    `/api/item/?id=${result.id}`,
     fetcher
   )
 

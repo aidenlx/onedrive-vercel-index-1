@@ -2,9 +2,11 @@ import FourOhFour from '@/components/FourOhFour'
 import Loading from '@/components/Loading'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
-import { toPermLink } from '@/utils/permlink-server'
 import { useTranslations } from 'next-intl'
 import { ReactNode, Suspense } from 'react'
+import { getAccessToken } from '@/utils/api/common'
+import { kv } from '@/utils/kv/edge'
+import { getDownloadLink } from '@/utils/getDownloadLink'
 
 export interface TextPreviewContentProps {
   path: string
@@ -12,10 +14,10 @@ export interface TextPreviewContentProps {
 }
 
 async function TextPreviewContent({ path, children: renderContent }: TextPreviewContentProps) {
-  const hashedToken = ''
-
   try {
-    const content = await fetch(toPermLink(path, hashedToken)).then(res =>
+    const accessToken = await getAccessToken(kv)
+    const [downloadLink] = await getDownloadLink(decodeURIComponent(path), accessToken)
+    const content = await fetch(downloadLink).then(res =>
       res.ok ? res.text() : Promise.reject(new Error(res.statusText))
     )
     if (!content) {

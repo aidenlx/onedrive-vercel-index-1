@@ -1,7 +1,18 @@
-import { getIronSession } from 'iron-session/edge'
 import type { IronSession } from 'iron-session'
+import { getIronSession } from 'iron-session/edge'
 import { NextRequest, NextResponse } from 'next/server'
+import { encryptToken } from '../protectedRouteHandler'
 import { authCookieName } from './const'
+
+export async function getHashedToken(req: NextRequest, path: string) {
+  const [_, session] = await getSession(req)
+  const passwords = session?.passwords
+  if (!passwords) return null
+  for (const route of Object.keys(passwords).sort().reverse()) {
+    if (path.startsWith(route)) return encryptToken(passwords[route])
+  }
+  return null
+}
 
 export function isPathPasswordRecord(record: unknown): record is Record<string, string> {
   if (typeof record !== 'object' || record === null) return false
@@ -15,6 +26,7 @@ export async function getSession(req: NextRequest) {
   if (!process.env.IRON_SESSION_TOKEN) {
     return [new Response('IRON_SESSION_TOKEN is not set', { status: 500 })] as const
   }
+
   const res = NextResponse.next()
   const session = (await getIronSession(req, res, {
     cookieName: authCookieName,

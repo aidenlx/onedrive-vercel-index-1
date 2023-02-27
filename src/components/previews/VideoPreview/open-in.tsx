@@ -1,7 +1,7 @@
 'use client'
 
 import { DownloadButton } from "@/components/DownloadButton";
-import { getBaseUrl } from "@/utils/getBaseUrl";
+import { getBaseUrl } from "@/utils/useBaseUrl";
 
 export function OpenInPlayers({ videoUrl }: { videoUrl: string }) {
   return (

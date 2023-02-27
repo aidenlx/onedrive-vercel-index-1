@@ -1,17 +1,19 @@
 'use client'
 
 import { DriveItem } from '@/utils/api/type'
-import { getBaseUrl } from '@/utils/getBaseUrl'
+import { getBaseUrl } from '@/utils/useBaseUrl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
 import { getFiles, itemPathGetter } from '../utils'
-import { toPermLink, usePermLink } from "@/utils/permlink"
+import { toPermLink } from '@/utils/permlink'
+import { usePermLink } from '@/utils/usePermLink'
 import Checkbox from './Checkbox'
 import Downloading from './Downloading'
 import { useClipboard } from 'use-clipboard-copy'
 import toast from 'react-hot-toast'
 import { useEffect } from 'react'
 import { faArrowAltCircleDown, faCopy } from '@fortawesome/free-regular-svg-icons'
+import { useAuth, useCanCopy } from '@/utils/auth/useAuth'
 // import {
 //   DownloadingToast,
 //   downloadMultipleFiles,
@@ -46,6 +48,9 @@ export function BatchAction({
     selected = useStore(s => s.selected),
     updateItems = useStore(s => s.updateItems)
 
+  // can copy if not in protected route
+  const canCopy = useCanCopy(path)
+
   useEffect(() => {
     updateItems(folderChildren.map(v => v.id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,8 +58,6 @@ export function BatchAction({
 
   const clipboard = useClipboard()
   const getItemPath = itemPathGetter(path)
-  const hashedToken = ''
-
 
   return (
     <>
@@ -62,12 +65,12 @@ export function BatchAction({
       <button
         title={label.copySelected}
         className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
-        disabled={totalSelected === 0}
+        disabled={!canCopy || totalSelected === 0}
         onClick={() => {
           clipboard.copy(
             getFiles(folderChildren)
               .filter(v => selected.has(v.name))
-              .map(v => toPermLink(getItemPath(v.name), hashedToken))
+              .map(v => toPermLink(getItemPath(v.name)))
               .join('\n')
           )
           toast.success(label.cpSelectedDone)
@@ -136,8 +139,6 @@ export function FolderAction({ c, label, path }: { c: DriveItem; path: string; l
   )
 }
 
-
-
 export interface FileActionLabels {
   copyFile: string
   cpFileDone: string
@@ -150,19 +151,22 @@ export function FileAction({ c, label, path }: { c: DriveItem; path: string; lab
   const clipboard = useClipboard()
 
   const permlink = usePermLink(getItemPath(c.name), hashedToken)
+  // can copy if not in protected route
+  const canCopy = useCanCopy(path)
 
   return (
     <>
-      <span
+      <button
         title={label.copyFile}
-        className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
+        className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 "
+        disabled={!canCopy}
         onClick={() => {
           clipboard.copy(permlink)
           toast.success(label.cpFileDone)
         }}
       >
         <FontAwesomeIcon icon={faCopy} />
-      </span>
+      </button>
       <a
         title={label.downloadFile}
         className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"

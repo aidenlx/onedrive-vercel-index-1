@@ -4,7 +4,6 @@ import toast from 'react-hot-toast'
 import JSZip from 'jszip'
 
 import { fetcher } from '../../utils/fetchWithSWR'
-import { useStoredToken } from '../../utils/useStoredToken'
 import { useRouter } from 'next/navigation'
 
 /**
@@ -159,7 +158,7 @@ export async function downloadTreelikeMultipleFiles({
     toast.loading(
       // TODO i18n
       <DownloadingToast progress={metadata.percent.toFixed(0)} label={{ cancel: 'Cancel', progress: 'Downloading' }} />,
-      { id: toastId, }
+      { id: toastId }
     )
   })
   downloadBlob({ blob: b, name: folder ? folder + '.zip' : 'download.zip' })
@@ -187,17 +186,16 @@ interface TraverseItem {
  * Error key in the item will contain the error when there is a handleable error.
  */
 export async function* traverseFolder(path: string): AsyncGenerator<TraverseItem, void, undefined> {
-  const hashedToken = useStoredToken(path)
-
   // Generate the task passed to Promise.race to request a folder
   const genTask = async (i: number, path: string, next?: string) => {
     return {
       i,
       path,
-      data: await fetcher([
-        next ? `/api/?path=${path}&next=${next}` : `/api?path=${path}`,
-        hashedToken ?? undefined,
-      ]).catch(error => ({ i, path, error })),
+      data: await fetcher(next ? `/api/?path=${path}&next=${next}` : `/api?path=${path}`).catch(error => ({
+        i,
+        path,
+        error,
+      })),
     }
   }
 

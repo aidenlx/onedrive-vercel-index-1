@@ -16,6 +16,8 @@ import { handleRaw } from './raw'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 import type { Drive, DriveItem } from '@microsoft/microsoft-graph-types'
+import { getHashedToken } from '../auth/utils'
+import { resolveRoot } from '../path'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   // If method is POST, then the API is called by the client to store acquired tokens
@@ -53,7 +55,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
     return ResponseCompat.json({ error: 'Path query invalid.' }, { status: 400, headers })
   }
   // Besides normalizing and making absolute, trailing slashes are trimmed
-  const cleanPath = pathPosix.resolve('/', pathPosix.normalize(path)).replace(/\/$/, '')
+  const cleanPath = resolveRoot(path)
 
   // Validate sort param
   if (typeof sort !== 'string') {
@@ -68,7 +70,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
 
   // Handle protected routes authentication
-  const { code, message } = await checkAuthRoute(cleanPath, accessToken, req.headers.get('od-protected-token') ?? '')
+  const { code, message } = await checkAuthRoute(cleanPath, accessToken, (await getHashedToken(req, cleanPath)) ?? '')
   // Status code other than 200 means user has not authenticated yet
   if (code !== 200) {
     return ResponseCompat.json({ error: message }, { status: code, headers })
@@ -76,14 +78,13 @@ export default async function handler(kv: Redis, req: NextRequest) {
 
   noCacheForProtectedPath(headers, message)
 
-  const requestPath = encodePath(cleanPath)
-
   // Go for file raw download link, add CORS headers, and redirect to @microsoft.graph.downloadUrl
   // (kept here for backwards compatibility, and cache headers will be reverted to no-cache)
   if (raw) {
-    return await handleRaw({ headers, requestPath, accessToken })
+    return await handleRaw({ headers, cleanPath, accessToken })
   }
 
+  const requestPath = encodePath(cleanPath)
   // Handle response from OneDrive API
   const requestUrl = `${apiConfig.driveApi}/root${requestPath}`
   // Whether path is root, which requires some special treatment

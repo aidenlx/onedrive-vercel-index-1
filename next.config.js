@@ -5,6 +5,7 @@ const withNextIntl = require('next-intl/plugin')(
 
 const withBundleAnalyzer =
   process.env.ANALYZE === 'true' ? require('@next/bundle-analyzer')({ enabled: true }) : cfg => cfg
+const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = withBundleAnalyzer(
   withNextIntl({

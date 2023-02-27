@@ -4,14 +4,12 @@ import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { formatModifiedDateTime } from '@/utils/fileDetails'
 import { useTranslations } from 'next-intl'
 import AudioPlayer from './lazy'
-import { toPermLink } from "@/utils/permlink-server"
+import { toPermLink } from "@/utils/permlink"
 
 export default function AudioPreview({ file, path }: { file: DriveItem; path: string }) {
-  const hashedToken = ''
-
   // Render audio thumbnail, and also check for broken thumbnails
-  const thumbnail = `/api/thumbnail/?path=${path}&size=medium${hashedToken ? `&odpt=${hashedToken}` : ''}`
-  const audioUrl = toPermLink(path, hashedToken)
+  const thumbnail = `/api/thumbnail/?path=${path}&size=medium`
+  const audioUrl = toPermLink(path)
 
   const t = useTranslations('file.audio')
 

@@ -6,7 +6,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useClipboard } from 'use-clipboard-copy'
 
-import { customisedPermLinkFromParams, permLinkFromParams } from '@/utils/permlink'
+import { customisedPermLinkFromParams, permLinkFromParams, toCustomisedPermLink, toPermLink } from '@/utils/permlink'
 import type { CustomEmbedLinkMenuLabels } from './server'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faCopy } from '@fortawesome/free-regular-svg-icons'
@@ -40,21 +40,19 @@ export default function CustomEmbedLinkMenu({
   menuOpen,
   setMenuOpen,
   children,
+  path,
   label,
-  permLinkParams,
 }: PropsWithChildren<{
   menuOpen: boolean
   setMenuOpen: Dispatch<SetStateAction<boolean>>
   label: CustomEmbedLinkMenuLabels
-  permLinkParams: Record<'encoded' | 'readable', string>
+  path: string
 }>) {
   // Focus on input automatically when menu modal opens
   const focusInputRef = useRef<HTMLInputElement>(null)
   const closeMenu = () => setMenuOpen(false)
 
-  const [name, setName] = useState(
-    () => new URLSearchParams(permLinkParams.encoded).get('path')?.split('/').pop() ?? ''
-  )
+  const [name, setName] = useState(() => path.split('/').pop() ?? '')
 
   return (
     <Transition appear show={menuOpen} as={Fragment}>
@@ -95,15 +93,12 @@ export default function CustomEmbedLinkMenu({
                   value={name}
                   onChange={e => setName(e.target.value)}
                 />
-                <LinkContainer title={label.Default} value={permLinkFromParams(permLinkParams.readable)} />
-                <LinkContainer title={label['URL encoded']} value={permLinkFromParams(permLinkParams.encoded)} />
-                <LinkContainer
-                  title={label.Customised}
-                  value={customisedPermLinkFromParams(name, permLinkParams.readable)}
-                />
+                <LinkContainer title={label.Default} value={toPermLink(path)} />
+                <LinkContainer title={label['URL encoded']} value={toPermLink(path, null, false)} />
+                <LinkContainer title={label.Customised} value={toCustomisedPermLink(name, path)} />
                 <LinkContainer
                   title={label['Customised and encoded']}
-                  value={customisedPermLinkFromParams(name, permLinkParams.encoded)}
+                  value={toCustomisedPermLink(name, path, null, false)}
                 />
               </div>
             </div>

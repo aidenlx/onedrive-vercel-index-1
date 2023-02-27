@@ -1,10 +1,11 @@
-import pathPosix from 'path-browserify'
-
 import { encodePath, getAccessToken, checkAuthRoute, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
 import { NextRequest } from 'next/server'
 import { Redis } from '@/utils/odAuthTokenStore'
-import { cacheControlHeader, driveApi } from '@cfg/api.config'
+import { cacheControlHeader } from '@cfg/api.config'
 import { handleResponseError } from './common'
+import { getHashedToken } from '@/utils/auth/utils'
+import { resolveRoot } from '../path'
+import { getDownloadLink } from '../getDownloadLink'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   const accessToken = await getAccessToken(kv)
@@ -26,10 +27,10 @@ export default async function handler(kv: Redis, req: NextRequest) {
   if (typeof path !== 'string') {
     return ResponseCompat.json({ error: 'Path query invalid.' }, { status: 400 })
   }
-  const cleanPath = pathPosix.resolve('/', pathPosix.normalize(path))
+  const cleanPath = resolveRoot(path)
 
   // Handle protected routes authentication
-  const odTokenHeader = req.headers.get('od-protected-token') ?? odpt
+  let odTokenHeader = (await getHashedToken(req, cleanPath)) ?? odpt
 
   const { code, message } = await checkAuthRoute(cleanPath, accessToken, odTokenHeader)
   // Status code other than 200 means user has not authenticated yet
@@ -38,20 +39,13 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
 
   const headers = noCacheForProtectedPath(new Headers(), message)
-  return await handleRaw({ headers: headers, requestPath: encodePath(cleanPath), accessToken }, proxy)
+  return await handleRaw({ headers: headers, cleanPath, accessToken }, proxy)
 }
 
-export async function handleRaw(ctx: { headers?: Headers; requestPath: string; accessToken: string }, proxy = false) {
+export async function handleRaw(ctx: { headers?: Headers; cleanPath: string; accessToken: string }, proxy = false) {
   const init = { headers: ctx.headers ?? new Headers(), cors: true }
   try {
-    // Handle response from OneDrive API
-    const requestUrl = new URL(`${driveApi}/root${ctx.requestPath}`)
-    // OneDrive international version fails when only selecting the downloadUrl (what a stupid bug)
-    requestUrl.searchParams.append('select', 'id,size,@microsoft.graph.downloadUrl')
-    const { ['@microsoft.graph.downloadUrl']: downloadUrl, size } = await fetch(requestUrl, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${ctx.accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, ctx.accessToken)
 
     if (!downloadUrl) {
       // CDN Cache for 1 hour

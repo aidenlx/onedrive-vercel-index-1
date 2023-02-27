@@ -14,6 +14,8 @@ import {
 } from '@/utils/api/common'
 import { NextRequest } from 'next/server'
 import { Redis } from '@/utils/odAuthTokenStore'
+import { resolveRoot } from '../path'
+import { getHashedToken } from '../auth/utils'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   const accessToken = await getAccessToken(kv)
@@ -29,10 +31,6 @@ export default async function handler(kv: Redis, req: NextRequest) {
 
   const headers = new Headers()
 
-  // Set edge function caching for faster load times, if route is not protected, check docs:
-  // https://vercel.com/docs/concepts/functions/edge-caching
-  if (odpt === '') setCaching(headers)
-
   // Check whether the size is valid - must be one of 'large', 'medium', or 'small'
   if (size !== 'large' && size !== 'medium' && size !== 'small') {
     return ResponseCompat.json({ error: 'Invalid size' }, { status: 400, headers })
@@ -45,9 +43,13 @@ export default async function handler(kv: Redis, req: NextRequest) {
   if (typeof path !== 'string') {
     return ResponseCompat.json({ error: 'Path query invalid.' }, { status: 400, headers })
   }
-  const cleanPath = pathPosix.resolve('/', pathPosix.normalize(path))
+  const cleanPath = resolveRoot(path)
+  const hashedToken = (await getHashedToken(req, cleanPath)) ?? odpt
+  // Set edge function caching for faster load times, if route is not protected, check docs:
+  // https://vercel.com/docs/concepts/functions/edge-caching
+  setCaching(headers)
 
-  const { code, message } = await checkAuthRoute(cleanPath, accessToken, odpt as string)
+  const { code, message } = await checkAuthRoute(cleanPath, accessToken, hashedToken)
   // Status code other than 200 means user has not authenticated yet
   if (code !== 200) {
     return ResponseCompat.json({ error: message }, { status: code, headers })
