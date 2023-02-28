@@ -21,7 +21,7 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   const { mutate } = useAuth()
 
   const protectedRoute = useSearchParams()?.get('route')
-  const [_, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const [token, setToken] = useState('')
 
@@ -37,8 +37,13 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   async function applyToken() {
     await setPersistedToken(token)
     startTransition(() => {
+      console.log(redirect)
       router.push(redirect)
     })
+  }
+
+  if (isPending) {
+    return <Loading loadingText='Applying...'/>
   }
 
   return (
@@ -84,6 +89,7 @@ import { Fragment } from 'react'
 import { protectedRoutes } from '@cfg/site.config'
 import { faKey, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
+import Loading from './Loading'
 
 type TokenLabels = Record<keyof IntlMessages['layout']['token'], string>
 
