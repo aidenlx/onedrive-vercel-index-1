@@ -3,10 +3,8 @@ import { toPermLink } from '@/utils/permlink'
 import { DownloadBtnContainer } from './Containers'
 
 export default function PDFEmbedPreview({ path }: { path: string }) {
-  const hashedToken = ''
-
   const query = new URLSearchParams()
-  query.append('file', toPermLink(path, hashedToken))
+  query.append('file', toPermLink(path))
 
   return (
     <div>

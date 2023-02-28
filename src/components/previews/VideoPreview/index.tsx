@@ -38,7 +38,7 @@ export default function VideoPreview({ file, path }: { file: DriveItem; path: st
       </PreviewContainer>
       <DownloadBtnContainer>
         <DownloadButtonGroup path={path}>
-          <OpenInPlayers videoUrl={videoUrl} />
+          <OpenInPlayers path={path} />
         </DownloadButtonGroup>
       </DownloadBtnContainer>
     </>

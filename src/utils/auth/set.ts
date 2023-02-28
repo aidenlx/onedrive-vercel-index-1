@@ -1,7 +1,8 @@
 import type { NextRequest } from 'next/server'
 import PQueue from 'p-queue'
 import { getPassword as getPwd } from './get-pwd'
-import { getSession, isPathPasswordRecord } from './utils'
+import { getSession } from './session'
+import { isPathPasswordRecord } from './const'
 
 export async function setPassword(req: NextRequest) {
   const [res, session] = await getSession(req)
@@ -27,7 +28,7 @@ export async function setPassword(req: NextRequest) {
       })
     )
   )
-  
+
   session.passwords = { ...(session.passwords ?? {}), ...authResult }
   await session.save()
   return res

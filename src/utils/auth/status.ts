@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AuthStatus } from './const'
-import { getSession } from './utils'
+import { getSession } from './session'
 
 export async function checkStatus(req: NextRequest) {
   const [res, session] = await getSession(req)

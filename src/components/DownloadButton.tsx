@@ -8,11 +8,11 @@ import { useClipboard } from 'use-clipboard-copy'
 import { toast } from 'react-hot-toast'
 import type { CustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
 import CustomEmbedLinkMenu from './page/CustomEmbedLinkMenu'
-import { permLinkFromParams, toPermLink } from '@/utils/permlink'
+import { toPermLink } from '@/utils/permlink'
 import { Dialog } from '@headlessui/react'
 import { faFileDownload, faPen } from '@fortawesome/free-solid-svg-icons'
 import { faCopy } from '@fortawesome/free-regular-svg-icons'
-import { useCanCopy } from '@/utils/auth/useAuth'
+import { useSealedURL } from '@/utils/auth/useSeal'
 
 const btnStyleMap = (btnColor?: string) => {
   const colorMap = {
@@ -87,29 +87,26 @@ export function DownloadActions({
   const clipboard = useClipboard()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // can copy if not in protected route
-  const canCopy = useCanCopy(path)
+  const { payload, isLoading, error } = useSealedURL(path)
 
   return (
     <>
-      {canCopy && (
-        <CustomEmbedLinkMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} label={label} path={path}>
-          <Dialog.Title as="h3" className="py-2 text-xl font-bold">
-            {label['Customise direct link']}
-          </Dialog.Title>
-          <Dialog.Description as="p" className="py-2 opacity-80">
-            {label['Change the raw file direct link to a URL ending with the extension of the file.']}
-            <a
-              href="https://ovi.swo.moe/docs/features/customise-direct-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 underline"
-            >
-              {label['What is this?']}
-            </a>
-          </Dialog.Description>
-        </CustomEmbedLinkMenu>
-      )}
+      <CustomEmbedLinkMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} label={label} path={path}>
+        <Dialog.Title as="h3" className="py-2 text-xl font-bold">
+          {label['Customise direct link']}
+        </Dialog.Title>
+        <Dialog.Description as="p" className="py-2 opacity-80">
+          {label['Change the raw file direct link to a URL ending with the extension of the file.']}
+          <a
+            href="https://ovi.swo.moe/docs/features/customise-direct-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 underline"
+          >
+            {label['What is this?']}
+          </a>
+        </Dialog.Description>
+      </CustomEmbedLinkMenu>
       <DownloadButton
         onClickCallback={() => window.open(toPermLink(path))}
         btnColor="blue"
@@ -119,21 +116,21 @@ export function DownloadActions({
       />
       <DownloadButton
         onClickCallback={() => {
-          clipboard.copy(toPermLink(path))
+          const url = new URL(toPermLink(path, payload), window.location.origin)
+          clipboard.copy(url.href)
           toast.success(label['Copied direct link to clipboard'])
         }}
         btnColor="pink"
         btnText={label['Copy direct link']}
         btnIcon={faCopy}
         btnTitle={label['Copy the permalink to the file to the clipboard']}
-        disabled={!canCopy}
+        disabled={isLoading || !!error}
       />
       <DownloadButton
         onClickCallback={() => setMenuOpen(true)}
         btnColor="teal"
         btnText={label['Customise link']}
         btnIcon={faPen}
-        disabled={!canCopy}
       />
       {children}
     </>

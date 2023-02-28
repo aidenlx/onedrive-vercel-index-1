@@ -8,24 +8,16 @@ export interface AuthStatus {
   authenticated: string[]
 }
 
-export interface SealProps {
-  ttl: number
-  url: string
+export interface SealedPayload {
+  payload: string | null
 }
 
-export interface SealedUrl {
-  url: string
-}
-
-export function isSealProps(obj: unknown): obj is SealProps {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'ttl' in obj &&
-    'url' in obj &&
-    typeof obj.ttl === 'number' &&
-    typeof obj.url === 'string'
-  )
+export function isPathPasswordRecord(record: unknown): record is Record<string, string> {
+  if (typeof record !== 'object' || record === null) return false
+  for (const key in record) {
+    if (!key.startsWith('/') || typeof record[key] !== 'string') return false
+  }
+  return true
 }
 
 declare module 'iron-session' {
@@ -33,9 +25,3 @@ declare module 'iron-session' {
     passwords?: Record<string, boolean>
   }
 }
-
-if (!process.env.IRON_SESSION_TOKEN) {
-  throw new Error('IRON_SESSION_TOKEN is not set')
-}
-
-export const IronSessionToken = process.env.IRON_SESSION_TOKEN

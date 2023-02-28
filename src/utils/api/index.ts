@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { setCaching, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
 import { handleRaw } from './raw'
 import { resolveRoot } from '../path'
-import { checkAuthRoute } from '../auth/utils'
+import { checkAuthRoute } from '../auth/session'
 import { revealObfuscatedToken } from '../oauth/const'
 import { saveAuthToken } from '../oauth/store'
 

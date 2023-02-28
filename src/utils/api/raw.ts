@@ -1,5 +1,5 @@
 import { noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
-import { checkAuthRoute } from '../auth/utils'
+import { checkAuthRoute } from '../auth/session'
 import { NextRequest } from 'next/server'
 import { cacheControlHeader } from '@cfg/api.config'
 import { handleResponseError } from './common'

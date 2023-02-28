@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import { getSession } from './utils'
+import { getSession } from './session'
 
 export async function clearPassword(req: NextRequest) {
   const [res, session] = await getSession(req)

@@ -1,7 +1,7 @@
 import type { OdThumbnail } from '@/types'
 
 import { setCaching, noCacheForProtectedPath, handleResponseError, ResponseCompat } from '@/utils/api/common'
-import { checkAuthRoute } from '../auth/utils'
+import { checkAuthRoute } from '../auth/session'
 import { NextRequest } from 'next/server'
 import { resolveRoot } from '../path'
 import { getRequsetURL } from '../od-api/odRequest'

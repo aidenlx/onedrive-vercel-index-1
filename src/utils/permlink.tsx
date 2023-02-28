@@ -1,10 +1,15 @@
 import { getReadablePath } from '@/utils/getReadablePath'
+import { authParamName } from './auth/const'
 
 export function permLinkParams(path: string, hashedToken?: string | null, readable = true) {
   if (readable) {
     path = getReadablePath(path)
   }
-  return `path=${path}`
+  let query = `path=${path}`
+  if (hashedToken) {
+    query += `&${authParamName}=${encodeURIComponent(hashedToken)}`
+  }
+  return query
 }
 
 export function toPermLink(path: string, hashedToken?: string | null, readable = true) {

@@ -1,5 +1,5 @@
-import { getAuthTokenPath } from './utils'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
+import { getAuthTokenPath } from './utils'
 /**
  * @returns null if no `.password` file is found or file empty
  */

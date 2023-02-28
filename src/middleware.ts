@@ -31,7 +31,8 @@ export async function middleware(request: NextRequest) {
 
 import createIntlMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './locale'
-import { getSessionData, isAuthed, matchProtectedRoute } from './utils/auth/utils'
+import { getSessionData, isAuthed } from './utils/auth/session'
+import { matchProtectedRoute } from './utils/auth/utils'
 import { queryToPath } from './components/page/utils'
 import { authRoute } from './utils/auth/const'
 

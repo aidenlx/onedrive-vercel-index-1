@@ -1,7 +1,6 @@
 'use client'
 
 import { DriveItem } from '@/utils/api/type'
-import { getBaseUrl } from '@/utils/useBaseUrl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { totalSelectState, useStore } from '../store'
 import { getFiles, itemPathGetter } from '../utils'
@@ -13,7 +12,7 @@ import { useClipboard } from 'use-clipboard-copy'
 import toast from 'react-hot-toast'
 import { useEffect } from 'react'
 import { faArrowAltCircleDown, faCopy } from '@fortawesome/free-regular-svg-icons'
-import { useAuth, useCanCopy } from '@/utils/auth/useAuth'
+import { useSealedURL } from '@/utils/auth/useSeal'
 // import {
 //   DownloadingToast,
 //   downloadMultipleFiles,
@@ -48,13 +47,12 @@ export function BatchAction({
     selected = useStore(s => s.selected),
     updateItems = useStore(s => s.updateItems)
 
-  // can copy if not in protected route
-  const canCopy = useCanCopy(path)
-
   useEffect(() => {
     updateItems(folderChildren.map(v => v.id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderChildren])
+
+  const { payload, error, isLoading } = useSealedURL(path)
 
   const clipboard = useClipboard()
   const getItemPath = itemPathGetter(path)
@@ -65,12 +63,12 @@ export function BatchAction({
       <button
         title={label.copySelected}
         className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
-        disabled={!canCopy || totalSelected === 0}
+        disabled={error || isLoading || totalSelected === 0}
         onClick={() => {
           clipboard.copy(
             getFiles(folderChildren)
               .filter(v => selected.has(v.name))
-              .map(v => toPermLink(getItemPath(v.name)))
+              .map(v => new URL(toPermLink(getItemPath(v.name), payload), window.location.origin).href)
               .join('\n')
           )
           toast.success(label.cpSelectedDone)
@@ -115,7 +113,7 @@ export function FolderAction({ c, label, path }: { c: DriveItem; path: string; l
         title={label.copyFolder}
         className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
         onClick={() => {
-          clipboard.copy(`${getBaseUrl()}${getItemPath(c.name)}`)
+          clipboard.copy(new URL(getItemPath(c.name), window.location.origin).href)
           toast(label.cpFolderDone, { icon: '👌' })
         }}
       >
@@ -146,22 +144,20 @@ export interface FileActionLabels {
 }
 
 export function FileAction({ c, label, path }: { c: DriveItem; path: string; label: FileActionLabels }) {
-  const hashedToken = ''
   const getItemPath = itemPathGetter(path)
   const clipboard = useClipboard()
 
-  const permlink = usePermLink(getItemPath(c.name), hashedToken)
-  // can copy if not in protected route
-  const canCopy = useCanCopy(path)
+  const { payload, error, isLoading } = useSealedURL(path)
+  const permlink = usePermLink(getItemPath(c.name), payload)
 
   return (
     <>
       <button
         title={label.copyFile}
         className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 "
-        disabled={!canCopy}
+        disabled={error || isLoading}
         onClick={() => {
-          clipboard.copy(permlink)
+          clipboard.copy(new URL(permlink, window.location.origin).href)
           toast.success(label.cpFileDone)
         }}
       >
