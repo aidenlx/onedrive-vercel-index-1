@@ -24,6 +24,8 @@
     - https://github.com/vercel/next.js/blob/canary/examples/with-iron-session/pages/index.tsx
 - transverse时自动检测.password是否存在，保存在config中？
 
+external link support for protected route via <https://github.com/vvo/iron-session#magic-links>
+
 ## generateStaticProps() for each page
 
 可能默认就能用，不需要自己实现

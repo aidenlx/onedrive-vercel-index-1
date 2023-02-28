@@ -22,12 +22,11 @@ export async function middleware(request: NextRequest) {
     const [, locale, ...realPaths] = pathname.split('/')
     const realPath = queryToPath(realPaths)
 
-    const route = await matchProtectedRoute(realPath)
+    const route = matchProtectedRoute(realPath)
     if (!route) return resp
 
-    const [authenticated, respErr] = await isAuthed(request, route)
-    if (authenticated === true) return resp
-    if (respErr) return respErr
+    const session = await getSessionData(request)
+    if (session && (await isAuthed(session, route)) === true) return resp
 
     const query = new URLSearchParams()
     query.set('route', route)
@@ -63,7 +62,7 @@ export async function apiRewrite(request: NextRequest) {
 
 import createIntlMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './locale'
-import { getSession, isAuthed, matchProtectedRoute } from './utils/auth/utils'
+import { getSession, getSessionData, isAuthed, matchProtectedRoute } from './utils/auth/utils'
 import { queryToPath } from './components/page/utils'
 import { authRoute } from './utils/auth/const'
 

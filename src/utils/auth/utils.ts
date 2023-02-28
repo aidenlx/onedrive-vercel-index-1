@@ -1,15 +1,21 @@
 import { protectedRoutes } from '@/../config/site.config'
-import type { IronSession } from 'iron-session'
-import { getIronSession } from 'iron-session/edge'
+import type { IronSessionData } from 'iron-session'
+import { getIronSession, unsealData } from 'iron-session/edge'
 import { NextRequest, NextResponse } from 'next/server'
-import { authCookieName } from './const'
+import { authCookieName, authParamName, IronSessionToken } from './const'
 
-export async function isAuthed(req: NextRequest, route: string): Promise<[auth: boolean, resp?: Response]> {
-  const [respErr, session] = await getSession(req)
-  if (!session) return [false, respErr]
+export async function isAuthed(session: IronSessionData, route: string): Promise<boolean> {
   const passwords = session.passwords
-  if (!passwords) return [false]
-  return [passwords[route] ?? false]
+  if (!passwords) return false
+  return passwords[route] ?? false
+}
+
+export async function getSessionData(req: NextRequest) {
+  const [_, session] = await getSession(req)
+  if (session) return session
+  const sealed = req.nextUrl.searchParams.get(authParamName)
+  if (sealed) return (await unsealData(sealed, { password: IronSessionToken })) as IronSessionData
+  return null
 }
 
 /**
@@ -17,7 +23,7 @@ export async function isAuthed(req: NextRequest, route: string): Promise<[auth: 
  * @param route directory path
  * @returns matched route or null
  */
-export async function matchProtectedRoute(path: string) {
+export function matchProtectedRoute(path: string) {
   // match the longest route first
   for (const r of protectedRoutes.sort().reverse()) {
     // protected route array could be empty
@@ -37,18 +43,14 @@ export function isPathPasswordRecord(record: unknown): record is Record<string, 
 }
 
 export async function getSession(req: NextRequest) {
-  if (!process.env.IRON_SESSION_TOKEN) {
-    return [new Response('IRON_SESSION_TOKEN is not set', { status: 500 })] as const
-  }
-
   const res = NextResponse.next()
-  const session = (await getIronSession(req, res, {
+  const session = await getIronSession(req, res, {
     cookieName: authCookieName,
-    password: process.env.IRON_SESSION_TOKEN,
+    password: IronSessionToken,
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production',
     },
-  })) as IronSession & { passwords?: Record<string, boolean> }
+  })
   return [res, session] as const
 }
 
@@ -100,9 +102,10 @@ export async function checkAuthRoute(
     return { code: 200, message: '' }
   }
 
-  const [authenticated] = await isAuthed(req, path)
-  if (authenticated === true) {
-    return { code: 200, message: 'Authenticated.' }
+  const session = await getSessionData(req)
+  if (!session || (await isAuthed(session, route)) !== true) {
+    return { code: 401, message: 'Password required.' }
   }
-  return { code: 401, message: 'Password required.' }
+
+  return { code: 200, message: 'Authenticated.' }
 }

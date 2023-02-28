@@ -4,7 +4,7 @@ export function permLinkParams(path: string, hashedToken?: string | null, readab
   if (readable) {
     path = getReadablePath(path)
   }
-  return `path=${path}${hashedToken ? `&odpt=${hashedToken}` : ''}`
+  return `path=${path}`
 }
 
 export function toPermLink(path: string, hashedToken?: string | null, readable = true) {
