@@ -4,12 +4,10 @@ import { encodePath, getAccessToken } from '@/utils/api/common'
 import { Redis } from '@/utils/odAuthTokenStore'
 import { resolveRoot } from '@/utils/path'
 import { driveApi } from '@cfg/api.config'
-import { maxItems } from '@cfg/site.config'
 import { FileData, FolderData, select, DriveItem } from '@/utils/api/type'
 
 export async function getPageData(
   path = '',
-  size = 0,
   opts: Partial<{ sort: string }> & { kv: Redis }
 ): Promise<FileData | FolderData> {
   path = resolveRoot(path)
@@ -35,32 +33,33 @@ export async function getPageData(
 
   if (!identityData.folder) return { type: 'file', value: identityData }
 
-  async function paginatedFetch(
-    next: string | null = null,
-    prevData: DriveItem[] = [],
-    level = 0
-  ): Promise<[data: DriveItem[], canLoadMore: boolean]> {
-    const childUrl = new URL(`${requestUrl}${isRoot ? '' : ':'}/children`)
-    childUrl.searchParams.set('$top', maxItems.toString())
-    if (next) childUrl.searchParams.set('$skipToken', next)
-    if (opts.sort) childUrl.searchParams.set('$orderby', opts.sort)
+  async function* paginatedFetch() {
+    const initial = new URL(`${requestUrl}${isRoot ? '' : ':'}/children`)
+    initial.searchParams.set('select', select.join(','))
 
-    const data: { value: DriveItem[] } = await get(childUrl)
-
-    // reached the end of the collection
-    if (data.value.length === 0 || (level > 0 && !next)) return [prevData, false]
-
-    // load one more level to check if there is more data
-    if (level >= size + 1) return [prevData, true]
-    return await paginatedFetch(getSkipToken(data), [...prevData, ...data.value], level + 1)
+    let next: string | undefined = initial.href
+    do {
+      const data: { value: DriveItem[]; '@odata.nextLink'?: string } = await fetch(next, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+      yield* data.value
+      next = data['@odata.nextLink']
+    } while (next)
   }
 
-  const [data, canLoadMore] = await paginatedFetch()
+  const data = await ArrayAsyncFrom(paginatedFetch())
   return {
     type: 'folder',
     value: data,
-    canLoadMore,
   }
+}
+
+async function ArrayAsyncFrom<T>(iter: AsyncIterable<T>) {
+  const arr: Awaited<T>[] = []
+  for await (const item of iter) {
+    arr.push(item)
+  }
+  return arr
 }
 
 /**

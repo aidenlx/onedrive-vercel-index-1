@@ -12,5 +12,4 @@ export interface FileData {
 export interface FolderData {
   type: 'folder'
   value: DriveItem[]
-  canLoadMore: boolean
 }

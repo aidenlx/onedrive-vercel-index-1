@@ -24,11 +24,7 @@ module.exports = {
 
   // [OPTIONAL] This represents the maximum number of items that one directory lists, pagination supported.
   // Do note that this is limited up to 200 items by the upstream OneDrive API.
-  maxItems: 100,
-
-  // `next/font` don't allow dynamic import
-  // change font in `src/app/[locale]/layout.tsx`
-  // `import { Inter as Sans, Fira_Mono as Mono } from 'next/font/google'`
+  // maxItems: 100,
 
   // [OPTIONAL] We use Google Fonts natively for font customisations.
   // You can check and generate the required links and names at https://fonts.google.com.

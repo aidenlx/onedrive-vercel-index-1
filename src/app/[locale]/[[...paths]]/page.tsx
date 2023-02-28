@@ -29,7 +29,7 @@ export default async function Page({
   // this will cause static generation to fail
   // const size = toInt(searchParams?.size, 0)
 
-  const data = await getPageData(path, size, { kv }).catch(error => ({ type: 'error', error } as const))
+  const data = await getPageData(path, { kv }).catch(error => ({ type: 'error', error } as const))
 
   switch (data.type) {
     case 'error': {
@@ -47,7 +47,7 @@ export default async function Page({
     case 'file':
       return <FilePreview {...data} path={path} />
     case 'folder':
-      return <FolderView {...data} size={size} path={path} />
+      return <FolderView {...data} path={path} />
     default:
       return <Fallback path={path} />
   }
