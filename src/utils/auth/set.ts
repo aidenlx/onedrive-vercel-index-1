@@ -1,4 +1,6 @@
 import type { NextRequest } from 'next/server'
+import PQueue from 'p-queue'
+import { getPassword as getPwd } from './get-pwd'
 import { getSession, isPathPasswordRecord } from './utils'
 
 export async function setPassword(req: NextRequest) {
@@ -13,7 +15,20 @@ export async function setPassword(req: NextRequest) {
   if (payload instanceof Error) {
     return new Response(payload.message, { status: 400 })
   }
-  session.passwords = { ...(session.passwords ?? {}), ...payload }
+
+  const queue = new PQueue({ concurrency: 5, throwOnTimeout: true })
+  const getPassword = (path: string) => queue.add(() => getPwd(path))
+
+  const authResult = Object.fromEntries(
+    await Promise.all(
+      Object.entries(payload).map(async ([path, userPwd]) => {
+        const realPwd = await getPassword(path)
+        return [path, !!realPwd && userPwd === realPwd] as const
+      })
+    )
+  )
+  
+  session.passwords = { ...(session.passwords ?? {}), ...authResult }
   await session.save()
   return res
 }

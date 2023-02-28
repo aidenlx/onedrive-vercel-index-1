@@ -14,7 +14,7 @@ export async function traverseFolder(path = '/') {
         if (url instanceof URL) url.searchParams.set('select', ['name', 'folder'].join(','))
         return await fetchWithAuth(url, { accessToken }).then(res => res.json())
       })
-      console.log('children of ' + path, children.length)
+      // console.log('children of ' + path, children.length)
       return children
       // https://github.com/sindresorhus/p-queue/issues/175
     })) as Pick<DriveItem, 'name' | 'folder'>[]

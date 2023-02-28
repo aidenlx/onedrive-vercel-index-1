@@ -22,32 +22,16 @@ export async function middleware(request: NextRequest) {
     const [, locale, ...realPaths] = pathname.split('/')
     const realPath = queryToPath(realPaths)
 
-    for (const route of protectedRoutes) {
-      if (!realPath.startsWith(route)) continue
-      const [req, session] = await getSession(request)
-      // return error response if session cannot be retrieved
-      if (!session) return req
+    const route = await matchProtectedRoute(realPath)
+    if (!route) return resp
 
-      const query = new URLSearchParams()
-      query.set('route', route)
-      const needAuth = NextResponse.redirect(new URL(`/${locale}/${authRoute}${realPath}?${query}`, request.url))
+    const [authenticated, respErr] = await isAuthed(request, route)
+    if (authenticated === true) return resp
+    if (respErr) return respErr
 
-      const password = session.passwords?.[route]
-      if (!password) return needAuth
-
-      try {
-        const realPassword = await getPassword(realPath)
-        if (realPassword && password !== realPassword) return needAuth
-        // if no password is set or password matches, allow access
-        return resp
-      } catch (error) {
-        return NextResponse.json(
-          { error: error instanceof Error ? error.message : JSON.stringify(error) },
-          { status: 500 }
-        )
-      }
-    }
-    return resp
+    const query = new URLSearchParams()
+    query.set('route', route)
+    return NextResponse.redirect(new URL(`/${locale}/${authRoute}${realPath}?${query}`, request.url))
   }
 }
 
@@ -79,11 +63,8 @@ export async function apiRewrite(request: NextRequest) {
 
 import createIntlMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './locale'
-import { protectedRoutes } from '../config/site.config'
-import { getSession } from './utils/auth/utils'
-import { getPassword } from './utils/auth/get-pwd'
+import { getSession, isAuthed, matchProtectedRoute } from './utils/auth/utils'
 import { queryToPath } from './components/page/utils'
-import { getAccessToken } from './utils/api/common'
 import { authRoute } from './utils/auth/const'
 
 const intl = createIntlMiddleware({

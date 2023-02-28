@@ -1,14 +1,12 @@
 import { authApi, cacheControlHeader, clientId, obfuscatedClientSecret, redirectUri } from '@cfg/api.config'
-import { baseDirectory, protectedRoutes } from '@cfg/site.config'
+import { baseDirectory } from '@cfg/site.config'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, getOdAuthTokens, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
-import { compareHashedToken } from '@/utils/protectedRouteHandler'
 
 import { NextRequest, NextResponse } from 'next/server'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Response as NodeResponse } from 'node-fetch'
 import { join, resolveRoot } from '@/utils/path'
-import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
 const basePath = resolveRoot(baseDirectory)
 const clientSecret = revealObfuscatedToken(obfuscatedClientSecret)
@@ -76,82 +74,6 @@ export async function getAccessToken(kv: Redis): Promise<string> {
   }
 
   return ''
-}
-
-/**
- * Match protected routes in site config to get path to required auth token
- * @param path Path cleaned in advance
- * @returns Path to required auth token. If not required, return empty string.
- */
-export function getAuthTokenPath(path: string) {
-  // Ensure trailing slashes to compare paths component by component. Same for protectedRoutes.
-  // Since OneDrive ignores case, lower case before comparing. Same for protectedRoutes.
-  path = path.toLowerCase() + '/'
-  let authTokenPath = ''
-  for (let r of protectedRoutes) {
-    if (typeof r !== 'string') continue
-    r = r.toLowerCase().replace(/\/$/, '') + '/'
-    if (path.startsWith(r)) {
-      authTokenPath = `${r}.password`
-      break
-    }
-  }
-  return authTokenPath
-}
-
-/**
- * Handles protected route authentication:
- * - Match the cleanPath against an array of user defined protected routes
- * - If a match is found:
- * - 1. Download the .password file stored inside the protected route and parse its contents
- * - 2. Check if the od-protected-token header is present in the request
- * - The request is continued only if these two contents are exactly the same
- *
- * @param cleanPath Sanitised directory path, used for matching whether route is protected
- * @param accessToken OneDrive API access token
- * @param req Next.js request object
- * @param res Next.js response object
- */
-export async function checkAuthRoute(
-  cleanPath: string,
-  accessToken: string,
-  odTokenHeader: string
-): Promise<{ code: 200 | 401 | 404 | 500; message: string }> {
-  // Handle authentication through .password
-  const authTokenPath = getAuthTokenPath(cleanPath)
-
-  // Fetch password from remote file content
-  if (authTokenPath === '') {
-    return { code: 200, message: '' }
-  }
-
-  try {
-    const [downloadUrl] = await getDownloadLink(authTokenPath, accessToken, true)
-
-    // Handle request and check for header 'od-protected-token'
-    const odProtectedToken = await fetch(downloadUrl).then(res => (res.ok ? res.text() : Promise.reject(res)))
-
-    // console.log(odTokenHeader, odProtectedToken.data.trim())
-
-    if (
-      !compareHashedToken({
-        odTokenHeader: odTokenHeader,
-        dotPassword: odProtectedToken,
-      })
-    ) {
-      return { code: 401, message: 'Password required.' }
-    }
-  } catch (error) {
-    const { status } = await handleResponseError(error)
-    // Password file not found, fallback to 404
-    if (status === 404) {
-      return { code: 404, message: "You didn't set a password." }
-    } else {
-      return { code: 500, message: 'Internal server error.' }
-    }
-  }
-
-  return { code: 200, message: 'Authenticated.' }
 }
 
 /**

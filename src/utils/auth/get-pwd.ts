@@ -1,4 +1,5 @@
-import { getAccessToken, getAuthTokenPath } from '../api/common'
+import { getAccessToken } from '../api/common'
+import { getAuthTokenPath } from './utils'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 import { kv } from '../kv/edge'
 

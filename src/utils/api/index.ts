@@ -1,24 +1,10 @@
-import pathPosix from 'path-browserify'
-
-import apiConfig from '@cfg/api.config'
-import siteConfig from '@cfg/site.config'
 import { NextRequest } from 'next/server'
-import {
-  getAccessToken,
-  checkAuthRoute,
-  encodePath,
-  setCaching,
-  noCacheForProtectedPath,
-  handleResponseError,
-  ResponseCompat,
-} from '@/utils/api/common'
+import { getAccessToken, setCaching, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
 import { handleRaw } from './raw'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
-import type { Drive, DriveItem } from '@microsoft/microsoft-graph-types'
-import { getHashedToken } from '../auth/utils'
 import { resolveRoot } from '../path'
-import { getRequsetURL } from '@/utils/od-api/odRequest'
+import { checkAuthRoute } from '../auth/utils'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   // If method is POST, then the API is called by the client to store acquired tokens
@@ -71,12 +57,11 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
 
   // Handle protected routes authentication
-  const { code, message } = await checkAuthRoute(cleanPath, accessToken, (await getHashedToken(req, cleanPath)) ?? '')
+  const { code, message } = await checkAuthRoute(req, cleanPath)
   // Status code other than 200 means user has not authenticated yet
   if (code !== 200) {
     return ResponseCompat.json({ error: message }, { status: code, headers })
   }
-
   noCacheForProtectedPath(headers, message)
 
   // Go for file raw download link, add CORS headers, and redirect to @microsoft.graph.downloadUrl
@@ -86,7 +71,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
 
   // logic moved to server component
-  return ResponseCompat.text("Not implemented", { status: 501 })
+  return ResponseCompat.text('Not implemented', { status: 501 })
 }
 
 /**

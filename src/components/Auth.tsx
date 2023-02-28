@@ -37,7 +37,6 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   async function applyToken() {
     await setPersistedToken(token)
     startTransition(() => {
-      console.log(redirect)
       router.push(redirect)
     })
   }

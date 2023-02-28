@@ -19,6 +19,8 @@ export async function generateStaticParams(): Promise<{ locale: string; paths: s
 
 export const revalidate = 43200 // 12 hours
 
+export const dynamic = 'error'
+
 export default async function Page({
   params,
 }: // searchParams,

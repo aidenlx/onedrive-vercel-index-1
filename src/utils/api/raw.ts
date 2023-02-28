@@ -1,9 +1,9 @@
-import { encodePath, getAccessToken, checkAuthRoute, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
+import { getAccessToken, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
+import { checkAuthRoute } from '../auth/utils'
 import { NextRequest } from 'next/server'
 import { Redis } from '@/utils/odAuthTokenStore'
 import { cacheControlHeader } from '@cfg/api.config'
 import { handleResponseError } from './common'
-import { getHashedToken } from '@/utils/auth/utils'
 import { resolveRoot } from '../path'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
@@ -30,9 +30,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   const cleanPath = resolveRoot(path)
 
   // Handle protected routes authentication
-  let odTokenHeader = (await getHashedToken(req, cleanPath)) ?? odpt
-
-  const { code, message } = await checkAuthRoute(cleanPath, accessToken, odTokenHeader)
+  const { code, message } = await checkAuthRoute(req, cleanPath)
   // Status code other than 200 means user has not authenticated yet
   if (code !== 200) {
     return ResponseCompat.json({ error: message }, { status: code })

@@ -2,16 +2,15 @@ import type { OdThumbnail } from '@/types'
 
 import {
   getAccessToken,
-  checkAuthRoute,
   setCaching,
   noCacheForProtectedPath,
   handleResponseError,
   ResponseCompat,
 } from '@/utils/api/common'
+import { checkAuthRoute } from '../auth/utils'
 import { NextRequest } from 'next/server'
 import { Redis } from '@/utils/odAuthTokenStore'
 import { resolveRoot } from '../path'
-import { getHashedToken } from '../auth/utils'
 import { getRequsetURL } from '../od-api/odRequest'
 import { fetchWithAuth } from '../od-api/fetchWithAuth'
 
@@ -42,12 +41,11 @@ export default async function handler(kv: Redis, req: NextRequest) {
     return ResponseCompat.json({ error: 'Path query invalid.' }, { status: 400, headers })
   }
   const cleanPath = resolveRoot(path)
-  const hashedToken = (await getHashedToken(req, cleanPath)) ?? odpt
   // Set edge function caching for faster load times, if route is not protected, check docs:
   // https://vercel.com/docs/concepts/functions/edge-caching
   setCaching(headers)
 
-  const { code, message } = await checkAuthRoute(cleanPath, accessToken, hashedToken)
+  const { code, message } = await checkAuthRoute(req, cleanPath)
   // Status code other than 200 means user has not authenticated yet
   if (code !== 200) {
     return ResponseCompat.json({ error: message }, { status: code, headers })
