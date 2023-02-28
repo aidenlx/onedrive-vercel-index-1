@@ -1,18 +1,15 @@
 import Queue from 'p-queue'
-import { getAccessToken } from '../api/common'
 import { DriveItem } from '../api/type'
-import { kv } from '../kv/edge'
 import { fetchWithAuth } from './fetchWithAuth'
 import { getChildren } from './getChildren'
 
 export async function traverseFolder(path = '/') {
-  const accessToken = await getAccessToken(kv)
   const queue = new Queue({ concurrency: 5, throwOnTimeout: true })
   async function fetchChildren(path: string) {
     return (await queue.add(async () => {
       const children = await getChildren<Pick<DriveItem, 'name' | 'folder'>>(path, async (url: URL | string) => {
         if (url instanceof URL) url.searchParams.set('select', ['name', 'folder'].join(','))
-        return await fetchWithAuth(url, { accessToken }).then(res => res.json())
+        return await fetchWithAuth(url).then(res => res.json())
       })
       // console.log('children of ' + path, children.length)
       return children

@@ -1,26 +1,9 @@
-import AES from 'crypto-js/aes'
-import Utf8 from 'crypto-js/enc-utf8'
-
-import apiConfig from '@cfg/api.config'
-import { fetchWithAuth } from './od-api/fetchWithAuth'
-
-// Just a disguise to obfuscate required tokens (including but not limited to client secret,
-// access tokens, and refresh tokens), used along with the following two functions
-const AES_SECRET_KEY = 'onedrive-vercel-index'
-export function obfuscateToken(token: string): string {
-  // Encrypt token with AES
-  const encrypted = AES.encrypt(token, AES_SECRET_KEY)
-  return encrypted.toString()
-}
-export function revealObfuscatedToken(obfuscated: string): string {
-  // Decrypt SHA256 obfuscated token
-  const decrypted = AES.decrypt(obfuscated, AES_SECRET_KEY)
-  return decrypted.toString(Utf8)
-}
+import { clientId, redirectUri, authApi, scope, obfuscatedClientSecret, driveApi } from '@cfg/api.config'
+import { fetchWithAuth } from '../od-api/fetchWithAuth'
+import { revealObfuscatedToken, obfuscateToken } from './const'
 
 // Generate the Microsoft OAuth 2.0 authorization URL, used for requesting the authorisation code
 export function generateAuthorisationUrl(): string {
-  const { clientId, redirectUri, authApi, scope } = apiConfig
   const authUrl = authApi.replace('/token', '/authorize')
 
   // Construct URL parameters for OAuth2
@@ -38,7 +21,7 @@ export function generateAuthorisationUrl(): string {
 // http://localhost and URL parameter code. This function extracts the code from the request URL
 export function extractAuthCodeFromRedirected(url: string): string {
   // Return empty string if the url is not the defined redirect uri
-  if (!url.startsWith(apiConfig.redirectUri)) {
+  if (!url.startsWith(redirectUri)) {
     return ''
   }
 
@@ -56,8 +39,7 @@ export async function requestTokenWithAuthCode(
   | { expiryTime: string; accessToken: string; refreshToken: string }
   | { error: string; errorDescription: string; errorUri: string }
 > {
-  const { clientId, redirectUri, authApi } = apiConfig
-  const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
+  const clientSecret = revealObfuscatedToken(obfuscatedClientSecret)
 
   // Construct URL parameters for OAuth2
   const url = new URL(authApi)
@@ -88,8 +70,8 @@ export async function requestTokenWithAuthCode(
 // Verify the identity of the user with the access token and compare it with the userPrincipalName
 // in the Microsoft Graph API. If the userPrincipalName matches, proceed with token storing.
 export async function getAuthPersonInfo(accessToken: string) {
-  const profileApi = apiConfig.driveApi.replace('/drive', '')
-  return await fetchWithAuth(profileApi, { accessToken }).then(res => res.json())
+  const profileApi = driveApi.replace('/drive', '')
+  return await fetchWithAuth(profileApi).then(res => res.json())
 }
 
 export async function sendTokenToServer(accessToken: string, refreshToken: string, expiryTime: string) {

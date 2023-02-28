@@ -1,23 +1,7 @@
-import { getAccessToken } from '../api/common'
-import { Redis } from '../odAuthTokenStore'
+import { getAccessToken } from '../oauth/get-at'
 
-export class NoAccessTokenError extends Error {
-  constructor() {
-    super('No access token')
-  }
-}
-
-export async function fetchWithAuth(
-  input: RequestInfo | URL,
-  _init: (RequestInit & { kv: Redis }) | (RequestInit & { accessToken: string })
-) {
-  const { kv, accessToken: _at, ...init } = _init as RequestInit & { kv?: Redis; accessToken?: string }
-  let accessToken = _at
-  if (!accessToken) {
-    if (!kv) throw new Error('neither kv store or accessToken is provided')
-    accessToken = await getAccessToken(kv)
-  }
-  if (!accessToken) throw new NoAccessTokenError()
+export async function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit) {
+  const accessToken = await getAccessToken()
   return fetch(input, {
     ...init,
     headers: {

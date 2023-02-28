@@ -7,7 +7,7 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   if (req.method !== 'GET') {
-    return NextResponse.json({ error: 'Invalid request method.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request method.' }, { status: 405 })
   }
   return sealUrl(req)
 }

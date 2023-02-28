@@ -1,22 +1,15 @@
-import { getAccessToken, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
+import { noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
 import { checkAuthRoute } from '../auth/utils'
 import { NextRequest } from 'next/server'
-import { Redis } from '@/utils/odAuthTokenStore'
 import { cacheControlHeader } from '@cfg/api.config'
 import { handleResponseError } from './common'
 import { resolveRoot } from '../path'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
-export default async function handler(kv: Redis, req: NextRequest) {
-  const accessToken = await getAccessToken(kv)
-  if (!accessToken) {
-    return ResponseCompat.json({ error: 'No access token.' }, { status: 403 })
-  }
-
+export default async function handler(req: NextRequest) {
   const search = req.nextUrl.searchParams
 
   const path = search.get('path') ?? '/',
-    odpt = search.get('odpt') ?? '',
     proxy = search.has('proxy')
 
   // Sometimes the path parameter is defaulted to '[...path]' which we need to handle
@@ -37,13 +30,14 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
 
   const headers = noCacheForProtectedPath(new Headers(), message)
-  return await handleRaw({ headers: headers, cleanPath, accessToken }, proxy)
+
+  return await handleRaw({ headers, cleanPath }, proxy)
 }
 
-export async function handleRaw(ctx: { headers?: Headers; cleanPath: string; accessToken: string }, proxy = false) {
+export async function handleRaw(ctx: { headers?: Headers; cleanPath: string }, proxy = false) {
   const init = { headers: ctx.headers ?? new Headers(), cors: true }
   try {
-    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, ctx.accessToken, true)
+    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, true)
 
     if (!downloadUrl) {
       // CDN Cache for 1 hour

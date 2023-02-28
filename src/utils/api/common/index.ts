@@ -1,15 +1,13 @@
-import { authApi, cacheControlHeader, clientId, obfuscatedClientSecret, redirectUri } from '@cfg/api.config'
+import { cacheControlHeader } from '@cfg/api.config'
 import { baseDirectory } from '@cfg/site.config'
-import { revealObfuscatedToken } from '@/utils/oAuthHandler'
-import { Redis, getOdAuthTokens, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 
 import { NextRequest, NextResponse } from 'next/server'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Response as NodeResponse } from 'node-fetch'
 import { join, resolveRoot } from '@/utils/path'
+import { NoAccessTokenError } from '@/utils/oauth/get-at'
 
 const basePath = resolveRoot(baseDirectory)
-const clientSecret = revealObfuscatedToken(obfuscatedClientSecret)
 
 /**
  * Encode the path of the file relative to the base directory
@@ -24,56 +22,6 @@ export function encodePath(path: string, urlEncode: boolean): string {
   }
   encodedPath = encodedPath.replace(/\/$/, '')
   return `:${urlEncode ? encodeURIComponent(encodedPath) : encodedPath}`
-}
-
-/**
- * Fetch the access token from Redis storage and check if the token requires a renew
- *
- * @returns Access token for OneDrive API
- */
-export async function getAccessToken(kv: Redis): Promise<string> {
-  const { accessToken, refreshToken } = await getOdAuthTokens(kv)
-
-  // Return in storage access token if it is still valid
-  if (typeof accessToken === 'string') {
-    // console.debug('Fetch access token from storage.')
-    return accessToken
-  }
-
-  // Return empty string if no refresh token is stored, which requires the application to be re-authenticated
-  if (typeof refreshToken !== 'string') {
-    console.debug('No refresh token, return empty access token.')
-    return ''
-  }
-
-  // Fetch new access token with in storage refresh token
-  const body = new URLSearchParams()
-  body.append('client_id', clientId)
-  body.append('redirect_uri', redirectUri)
-  body.append('client_secret', clientSecret)
-  body.append('refresh_token', refreshToken)
-  body.append('grant_type', 'refresh_token')
-
-  const data = await fetch(authApi, {
-    method: 'POST',
-    body: body,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  }).then(resp => (resp.ok ? resp.json() : Promise.reject(resp)))
-
-  if ('access_token' in data && 'refresh_token' in data) {
-    const { expires_in, access_token, refresh_token } = data
-    await storeOdAuthTokens(kv, {
-      accessToken: access_token,
-      accessTokenExpiry: parseInt(expires_in),
-      refreshToken: refresh_token,
-    })
-    console.log('Fetch new access token with stored refresh token.')
-    return access_token
-  }
-
-  return ''
 }
 
 /**
@@ -104,6 +52,8 @@ export async function handleResponseError(error: unknown) {
   if (error instanceof Response) {
     output = { data: { error: (await error.json()) ?? error.statusText }, status: error.status }
     console.debug(output)
+  } else if (error instanceof NoAccessTokenError) {
+    output = { data: { error: 'No access token.' }, status: 403 }
   } else {
     output = { data: { error: 'Internal server error.' }, status: 500 }
     console.error('Error while handling response:', error)
@@ -203,4 +153,4 @@ const isNodeStream = (body: Response['body'] | NodeResponse['body']): body is No
   return !!(body as NodeResponse['body'])?.pipe
 }
 
-export type ReqHandler = (kv: Redis, req: NextRequest) => Promise<ResponseCompat>
+export type ReqHandler = (req: NextRequest) => Promise<ResponseCompat>

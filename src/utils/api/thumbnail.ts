@@ -1,25 +1,13 @@
 import type { OdThumbnail } from '@/types'
 
-import {
-  getAccessToken,
-  setCaching,
-  noCacheForProtectedPath,
-  handleResponseError,
-  ResponseCompat,
-} from '@/utils/api/common'
+import { setCaching, noCacheForProtectedPath, handleResponseError, ResponseCompat } from '@/utils/api/common'
 import { checkAuthRoute } from '../auth/utils'
 import { NextRequest } from 'next/server'
-import { Redis } from '@/utils/odAuthTokenStore'
 import { resolveRoot } from '../path'
 import { getRequsetURL } from '../od-api/odRequest'
 import { fetchWithAuth } from '../od-api/fetchWithAuth'
 
-export default async function handler(kv: Redis, req: NextRequest) {
-  const accessToken = await getAccessToken(kv)
-  if (!accessToken) {
-    return ResponseCompat.json({ error: 'No access token.' }, { status: 403 })
-  }
-
+export default async function handler(req: NextRequest) {
   // Get item thumbnails by its path since we will later check if it is protected
   const search = req.nextUrl.searchParams,
     path = search.get('path') ?? '',
@@ -55,7 +43,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   // Handle response from OneDrive API
   const requestUrl = getRequsetURL(cleanPath, true, 'thumbnails')
   try {
-    const data = await fetchWithAuth(requestUrl, { accessToken }).then(res => res.json())
+    const data = await fetchWithAuth(requestUrl).then(res => res.json())
 
     const thumbnailUrl = data.value && data.value.length > 0 ? (data.value[0] as OdThumbnail)[size].url : null
     if (!thumbnailUrl) {

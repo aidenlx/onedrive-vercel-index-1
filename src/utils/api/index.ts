@@ -1,15 +1,15 @@
 import { NextRequest } from 'next/server'
-import { getAccessToken, setCaching, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
+import { setCaching, noCacheForProtectedPath, ResponseCompat } from '@/utils/api/common'
 import { handleRaw } from './raw'
-import { revealObfuscatedToken } from '@/utils/oAuthHandler'
-import { Redis, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 import { resolveRoot } from '../path'
 import { checkAuthRoute } from '../auth/utils'
+import { revealObfuscatedToken } from '../oauth/const'
+import { saveAuthToken } from '../oauth/store'
 
-export default async function handler(kv: Redis, req: NextRequest) {
+export default async function handler(req: NextRequest) {
   // If method is POST, then the API is called by the client to store acquired tokens
   if (req.method === 'POST') {
-    const { obfuscatedAccessToken, accessTokenExpiry, obfuscatedRefreshToken } = await req.json()
+    const { obfuscatedAccessToken, accessTokenExpiry: expiry, obfuscatedRefreshToken } = await req.json()
     const accessToken = revealObfuscatedToken(obfuscatedAccessToken)
     const refreshToken = revealObfuscatedToken(obfuscatedRefreshToken)
 
@@ -17,7 +17,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
       return ResponseCompat.text('Invalid request body', { status: 400 })
     }
 
-    await storeOdAuthTokens(kv, { accessToken, accessTokenExpiry, refreshToken })
+    await saveAuthToken({ accessToken, expiry, refreshToken })
     return ResponseCompat.text('OK', { status: 200 })
   }
 
@@ -25,9 +25,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   const search = req.nextUrl.searchParams
 
   const path = search.get('path') ?? '/',
-    raw = search.has('raw'),
-    next = search.get('next') ?? '',
-    sort = search.get('sort') ?? ''
+    raw = search.has('raw')
 
   const headers = new Headers()
 
@@ -44,18 +42,6 @@ export default async function handler(kv: Redis, req: NextRequest) {
   // Besides normalizing and making absolute, trailing slashes are trimmed
   const cleanPath = resolveRoot(path)
 
-  // Validate sort param
-  if (typeof sort !== 'string') {
-    return ResponseCompat.json({ error: 'Sort query invalid.' }, { status: 400, headers })
-  }
-
-  const accessToken = await getAccessToken(kv)
-
-  // Return error 403 if access_token is empty
-  if (!accessToken) {
-    return ResponseCompat.json({ error: 'No access token.' }, { status: 403, headers })
-  }
-
   // Handle protected routes authentication
   const { code, message } = await checkAuthRoute(req, cleanPath)
   // Status code other than 200 means user has not authenticated yet
@@ -67,7 +53,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   // Go for file raw download link, add CORS headers, and redirect to @microsoft.graph.downloadUrl
   // (kept here for backwards compatibility, and cache headers will be reverted to no-cache)
   if (raw) {
-    return await handleRaw({ headers, cleanPath, accessToken })
+    return await handleRaw({ headers, cleanPath })
   }
 
   // logic moved to server component

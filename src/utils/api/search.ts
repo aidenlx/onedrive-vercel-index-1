@@ -1,7 +1,7 @@
-import { ResponseCompat, encodePath, getAccessToken, handleResponseError, setCaching } from '@/utils/api/common'
-import { Redis } from '@/utils/odAuthTokenStore'
+import { ResponseCompat, handleResponseError, setCaching } from '@/utils/api/common'
 import { maxItems } from '@cfg/site.config'
 import { NextRequest } from 'next/server'
+import { getAccessToken } from '../oauth/get-at'
 import { fetchWithAuth } from '../od-api/fetchWithAuth'
 import { getRequsetURL } from '../od-api/odRequest'
 
@@ -25,10 +25,7 @@ function sanitiseQuery(query: string): string {
   return encodeURIComponent(sanitisedQuery)
 }
 
-export default async function handler(kv: Redis, req: NextRequest) {
-  // Get access token from storage
-  const accessToken = await getAccessToken(kv)
-
+export default async function handler(req: NextRequest) {
   // Query parameter from request
   const searchQuery = req.nextUrl.searchParams.get('q') ?? ''
 
@@ -44,7 +41,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   searchApi.searchParams.set('select', 'id,name,file,folder,parentReference')
   searchApi.searchParams.set('top', maxItems.toString())
   try {
-    const data = await fetchWithAuth(searchApi, { accessToken }).then(res => res.json())
+    const data = await fetchWithAuth(searchApi).then(res => res.json())
     return ResponseCompat.json(data.value, { status: 200, headers })
   } catch (error) {
     const { data, status } = await handleResponseError(error)

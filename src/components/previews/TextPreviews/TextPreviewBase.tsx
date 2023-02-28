@@ -4,8 +4,6 @@ import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
 import { useTranslations } from 'next-intl'
 import { ReactNode, Suspense } from 'react'
-import { getAccessToken } from '@/utils/api/common'
-import { kv } from '@/utils/kv/edge'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 import { fetchWithAuth } from '@/utils/od-api/fetchWithAuth'
 
@@ -16,9 +14,8 @@ export interface TextPreviewContentProps {
 
 async function TextPreviewContent({ path, children: renderContent }: TextPreviewContentProps) {
   try {
-    const accessToken = await getAccessToken(kv)
-    const [downloadLink] = await getDownloadLink(path, accessToken, false)
-    const content = await fetchWithAuth(downloadLink, { accessToken }).then(res => res.text())
+    const [downloadLink] = await getDownloadLink(path, false)
+    const content = await fetchWithAuth(downloadLink).then(res => res.text())
     if (!content) {
       return <EmptyTextFile />
     }

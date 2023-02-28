@@ -16,6 +16,6 @@ export default async function handler(req: NextRequest) {
     case 'DELETE':
       return await clearPassword(req)
     default:
-      return NextResponse.json({ error: 'Invalid request method.' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid request method.' }, { status: 405 })
   }
 }

@@ -1,12 +1,9 @@
 import apiConfig from '@cfg/api.config'
-import { ResponseCompat, getAccessToken, handleResponseError, setCaching } from '@/utils/api/common'
+import { ResponseCompat, handleResponseError, setCaching } from '@/utils/api/common'
 import { NextRequest } from 'next/server'
-import { Redis } from '@/utils/odAuthTokenStore'
+import { getAccessToken } from '../oauth/get-at'
 
-export default async function handler(kv: Redis, req: NextRequest) {
-  // Get access token from storage
-  const accessToken = await getAccessToken(kv)
-
+export default async function handler(req: NextRequest) {
   // Get item details (specifically, its path) by its unique ID in OneDrive
   const id = req.nextUrl.searchParams.get('id') ?? ''
 
@@ -17,7 +14,9 @@ export default async function handler(kv: Redis, req: NextRequest) {
   itemApi.searchParams.set('select', 'id,name,parentReference')
 
   try {
-    const data = await fetch(itemApi).then(res => res.json())
+    const data = await fetch(itemApi, {
+      headers: { Authorization: `Bearer ${await getAccessToken()}` },
+    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
     return ResponseCompat.json(data, { status: 200, headers })
   } catch (error) {
     const { data, status } = await handleResponseError(error)

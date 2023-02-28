@@ -3,14 +3,13 @@ import { PreviewContainer } from '@/components/previews/Containers'
 import { getPageData } from './fetch'
 import FourOhFour from '@/components/FourOhFour'
 import { queryToPath } from '@/components/page/utils'
-import { kv } from '@/utils/kv/edge'
 import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
 import { locales } from '@/locale'
-import { NoAccessTokenError } from '@/utils/od-api/fetchWithAuth'
 import { arrayAsyncFrom } from '@/utils/arrayAsyncFrom'
 import { traverseFolder } from '@/utils/od-api/traverseFolder'
+import { NoAccessTokenError } from '@/utils/oauth/get-at'
 
 export async function generateStaticParams(): Promise<{ locale: string; paths: string[] }[]> {
   const paths = process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder()) : [[]]
@@ -34,7 +33,7 @@ export default async function Page({
   // this will cause static generation to fail
   // const size = toInt(searchParams?.size, 0)
 
-  const data = await getPageData(path, { kv }).catch(error => ({ type: 'error', error } as const))
+  const data = await getPageData(path).catch(error => ({ type: 'error', error } as const))
 
   switch (data.type) {
     case 'error': {
