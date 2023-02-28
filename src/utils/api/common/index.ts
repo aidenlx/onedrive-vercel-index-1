@@ -1,5 +1,5 @@
-import apiConfig, { driveApi } from '@cfg/api.config'
-import siteConfig from '@cfg/site.config'
+import { authApi, cacheControlHeader, clientId, obfuscatedClientSecret, redirectUri } from '@cfg/api.config'
+import { baseDirectory, protectedRoutes } from '@cfg/site.config'
 import { revealObfuscatedToken } from '@/utils/oAuthHandler'
 import { Redis, getOdAuthTokens, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 import { compareHashedToken } from '@/utils/protectedRouteHandler'
@@ -8,9 +8,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Response as NodeResponse } from 'node-fetch'
 import { join, resolveRoot } from '@/utils/path'
+import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
-const basePath = resolveRoot(siteConfig.baseDirectory)
-const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
+const basePath = resolveRoot(baseDirectory)
+const clientSecret = revealObfuscatedToken(obfuscatedClientSecret)
 
 /**
  * Encode the path of the file relative to the base directory
@@ -18,7 +19,7 @@ const clientSecret = revealObfuscatedToken(apiConfig.obfuscatedClientSecret)
  * @param path Relative path of the file to the base directory
  * @returns Absolute path of the file inside OneDrive
  */
-export function encodePath(path: string, urlEncode = true): string {
+export function encodePath(path: string, urlEncode: boolean): string {
   let encodedPath = join(basePath, path)
   if (encodedPath === '/' || encodedPath === '') {
     return ''
@@ -37,7 +38,7 @@ export async function getAccessToken(kv: Redis): Promise<string> {
 
   // Return in storage access token if it is still valid
   if (typeof accessToken === 'string') {
-    console.debug('Fetch access token from storage.')
+    // console.debug('Fetch access token from storage.')
     return accessToken
   }
 
@@ -49,13 +50,13 @@ export async function getAccessToken(kv: Redis): Promise<string> {
 
   // Fetch new access token with in storage refresh token
   const body = new URLSearchParams()
-  body.append('client_id', apiConfig.clientId)
-  body.append('redirect_uri', apiConfig.redirectUri)
+  body.append('client_id', clientId)
+  body.append('redirect_uri', redirectUri)
   body.append('client_secret', clientSecret)
   body.append('refresh_token', refreshToken)
   body.append('grant_type', 'refresh_token')
 
-  const data = await fetch(apiConfig.authApi, {
+  const data = await fetch(authApi, {
     method: 'POST',
     body: body,
     headers: {
@@ -86,7 +87,6 @@ export function getAuthTokenPath(path: string) {
   // Ensure trailing slashes to compare paths component by component. Same for protectedRoutes.
   // Since OneDrive ignores case, lower case before comparing. Same for protectedRoutes.
   path = path.toLowerCase() + '/'
-  const protectedRoutes = siteConfig.protectedRoutes
   let authTokenPath = ''
   for (let r of protectedRoutes) {
     if (typeof r !== 'string') continue
@@ -126,14 +126,7 @@ export async function checkAuthRoute(
   }
 
   try {
-    const url = new URL(`${driveApi}/root${encodePath(authTokenPath)}`)
-    url.searchParams.append('select', '@microsoft.graph.downloadUrl,file')
-    const { ['@microsoft.graph.downloadUrl']: downloadUrl } = await fetch(
-      `${apiConfig.driveApi}/root${encodePath(authTokenPath)}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    ).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const [downloadUrl] = await getDownloadLink(authTokenPath, accessToken, true)
 
     // Handle request and check for header 'od-protected-token'
     const odProtectedToken = await fetch(downloadUrl).then(res => (res.ok ? res.text() : Promise.reject(res)))
@@ -166,7 +159,7 @@ export async function checkAuthRoute(
  * @see https://vercel.com/docs/concepts/functions/edge-caching
  */
 export function setCaching(header: Headers) {
-  header.set('Cache-Control', apiConfig.cacheControlHeader)
+  header.set('Cache-Control', cacheControlHeader)
   return header
 }
 

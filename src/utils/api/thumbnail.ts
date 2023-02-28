@@ -1,12 +1,8 @@
 import type { OdThumbnail } from '@/types'
 
-import pathPosix from 'path-browserify'
-
-import apiConfig from '@cfg/api.config'
 import {
   getAccessToken,
   checkAuthRoute,
-  encodePath,
   setCaching,
   noCacheForProtectedPath,
   handleResponseError,
@@ -16,6 +12,8 @@ import { NextRequest } from 'next/server'
 import { Redis } from '@/utils/odAuthTokenStore'
 import { resolveRoot } from '../path'
 import { getHashedToken } from '../auth/utils'
+import { getRequsetURL } from '../od-api/odRequest'
+import { fetchWithAuth } from '../od-api/fetchWithAuth'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   const accessToken = await getAccessToken(kv)
@@ -56,16 +54,10 @@ export default async function handler(kv: Redis, req: NextRequest) {
   }
   noCacheForProtectedPath(headers, message)
 
-  const requestPath = encodePath(cleanPath)
   // Handle response from OneDrive API
-  const requestUrl = `${apiConfig.driveApi}/root${requestPath}`
-  // Whether path is root, which requires some special treatment
-  const isRoot = requestPath === ''
-
+  const requestUrl = getRequsetURL(cleanPath, true, 'thumbnails')
   try {
-    const data = await fetch(`${requestUrl}${isRoot ? '' : ':'}/thumbnails`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const data = await fetchWithAuth(requestUrl, { accessToken }).then(res => res.json())
 
     const thumbnailUrl = data.value && data.value.length > 0 ? (data.value[0] as OdThumbnail)[size].url : null
     if (!thumbnailUrl) {

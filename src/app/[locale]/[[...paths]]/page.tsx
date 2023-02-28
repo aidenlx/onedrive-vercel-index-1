@@ -1,6 +1,6 @@
 import { redirect } from 'next-intl/server'
 import { PreviewContainer } from '@/components/previews/Containers'
-import { getPageData, NoAccessTokenError } from './fetch'
+import { getPageData } from './fetch'
 import FourOhFour from '@/components/FourOhFour'
 import { queryToPath } from '@/components/page/utils'
 import { kv } from '@/utils/kv/edge'
@@ -8,18 +8,21 @@ import { useTranslations } from 'next-intl'
 import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
 import { locales } from '@/locale'
+import { NoAccessTokenError } from '@/utils/od-api/fetchWithAuth'
+import { arrayAsyncFrom } from '@/utils/arrayAsyncFrom'
+import { traverseFolder } from '@/utils/od-api/traverseFolder'
 
-export function generateStaticParams() {
-  // statically render home page
-  return locales.map(locale => ({ locale, paths: [] }))
+export async function generateStaticParams(): Promise<{ locale: string; paths: string[] }[]> {
+  const paths = process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder()) : [[]]
+  return paths.flatMap(paths => locales.map(locale => ({ locale, paths })))
 }
 
-export const revalidate = 1800
+export const revalidate = 43200 // 12 hours
 
 export default async function Page({
   params,
-  // searchParams,
-}: {
+}: // searchParams,
+{
   params: { paths?: string[] }
   // searchParams?: { [key: string]: string | string[] | undefined }
 }) {

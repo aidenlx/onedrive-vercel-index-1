@@ -1,8 +1,9 @@
 import { ResponseCompat, encodePath, getAccessToken, handleResponseError, setCaching } from '@/utils/api/common'
 import { Redis } from '@/utils/odAuthTokenStore'
-import apiConfig from '@cfg/api.config'
-import siteConfig from '@cfg/site.config'
+import { maxItems } from '@cfg/site.config'
 import { NextRequest } from 'next/server'
+import { fetchWithAuth } from '../od-api/fetchWithAuth'
+import { getRequsetURL } from '../od-api/odRequest'
 
 /**
  * Sanitize the search query
@@ -38,17 +39,12 @@ export default async function handler(kv: Redis, req: NextRequest) {
   if (typeof searchQuery !== 'string') return ResponseCompat.json([], { status: 200, headers })
 
   // Construct Microsoft Graph Search API URL, and perform search only under the base directory
-  const searchRootPath = encodePath('/')
-  const encodedPath = searchRootPath === '' ? searchRootPath : searchRootPath + ':'
-
-  const searchApi = new URL(`${apiConfig.driveApi}/root${encodedPath}/search(q='${sanitiseQuery(searchQuery)}')`)
+  const searchApi = getRequsetURL('/', true, `search(q='${sanitiseQuery(searchQuery)}')`)
 
   searchApi.searchParams.set('select', 'id,name,file,folder,parentReference')
-  searchApi.searchParams.set('top', siteConfig.maxItems.toString())
+  searchApi.searchParams.set('top', maxItems.toString())
   try {
-    const data = await fetch(searchApi, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const data = await fetchWithAuth(searchApi, { accessToken }).then(res => res.json())
     return ResponseCompat.json(data.value, { status: 200, headers })
   } catch (error) {
     const { data, status } = await handleResponseError(error)

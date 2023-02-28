@@ -18,6 +18,7 @@ import { Redis, storeOdAuthTokens } from '@/utils/odAuthTokenStore'
 import type { Drive, DriveItem } from '@microsoft/microsoft-graph-types'
 import { getHashedToken } from '../auth/utils'
 import { resolveRoot } from '../path'
+import { getRequsetURL } from '@/utils/od-api/odRequest'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   // If method is POST, then the API is called by the client to store acquired tokens
@@ -84,42 +85,8 @@ export default async function handler(kv: Redis, req: NextRequest) {
     return await handleRaw({ headers, cleanPath, accessToken })
   }
 
-  const requestPath = encodePath(cleanPath)
-  // Handle response from OneDrive API
-  const requestUrl = `${apiConfig.driveApi}/root${requestPath}`
-  // Whether path is root, which requires some special treatment
-  const isRoot = requestPath === ''
-
-  const setSelectProps = (url: URL) =>
-    url.searchParams.set('select', 'name,size,id,lastModifiedDateTime,folder,file,video,image')
-  // Querying current path identity (file or folder) and follow up query childrens in folder
-  try {
-    const identityUrl = new URL(requestUrl)
-    setSelectProps(identityUrl)
-    const identityData: DriveItem = await fetch(requestUrl, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
-
-    if (!('folder' in identityData)) return ResponseCompat.json({ file: identityData }, { status: 200, headers })
-
-    const childUrl = new URL(`${requestUrl}${isRoot ? '' : ':'}/children`)
-    setSelectProps(childUrl)
-    childUrl.searchParams.set('$top', siteConfig.maxItems.toString())
-    if (next) childUrl.searchParams.set('$skipToken', next)
-    if (sort) childUrl.searchParams.set('$orderby', sort)
-
-    const folderData: DriveItem['children'] = await fetch(childUrl, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
-
-    const nextPage = getSkipToken(folderData)
-
-    // Return paging token if specified
-    return ResponseCompat.json({ folder: folderData, next: nextPage ? nextPage : undefined }, { status: 200, headers })
-  } catch (error) {
-    const { data, status } = await handleResponseError(error)
-    return ResponseCompat.json(data, { status, headers })
-  }
+  // logic moved to server component
+  return ResponseCompat.text("Not implemented", { status: 501 })
 }
 
 /**

@@ -1,5 +1,5 @@
-import { driveApi } from '@cfg/api.config'
-import { encodePath, getAccessToken, getAuthTokenPath } from '../api/common'
+import { getAccessToken, getAuthTokenPath } from '../api/common'
+import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 import { kv } from '../kv/edge'
 
 /**
@@ -15,11 +15,7 @@ export async function getPassword(cleanPath: string): Promise<string | null> {
   if (authTokenPath === '') return null
 
   try {
-    const url = new URL(`${driveApi}/root${encodePath(authTokenPath)}`)
-    url.searchParams.append('select', '@microsoft.graph.downloadUrl,file')
-    const { ['@microsoft.graph.downloadUrl']: downloadUrl } = await fetch(url, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const [downloadUrl] = await getDownloadLink(authTokenPath, accessToken, true)
 
     const odProtectedToken = (await fetch(downloadUrl).then(res => (res.ok ? res.text() : Promise.reject(res)))).trim()
     return odProtectedToken ? odProtectedToken : null

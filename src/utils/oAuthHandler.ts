@@ -2,6 +2,7 @@ import AES from 'crypto-js/aes'
 import Utf8 from 'crypto-js/enc-utf8'
 
 import apiConfig from '@cfg/api.config'
+import { fetchWithAuth } from './od-api/fetchWithAuth'
 
 // Just a disguise to obfuscate required tokens (including but not limited to client secret,
 // access tokens, and refresh tokens), used along with the following two functions
@@ -88,11 +89,7 @@ export async function requestTokenWithAuthCode(
 // in the Microsoft Graph API. If the userPrincipalName matches, proceed with token storing.
 export async function getAuthPersonInfo(accessToken: string) {
   const profileApi = apiConfig.driveApi.replace('/drive', '')
-  return await fetch(profileApi, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+  return await fetchWithAuth(profileApi, { accessToken }).then(res => res.json())
 }
 
 export async function sendTokenToServer(accessToken: string, refreshToken: string, expiryTime: string) {

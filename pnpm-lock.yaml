@@ -55,6 +55,7 @@ specifiers:
   next-intl: 2.11.0-beta.15
   nextjs-progressbar: ^0.0.16
   node-fetch: ^3.3.0
+  p-queue: ^7.3.4
   path-browserify: ^1.0.1
   plyr-react: ^5.1.2
   postcss: ^8.4.21
@@ -121,6 +122,7 @@ dependencies:
   next-intl: 2.11.0-beta.15_x27nqt2wd3njm3e6ue34vw2nh4_next@13.1.6+react@18.2.0
   nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
   node-fetch: 3.3.0
+  p-queue: 7.3.4
   path-browserify: 1.0.1
   plyr-react: 5.1.2_react@18.2.0
   preview-office-docs: 1.0.2_react@18.2.0
@@ -2514,6 +2516,10 @@ packages:
       es5-ext: 0.10.62
     dev: false
 
+  /eventemitter3/4.0.7:
+    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
+
   /expand-template/2.0.3:
     resolution: {integrity: sha512-XYfuKMvj4O35f/pOXLObndIRvyQ+/+6AhODh+OKWj9S9498pHHn/IMszH+gt0fBCRWMNfk1ZSp5x3AifmnI2vg==}
     engines: {node: '>=6'}
@@ -4502,6 +4508,19 @@ packages:
     dependencies:
       p-limit: 3.1.0
     dev: true
+
+  /p-queue/7.3.4:
+    resolution: {integrity: sha512-esox8CWt0j9EZECFvkFl2WNPat8LN4t7WWeXq73D9ha0V96qPRufApZi4ZhPwXAln1uVVal429HVVKPa2X0yQg==}
+    engines: {node: '>=12'}
+    dependencies:
+      eventemitter3: 4.0.7
+      p-timeout: 5.1.0
+    dev: false
+
+  /p-timeout/5.1.0:
+    resolution: {integrity: sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==}
+    engines: {node: '>=12'}
+    dev: false
 
   /pako/1.0.11:
     resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}

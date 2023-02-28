@@ -17,9 +17,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
   itemApi.searchParams.set('select', 'id,name,parentReference')
 
   try {
-    const data = await fetch(itemApi, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    const data = await fetch(itemApi).then(res => res.json())
     return ResponseCompat.json(data, { status: 200, headers })
   } catch (error) {
     const { data, status } = await handleResponseError(error)

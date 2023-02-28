@@ -5,7 +5,7 @@ import { cacheControlHeader } from '@cfg/api.config'
 import { handleResponseError } from './common'
 import { getHashedToken } from '@/utils/auth/utils'
 import { resolveRoot } from '../path'
-import { getDownloadLink } from '../getDownloadLink'
+import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
 export default async function handler(kv: Redis, req: NextRequest) {
   const accessToken = await getAccessToken(kv)
@@ -45,7 +45,7 @@ export default async function handler(kv: Redis, req: NextRequest) {
 export async function handleRaw(ctx: { headers?: Headers; cleanPath: string; accessToken: string }, proxy = false) {
   const init = { headers: ctx.headers ?? new Headers(), cors: true }
   try {
-    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, ctx.accessToken)
+    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, ctx.accessToken, true)
 
     if (!downloadUrl) {
       // CDN Cache for 1 hour
