@@ -133,21 +133,18 @@ export function FolderAction({
 
   async function handleFolderDownload() {
     setFolderGenerating(c.id)
-    const url = new URL('/api/transverse', window.location.origin)
-    url.searchParams.set('path', getItemPath(c.name))
+    const url = new URL(`/api/traverse?path=${getItemPath(c.name)}`, window.location.origin)
     const files = await fetch(url)
       .then(r => r.text())
       .then(csv => {
-        console.log(csv)
         return csv.split('\n').flatMap(v => {
           const [path, folder, size] = v.split(',')
           return folder === '0' ? [{ name: path, size: parseInt(size, 10) }] : []
         })
       })
-    console.log(files)
     await downloadMultiple(
       `${c.name}.zip`,
-      files.map(v => v.name),
+      files.map(v => encodeURIComponent(v.name)),
       c.name,
       predictLength(files)
     )
