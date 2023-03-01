@@ -1,6 +1,6 @@
 import { PreviewContainer, DownloadBtnContainer } from './Containers'
 import DownloadButtonGroup from '../DownloadBtnGtoup'
-import { toPermLink } from "@/utils/permlink"
+import { toPermLink } from '@/utils/permlink'
 import { DriveItem } from '@/utils/api/type'
 import Image from 'next/image'
 

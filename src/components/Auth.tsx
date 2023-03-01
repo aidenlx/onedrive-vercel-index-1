@@ -3,6 +3,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import Image from 'next/image'
+import AuthImage from '@img/fabulous-wapmire-weekdays.png'
 
 import { useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -42,13 +43,20 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   }
 
   if (isPending) {
-    return <Loading loadingText='Applying...'/>
+    return <Loading loadingText="Applying..." />
   }
 
   return (
     <div className="mx-auto flex max-w-sm flex-col space-y-4 md:my-10">
       <div className="mx-auto w-3/4 md:w-5/6">
-        <Image src={'/images/fabulous-wapmire-weekdays.png'} alt="authenticate" width={912} height={912} priority />
+        <Image
+          src={AuthImage}
+          alt="authenticate"
+          width={912}
+          height={912}
+          priority
+          placeholder="blur"
+        />
       </div>
       <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{label['Enter Password']}</div>
 

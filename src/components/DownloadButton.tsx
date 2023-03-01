@@ -3,7 +3,7 @@
 import { MouseEventHandler, PropsWithChildren, ReactNode, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
-import Image from 'next/image'
+import Image, { StaticImageData } from 'next/image'
 import { useClipboard } from 'use-clipboard-copy'
 import { toast } from 'react-hot-toast'
 import type { CustomEmbedLinkMenuLabels } from './page/CustomEmbedLinkMenu'
@@ -47,7 +47,7 @@ export const DownloadButton = ({
   btnColor?: string
   btnText: string
   btnIcon?: IconProp
-  btnImage?: string
+  btnImage?: StaticImageData | string
   btnTitle?: string
   disabled?: boolean
 }) => {
@@ -61,7 +61,16 @@ export const DownloadButton = ({
       disabled={disabled}
     >
       {btnIcon && <FontAwesomeIcon icon={btnIcon} />}
-      {btnImage && <Image src={btnImage} alt={btnImage} width={20} height={20} priority />}
+      {btnImage && (
+        <Image
+          src={btnImage}
+          alt={typeof btnImage === 'string' ? btnImage : ''}
+          width={20}
+          height={20}
+          priority
+          placeholder={typeof btnImage === 'string' ? undefined : 'blur'}
+        />
+      )}
       <span>{btnText}</span>
     </button>
   )

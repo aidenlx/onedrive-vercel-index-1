@@ -29,6 +29,12 @@
       ],
       "@cfg/*": [
         "../config/*"
+      ],
+      "@img/*": [
+        "../public/images/*"
+      ],
+      "@players/*": [
+        "../public/players/*"
       ]
     },
     "plugins": [

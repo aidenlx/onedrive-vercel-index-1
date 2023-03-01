@@ -5,6 +5,11 @@ import { useSealedURL } from '@/utils/auth/useSeal'
 import { toPermLink } from '@/utils/permlink'
 import { getBaseUrl } from '@/utils/useBaseUrl'
 
+import iina from '@players/iina.png'
+import vlc from '@players/vlc.png'
+import potplayer from '@players/potplayer.png'
+import nplayer from '@players/nplayer.png'
+
 function getHostname() {
   return window?.location.hostname ?? ''
 }
@@ -19,25 +24,25 @@ export function OpenInPlayers({ path }: { path: string }) {
         disabled={isLoading || error}
         onClickCallback={() => window.open(`iina://weblink?url=${encodeURIComponent(getBaseUrl() + videoUrl)}`)}
         btnText="IINA"
-        btnImage="/players/iina.png"
+        btnImage={iina}
       />
       <DownloadButton
         disabled={isLoading || error}
         onClickCallback={() => window.open(`vlc://${getBaseUrl() + videoUrl}`)}
         btnText="VLC"
-        btnImage="/players/vlc.png"
+        btnImage={vlc}
       />
       <DownloadButton
         disabled={isLoading || error}
         onClickCallback={() => window.open(`potplayer://${getBaseUrl() + videoUrl}`)}
         btnText="PotPlayer"
-        btnImage="/players/potplayer.png"
+        btnImage={potplayer}
       />
       <DownloadButton
         disabled={isLoading || error}
         onClickCallback={() => window.open(`nplayer-http://${getHostname() + videoUrl}`)}
         btnText="nPlayer"
-        btnImage="/players/nplayer.png"
+        btnImage={nplayer}
       />
     </>
   )
