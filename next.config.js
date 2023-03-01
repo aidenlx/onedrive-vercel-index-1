@@ -6,7 +6,13 @@ const withNextIntl = require('next-intl/plugin')(
 const withBundleAnalyzer =
   process.env.ANALYZE === 'true' ? require('@next/bundle-analyzer')({ enabled: true }) : cfg => cfg
 
-const withPWA = require('next-pwa')({ dest: 'public/assets/pwa', scope: '/', register: true })
+const isDev = process.env.NODE_ENV !== 'production'
+
+const withPWA = require('@ducanh2912/next-pwa').default({
+  dest: 'public',
+  scope: '/api/batch/',
+  register: false,
+})
 
 module.exports = withPWA(
   withBundleAnalyzer(

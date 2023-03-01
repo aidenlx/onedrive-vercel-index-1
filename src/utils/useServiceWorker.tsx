@@ -2,6 +2,14 @@
 import { useStore } from '@/components/page/store'
 import { useEffect, useRef } from 'react'
 
+import type { Workbox } from 'workbox-window'
+
+declare global {
+  interface Window {
+    workbox: Workbox
+  }
+}
+
 export function useServiceWorker() {
   const swRequested = useRef(false)
   const setSWRegistered = useStore(s => s.setSWRegistered)
@@ -13,8 +21,9 @@ export function useServiceWorker() {
     // https://github.com/Touffy/client-zip#known-issues
     if (isSafari && safariVersion < 15.4) return
     swRequested.current = true
-    navigator.serviceWorker
-      .register('/assets/pwa/sw.js', { scope: '/api/batch/' })
+    window.workbox !== undefined
+    const wb = window.workbox
+    wb.register()
       .then(() => {
         setSWRegistered()
         console.log('batch download service worker registered')

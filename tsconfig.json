@@ -21,9 +21,10 @@
       "@i18n": ["./i18n.ts"],
       "@cfg/*": ["../config/*"],
       "@img/*": ["../public/images/*"],
-      "@players/*": ["../public/players/*"],
+      "@players/*": ["../public/players/*"]
     },
-    "plugins": [{ "name": "next" }]
+    "plugins": [{ "name": "next" }],
+    "types": ["@ducanh2912/next-pwa/workbox"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

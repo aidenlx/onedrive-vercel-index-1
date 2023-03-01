@@ -6,7 +6,9 @@
 .pnp.js
 
 /public/assets/pdfjs
-/public/assets/pwa
+/public/sw.js*
+/public/workbox-*.js*
+/public/worker-*.js*
 
 # testing
 /coverage
