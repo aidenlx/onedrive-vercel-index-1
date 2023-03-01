@@ -1,13 +1,15 @@
 import siteConfig from '@cfg/site.config'
-import { get } from '@vercel/edge-config'
+import { get, getAll } from '@vercel/edge-config'
 
-const atKey = `${siteConfig.kvPrefix}access_token`
-const atExpiryKey = `${atKey}_expiry`
-const rtKey = `${siteConfig.kvPrefix}refresh_token`
+const atKey = `${siteConfig.kvPrefix}access_token` as const
+const atExpiryKey = `${atKey}_expiry` as const
+const rtKey = `${siteConfig.kvPrefix}refresh_token` as const
 
-export async function accessToken() {
+type AccessTokenValues = [at: string | undefined, expiry: number | undefined]
+export async function accessToken(): Promise<AccessTokenValues> {
   console.log('fetch access token from edge config')
-  return await Promise.all([get<string>(atKey), get<number>(atExpiryKey)])
+  const result = await getAll<Partial<Record<string, number | string>>>([atKey, atExpiryKey])
+  return [result?.[atKey], result?.[atExpiryKey]] as AccessTokenValues
 }
 
 export async function refreshToken() {

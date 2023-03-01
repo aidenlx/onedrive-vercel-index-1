@@ -29,3 +29,7 @@ external link support for protected route via <https://github.com/vvo/iron-sessi
 ## generateStaticParams() 
 
 等待nextjs升级，检查为何页面切换时会全量重新加载（可能SSG没有正常工作）
+
+- [ ] refreshed config panel: 不需要重新部署
+- 整体迁移至edge config+.env
+- client secret/client id 存储在 edge config 中
