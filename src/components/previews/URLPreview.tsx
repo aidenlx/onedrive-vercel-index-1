@@ -7,6 +7,8 @@ import { Suspense } from 'react'
 import { EmptyTextFile } from './TextPreviews/TextPreviewBase'
 import { toPermLink } from '@/utils/permlink'
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { fetchWithAuth } from '@/utils/od-api/fetchWithAuth'
+import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 
 const parseDotUrl = (content: string): string | undefined => {
   return content
@@ -17,9 +19,8 @@ const parseDotUrl = (content: string): string | undefined => {
 
 async function URLPreviewContent({ path }: { path: string }) {
   try {
-    const content = await fetch(toPermLink(path)).then(res =>
-      res.ok ? res.text() : Promise.reject(new Error(res.statusText))
-    )
+    const [downloadLink] = await getDownloadLink(path, false)
+    const content = await fetchWithAuth(downloadLink).then(res => res.text())
     if (!content) {
       return (
         <PreviewContainer>

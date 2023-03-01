@@ -8,5 +8,5 @@ export async function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit
       ...init?.headers,
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then(res => (res.ok ? res : Promise.reject(new Error(res.statusText))))
+  }).then(res => (res.ok ? res : Promise.reject(res)))
 }

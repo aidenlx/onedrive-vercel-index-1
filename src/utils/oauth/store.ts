@@ -6,10 +6,12 @@ const atExpiryKey = `${atKey}_expiry`
 const rtKey = `${siteConfig.kvPrefix}refresh_token`
 
 export async function accessToken() {
+  console.log('fetch access token from edge config')
   return await Promise.all([get<string>(atKey), get<number>(atExpiryKey)])
 }
 
 export async function refreshToken() {
+  console.log('fetch refresh token from edge config')
   return await get<string>(rtKey)
 }
 
@@ -22,6 +24,7 @@ export async function saveAuthToken({
   expiry: number
   refreshToken?: string
 }): Promise<void> {
+  console.log('save auth token to edge config')
   await set([
     { key: atKey, value: accessToken },
     { key: atExpiryKey, value: expiry },

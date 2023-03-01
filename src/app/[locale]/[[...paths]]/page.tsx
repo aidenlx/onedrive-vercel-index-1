@@ -10,6 +10,7 @@ import { locales } from '@/locale'
 import { arrayAsyncFrom } from '@/utils/arrayAsyncFrom'
 import { traverseFolder } from '@/utils/od-api/traverseFolder'
 import { NoAccessTokenError } from '@/utils/oauth/get-at'
+import { title } from '@cfg/site.config'
 
 export async function generateStaticParams(): Promise<{ locale: string; paths: string[] }[]> {
   const paths = process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder()) : [[]]
@@ -19,6 +20,12 @@ export async function generateStaticParams(): Promise<{ locale: string; paths: s
 export const revalidate = 43200 // 12 hours
 
 export const dynamic = 'error'
+export const dynamicParams = false
+
+export function generateMetadata({ params }: { params: { paths?: string[] } }) {
+  const paths = queryToPath(params.paths)
+  return { title: [decodeURIComponent(paths.substring(1)), title].join(' ') }
+}
 
 export default async function Page({
   params,
