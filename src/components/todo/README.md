@@ -26,6 +26,6 @@
 
 external link support for protected route via <https://github.com/vvo/iron-session#magic-links>
 
-## generateStaticProps() for each page
+## generateStaticParams() 
 
-可能默认就能用，不需要自己实现
+等待nextjs升级，检查为何页面切换时会全量重新加载（可能SSG没有正常工作）
