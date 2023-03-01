@@ -18,9 +18,11 @@ interface Params {
 }
 
 export async function generateStaticParams(): Promise<Params[]> {
-  const paths =
-    process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder('/', Infinity)) : []
-  return paths.flatMap(({ paths }) => locales.map(locale => ({ locale, paths })))
+  if (process.env.NODE_ENV !== 'production') return []
+  const files = await traverseFolder('/', Infinity)
+  return (await arrayAsyncFrom(files)).flatMap(({ paths }) =>
+    locales.map(locale => ({ locale, paths: paths.map(decodeURIComponent) }))
+  )
 }
 
 export const revalidate = 43200 // 12 hours
