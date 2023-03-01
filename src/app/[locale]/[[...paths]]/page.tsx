@@ -20,25 +20,15 @@ export async function generateStaticParams(): Promise<{ locale: string; paths: s
 export const revalidate = 43200 // 12 hours
 
 export const dynamic = 'error'
-export const dynamicParams = false
 
-export function generateMetadata({ params }: { params: { paths?: string[] } }) {
-  const paths = queryToPath(params.paths)
-  return { title: [decodeURIComponent(paths.substring(1)), title].join(' ') }
+export async function generateMetadata({ params }: { params: { paths?: string[] } }) {
+  const name = params?.paths?.pop() ?? ''
+  const pageTitle = name ? [decodeURIComponent(name), title].join(' - ') : title
+  return { title: pageTitle }
 }
 
-export default async function Page({
-  params,
-}: // searchParams,
-{
-  params: { paths?: string[] }
-  // searchParams?: { [key: string]: string | string[] | undefined }
-}) {
+export default async function Page({ params }: { params: { paths?: string[] } }) {
   const path = queryToPath(params.paths)
-
-  const size = 0
-  // this will cause static generation to fail
-  // const size = toInt(searchParams?.size, 0)
 
   const data = await getPageData(path).catch(error => ({ type: 'error', error } as const))
 
