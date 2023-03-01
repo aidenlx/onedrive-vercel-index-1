@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useStore } from '@/components/page/store'
+import { useEffect, useRef } from 'react'
 
 export function useServiceWorker() {
   const swRequested = useRef(false)
-  const [swReady, setSwReady] = useState(false)
+  const setSWRegistered = useStore(s => s.setSWRegistered)
   useEffect(() => {
     if (swRequested.current) return
     if (!('serviceWorker' in navigator)) return
@@ -15,10 +16,10 @@ export function useServiceWorker() {
     navigator.serviceWorker
       .register('/assets/pwa/sw.js', { scope: '/api/batch/' })
       .then(() => {
-        setSwReady(true)
+        setSWRegistered()
         console.log('batch download service worker registered')
       })
       .catch(console.error)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  return swReady
 }

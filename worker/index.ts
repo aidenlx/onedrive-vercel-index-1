@@ -9,6 +9,13 @@ import { downloadMultiple } from '../src/utils/download'
 
 const isString = (f: FormDataEntryValue | null): f is string => typeof f === 'string'
 const getString = (f: FormDataEntryValue | null) => (isString(f) ? f : undefined)
+const getInt = (f: FormDataEntryValue | null) => {
+  const str = getString(f)
+  if (str === undefined) return undefined
+  const num = parseInt(str, 10)
+  if (Number.isNaN(num) || num <= 0) return undefined
+  return num
+}
 
 self.addEventListener('fetch', (event: FetchEvent) => {
   const url = new URL(event.request.url)
@@ -22,8 +29,9 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         (async () => {
           const form = await event.request.formData()
           const paths = form.getAll('path').filter(isString),
-            rootFolder = getString(form.get('rootFolder'))
-          return downloadMultiple(name, paths, rootFolder)
+            rootFolder = getString(form.get('rootFolder')),
+            size = getInt(form.get('size'))
+          return downloadMultiple(decodeURI(name), paths, rootFolder, size)
         })().catch(err => new Response(err instanceof Error ? err.message : JSON.stringify(err), { status: 500 }))
       )
   }

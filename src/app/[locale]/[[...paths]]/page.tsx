@@ -12,16 +12,22 @@ import { traverseFolder } from '@/utils/od-api/traverseFolder'
 import { NoAccessTokenError } from '@/utils/oauth/get-at'
 import { title } from '@cfg/site.config'
 
-export async function generateStaticParams(): Promise<{ locale: string; paths: string[] }[]> {
-  const paths = process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder()) : [[]]
-  return paths.flatMap(paths => locales.map(locale => ({ locale, paths })))
+interface Params {
+  locale: string
+  paths?: string[]
+}
+
+export async function generateStaticParams(): Promise<Params[]> {
+  const paths =
+    process.env.NODE_ENV === 'production' ? await arrayAsyncFrom(await traverseFolder('/', Infinity)) : []
+  return paths.flatMap(({ paths }) => locales.map(locale => ({ locale, paths })))
 }
 
 export const revalidate = 43200 // 12 hours
 
 export const dynamic = 'error'
 
-export async function generateMetadata({ params }: { params: { paths?: string[] } }) {
+export async function generateMetadata({ params }: { params: Params }) {
   const name = params?.paths?.pop() ?? ''
   const pageTitle = name ? [decodeURIComponent(name), title].join(' - ') : title
   return { title: pageTitle }

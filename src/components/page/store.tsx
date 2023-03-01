@@ -3,6 +3,8 @@
 import { create } from 'zustand'
 
 interface BearState {
+  swRegistered: boolean
+  setSWRegistered: () => void
   selected: Map<string, boolean>
   updateItems(items: string[]): void
   toggleSelected(id: string): void
@@ -10,8 +12,8 @@ interface BearState {
   selectAll(): void
   toggleSelectAll(): void
   folderGenerating: Set<string>
-  startFolderGenerating(id: string): void
-  folderGenerated(id: string): void
+  setFolderGenerating(id: string): void
+  setfolderGenerated(id: string): void
 }
 
 enum SelectedState {
@@ -37,6 +39,8 @@ export const totalSelectState = (state: BearState) => {
 }
 
 export const useStore = create<BearState>(set => ({
+  swRegistered: false,
+  setSWRegistered: () => set({ swRegistered: true }),
   selected: new Map(),
   updateItems(items: string[]) {
     set(state => {
@@ -85,14 +89,14 @@ export const useStore = create<BearState>(set => ({
     })
   },
   folderGenerating: new Set(),
-  startFolderGenerating(id: string) {
+  setFolderGenerating(id: string) {
     set(state => {
       const newFolderGenerating = new Set(state.folderGenerating)
       newFolderGenerating.add(id)
       return { folderGenerating: newFolderGenerating }
     })
   },
-  folderGenerated(id: string) {
+  setfolderGenerated(id: string) {
     set(state => {
       const newFolderGenerating = new Set(state.folderGenerating)
       newFolderGenerating.delete(id)

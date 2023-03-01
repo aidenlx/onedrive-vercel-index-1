@@ -2,12 +2,12 @@
 
 import toast from 'react-hot-toast'
 
-import { useServiceWorker } from '@/utils/useServiceWorker'
 import { useMemo } from 'react'
-import { DownloadingToast } from '@/components/DownloadingToast'
+import { DownloadingToast, DownloadingToastLabels } from '@/components/DownloadingToast'
+import { useStore } from '@/components/page/store'
 
 // Blob download helper
-function downloadFilesWithForm(name: string, paths: string[], rootFolder?: string) {
+function downloadFilesWithForm(name: string, paths: string[], rootFolder?: string, size?: number | bigint) {
   const el = document.createElement('form')
   el.style.display = 'none'
 
@@ -21,6 +21,12 @@ function downloadFilesWithForm(name: string, paths: string[], rootFolder?: strin
     const input = document.createElement('input')
     input.value = rootFolder
     input.name = 'root'
+    el.appendChild(input)
+  }
+  if (size && size > 0) {
+    const input = document.createElement('input')
+    input.value = `${size}`
+    input.name = 'size'
     el.appendChild(input)
   }
   el.method = 'post'
@@ -82,36 +88,34 @@ function respWithProgress(resp: Response, onProgress: (loaded: number, total: nu
 }
 
 export function useDownloadMultipleFiles(
-  zipName: string
-): (files: string[], rootFolder?: string, toastId?: string) => Promise<void> {
-  const sw = useServiceWorker()
+  label: DownloadingToastLabels
+): (zipName: string, files: string[], rootFolder?: string, size?: number | bigint) => Promise<void> {
+  const sw = useStore(s => s.swRegistered)
   return useMemo(() => {
     if (sw) {
-      return async function downloadMultipleFiles(files, rootFolder = 'download.zip') {
-        downloadFilesWithForm(zipName, files, rootFolder)
+      return async function downloadMultipleFiles(zipFile, files, rootFolder = 'download.zip', size) {
+        downloadFilesWithForm(zipFile, files, rootFolder, size)
       }
     }
-    return async function downloadMultipleFiles(files, rootFolder = 'download.zip', toastId) {
+    return async function downloadMultipleFiles(zipFile, files, rootFolder = 'download.zip', size) {
       const { downloadMultiple } = await import('@/utils/download')
+      const toastId = toast.loading(<DownloadingToast label={label} />)
 
-      const blob = downloadMultiple(zipName, files, rootFolder)
-        .then(resp =>
-          toastId
-            ? respWithProgress(resp, (loaded: number, total: number) =>
-                toast.loading(
-                  // TODO i18n
-                  <DownloadingToast
-                    progress={((loaded / total) * 100).toFixed(2)}
-                    label={{ cancel: 'Cancel', progress: 'Downloading' }}
-                  />,
-                  { id: toastId }
-                )
-              )
-            : resp
+      try {
+        const resp = downloadMultiple(zipFile, files, rootFolder, size).then(resp =>
+          respWithProgress(resp, (loaded: number, total: number) =>
+            toast.loading(<DownloadingToast progress={((loaded / total) * 100).toFixed(2)} label={label} />, {
+              id: toastId,
+            })
+          )
         )
-        .then(r => r.blob())
-      const { saveAs } = await import('file-saver')
-      saveAs(await blob, zipName)
+        const [{ saveAs }, blob] = await Promise.all([import('file-saver'), resp.then(r => r.blob())])
+        saveAs(blob, zipFile)
+        toast.success(label.dlDone, { id: toastId })
+      } catch (error) {
+        toast.error(label.dlFailed, { id: toastId })
+      }
     }
-  }, [sw, zipName])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sw])
 }
