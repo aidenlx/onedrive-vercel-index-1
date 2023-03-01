@@ -35,6 +35,7 @@ export default function RootLayout({ children, params }: { children: React.React
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <PWA />
         <Layout>{children}</Layout>
       </body>
     </html>
@@ -50,6 +51,7 @@ import { Toaster } from '@/components/layout/Toaster'
 import { fromPairs } from '@/utils/fromPair'
 import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
+import PWA from './pwa'
 
 function Layout({ children }: { children: React.ReactNode }) {
   const tBasic = useTranslations('layout.basic'),

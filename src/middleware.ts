@@ -2,10 +2,18 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export const config = {
-  matcher: ['/((?!api|_next|favicon.ico|assets|icons|players|images).*)'],
+  matcher: ['/((?!api|_next|favicon.ico|assets|icons|players|images).*)', '/assets/pwa/:path*'],
 }
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/assets/pwa/')) {
+    return NextResponse.next({
+      headers: {
+        'Service-Worker-Allowed': '/',
+      },
+    })
+  }
+
   const resp = intl(request)
 
   // get real pathname without locale

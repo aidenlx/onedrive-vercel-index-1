@@ -5,26 +5,29 @@ const withNextIntl = require('next-intl/plugin')(
 
 const withBundleAnalyzer =
   process.env.ANALYZE === 'true' ? require('@next/bundle-analyzer')({ enabled: true }) : cfg => cfg
-const CopyPlugin = require('copy-webpack-plugin')
 
-module.exports = withBundleAnalyzer(
-  withNextIntl({
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    eslint: {
-      ignoreDuringBuilds: true,
-    },
-    reactStrictMode: true,
-    // Required by Next i18n with API routes, otherwise API routes 404 when fetching without trailing slash
-    trailingSlash: true,
-    webpack: config => {
-      config.resolve.fallback = { ...config.resolve.fallback, buffer: false }
-      return config
-    },
-    experimental: {
-      appDir: true,
-      fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
-    },
-  })
+const withPWA = require('next-pwa')({ dest: 'public/assets/pwa', scope: '/', register: true })
+
+module.exports = withPWA(
+  withBundleAnalyzer(
+    withNextIntl({
+      typescript: {
+        ignoreBuildErrors: true,
+      },
+      eslint: {
+        ignoreDuringBuilds: true,
+      },
+      reactStrictMode: true,
+      // Required by Next i18n with API routes, otherwise API routes 404 when fetching without trailing slash
+      trailingSlash: true,
+      webpack: config => {
+        config.resolve.fallback = { ...config.resolve.fallback, buffer: false }
+        return config
+      },
+      experimental: {
+        appDir: true,
+        fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
+      },
+    })
+  )
 )

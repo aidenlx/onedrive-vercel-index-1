@@ -6,6 +6,7 @@
 .pnp.js
 
 /public/assets/pdfjs
+/public/assets/pwa
 
 # testing
 /coverage

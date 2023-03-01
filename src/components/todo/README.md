@@ -33,3 +33,11 @@ external link support for protected route via <https://github.com/vvo/iron-sessi
 - [ ] refreshed config panel: 不需要重新部署
 - 整体迁移至edge config+.env
 - client secret/client id 存储在 edge config 中
+- stream zip files via API Route Stream API?
+    - https://www.cnblogs.com/Xianhuii/p/16843884.html
+    - https://github.com/eligrey/FileSaver.js/wiki/Saving-a-remote-file
+    - https://vercel.com/docs/concepts/functions/edge-functions/streaming
+    - https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/zip-stream.js
+    - rewrite header to disable compression: [Accept-Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)
+    - https://github.com/complexdatacollective/Interviewer/issues/881
+    - https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-multiple-files.html

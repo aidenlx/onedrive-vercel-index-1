@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -21,35 +17,14 @@
     "incremental": true,
     "baseUrl": "src",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@i18n": [
-        "./i18n.ts"
-      ],
-      "@cfg/*": [
-        "../config/*"
-      ],
-      "@img/*": [
-        "../public/images/*"
-      ],
-      "@players/*": [
-        "../public/players/*"
-      ]
+      "@/*": ["./*"],
+      "@i18n": ["./i18n.ts"],
+      "@cfg/*": ["../config/*"],
+      "@img/*": ["../public/images/*"],
+      "@players/*": ["../public/players/*"],
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "plugins": [{ "name": "next" }]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

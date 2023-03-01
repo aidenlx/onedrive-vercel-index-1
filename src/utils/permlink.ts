@@ -1,4 +1,4 @@
-import { getReadablePath } from '@/utils/getReadablePath'
+import { getReadablePath } from './getReadablePath'
 import { authParamName } from './auth/const'
 
 export function permLinkParams(path: string, hashedToken?: string | null, readable = true) {
