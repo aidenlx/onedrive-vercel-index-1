@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import PQueue from 'p-queue'
+import pLimit from 'p-limit'
 import { getPassword as getPwd } from './get-pwd'
 import { getSession } from './session'
 import { isPathPasswordRecord } from './const'
@@ -17,8 +17,8 @@ export async function setPassword(req: NextRequest) {
     return new Response(payload.message, { status: 400 })
   }
 
-  const queue = new PQueue({ concurrency: 5, throwOnTimeout: true })
-  const getPassword = (path: string) => queue.add(() => getPwd(path))
+  const limit = pLimit(5)
+  const getPassword = (path: string) => limit(() => getPwd(path))
 
   const authResult = Object.fromEntries(
     await Promise.all(
