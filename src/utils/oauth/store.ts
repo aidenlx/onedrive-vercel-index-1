@@ -53,6 +53,6 @@ async function set(
     const result = await updateEdgeConfig.json()
     console.debug(result)
   } catch (error) {
-    console.error(error)
+    console.error('Error while updateEdgeConfig', error)
   }
 }

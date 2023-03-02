@@ -11,7 +11,7 @@ export default function AudioPreview({ file, path }: { file: DriveItem; path: st
   const thumbnail = `/api/thumbnail/?path=${path}&size=medium`
   const audioUrl = toPermLink(path)
 
-  const t = useTranslations('file.audio')
+  const t = useTranslations('file')
 
   const lastModified = t('Last modified: ', { datetime: formatModifiedDateTime(file.lastModifiedDateTime) })
   return (

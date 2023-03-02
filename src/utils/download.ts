@@ -49,7 +49,7 @@ async function fetchAll(data: FileData[]) {
       try {
         return await getResp(url, path)
       } catch (err) {
-        console.error(err)
+        console.error('Error while fetching all headers for files', err)
       }
     })
   )
@@ -62,7 +62,7 @@ async function* fetchAsync(data: FileData[]) {
       const resp = await getResp(url, path)
       if (resp) yield resp
     } catch (err) {
-      console.error(err)
+      console.error('Error while yielding headers for files', err)
     }
   }
 }

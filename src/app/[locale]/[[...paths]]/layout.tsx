@@ -7,6 +7,29 @@ import { authRoute } from '@/utils/auth/const'
 import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
 import Loading from '@/components/Loading'
+import { traverseFolder } from '@/utils/od-api/traverseFolder'
+import { arrayAsyncFrom } from '@/utils/arrayAsyncFrom'
+import { title } from '@cfg/site.config'
+
+interface Params {
+  paths?: string[]
+}
+
+export async function generateStaticParams(): Promise<Params[]> {
+  if (process.env.NODE_ENV !== 'production') return []
+  const files = await traverseFolder('/', Infinity)
+  return (await arrayAsyncFrom(files)).map(({ paths }) => ({ paths: paths.map(decodeURIComponent) }))
+}
+
+export const revalidate = 43200 // 12 hours
+
+export const dynamic = 'force-static'
+
+export async function generateMetadata({ params }: { params: Params }) {
+  const name = params?.paths?.pop() ?? ''
+  const pageTitle = name ? [decodeURIComponent(name), title].join(' - ') : title
+  return { title: pageTitle }
+}
 
 export default function Layout({ children, params }: { children: React.ReactNode; params: { paths?: string[] } }) {
   const t = useTranslations('layout.layouts')

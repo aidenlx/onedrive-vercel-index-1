@@ -9,6 +9,7 @@ import { Inter as Sans, Fira_Mono as Mono } from '@next/font/google'
 
 import type { Metadata } from 'next'
 import { title } from '@cfg/site.config'
+import { locales } from '@/locale'
 
 export const metadata: Metadata = {
   title,
@@ -25,6 +26,10 @@ const mono = Mono({
   display: 'swap',
   weight: ['400', '500', '700'],
 })
+
+export async function generateStaticParams(): Promise<{ locale: string }[]> {
+  return locales.map(locale => ({ locale }))
+}
 
 export default function RootLayout({ children, params }: { children: React.ReactNode; params: { locale: string } }) {
   const locale = useLocale()

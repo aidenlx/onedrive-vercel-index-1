@@ -1,14 +1,12 @@
-import FourOhFour from '../FourOhFour'
 import Loading from '../Loading'
 import { DownloadButton } from '../DownloadButton'
 import { DownloadBtnContainer, PreviewContainer } from './Containers'
 import { useTranslations } from 'next-intl'
 import { Suspense } from 'react'
-import { EmptyTextFile } from './TextPreviews/TextPreviewBase'
-import { toPermLink } from '@/utils/permlink'
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { fetchWithAuth } from '@/utils/od-api/fetchWithAuth'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
+import { EmptyFileError } from '@/components/Error'
 
 const parseDotUrl = (content: string): string | undefined => {
   return content
@@ -18,28 +16,15 @@ const parseDotUrl = (content: string): string | undefined => {
 }
 
 async function URLPreviewContent({ path }: { path: string }) {
-  try {
-    const [downloadLink] = await getDownloadLink(path, false)
-    const content = await fetchWithAuth(downloadLink).then(res => res.text())
-    if (!content) {
-      return (
-        <PreviewContainer>
-          <EmptyTextFile />
-        </PreviewContainer>
-      )
-    }
-    return <URLPreviewMainContent content={content} />
-  } catch (error) {
-    return (
-      <PreviewContainer>
-        <FourOhFour>{error instanceof Error ? error.message : JSON.stringify(error)}</FourOhFour>
-      </PreviewContainer>
-    )
-  }
+  const [downloadLink] = await getDownloadLink(path, false)
+  const content = await fetchWithAuth(downloadLink).then(res => res.text())
+  if (!content) return <EmptyFileError path={path} />
+
+  return <URLPreviewMainContent content={content} />
 }
 
 function URLPreviewMainContent({ content }: { content: string }) {
-  const t = useTranslations('file.url')
+  const t = useTranslations('file')
 
   return (
     <>
@@ -62,7 +47,7 @@ function URLPreviewMainContent({ content }: { content: string }) {
 }
 
 export default function URLPreview({ path }: { path: string }) {
-  const t = useTranslations('file.text')
+  const t = useTranslations('file')
   return (
     <Suspense
       fallback={

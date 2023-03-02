@@ -78,7 +78,7 @@ function respWithProgress(resp: Response, onProgress: (loaded: number, total: nu
               read()
             })
             .catch(error => {
-              console.error(error)
+              console.error('error while reading stream', error)
               controller.error(error)
             })
         }

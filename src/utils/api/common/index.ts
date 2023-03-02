@@ -51,7 +51,7 @@ export async function handleResponseError(error: unknown) {
   let output: { data: { error: string }; status: number }
   if (error instanceof Response) {
     output = { data: { error: (await error.json()) ?? error.statusText }, status: error.status }
-    console.debug(output)
+    console.debug('Error Response', output)
   } else if (error instanceof NoAccessTokenError) {
     output = { data: { error: 'No access token.' }, status: 403 }
   } else {

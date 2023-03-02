@@ -2,6 +2,7 @@ import apiConfig from '@cfg/api.config'
 import { ResponseCompat, handleResponseError, setCaching } from '@/utils/api/common'
 import { NextRequest } from 'next/server'
 import { getAccessToken } from '../oauth/get-at'
+import { readResp } from '../od-api/fetchWithAuth'
 
 export default async function handler(req: NextRequest) {
   // Get item details (specifically, its path) by its unique ID in OneDrive
@@ -16,7 +17,7 @@ export default async function handler(req: NextRequest) {
   try {
     const data = await fetch(itemApi, {
       headers: { Authorization: `Bearer ${await getAccessToken()}` },
-    }).then(res => (res.ok ? res.json() : Promise.reject(res)))
+    }).then(readResp('json'))
     return ResponseCompat.json(data, { status: 200, headers })
   } catch (error) {
     const { data, status } = await handleResponseError(error)

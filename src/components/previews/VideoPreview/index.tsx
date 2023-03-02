@@ -29,7 +29,7 @@ export default function VideoPreview({ file, path }: { file: DriveItem; path: st
     isFlv,
   }
 
-  const t = useTranslations('file.video')
+  const t = useTranslations('file')
 
   return (
     <>

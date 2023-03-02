@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl'
 import { DriveItem } from '@/utils/api/type'
 
 export default function DefaultPreview({ file, path }: { file: DriveItem; path: string }) {
-  const t = useTranslations('file.fallback')
+  const t = useTranslations('file')
 
   return (
     <div>

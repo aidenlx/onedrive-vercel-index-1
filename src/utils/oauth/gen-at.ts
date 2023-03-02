@@ -1,5 +1,6 @@
 import { authApi, clientId, redirectUri } from '@cfg/api.config'
 import { clientSecret } from '@/utils/oauth/const'
+import { readResp } from '../od-api/fetchWithAuth'
 
 /**
  * Fetch the access token from Redis storage and check if the token requires a renew
@@ -22,7 +23,7 @@ export async function genAccessToken(refreshToken: string) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-  }).then(resp => (resp.ok ? (resp.json() as Promise<unknown>) : Promise.reject(resp)))
+  }).then(readResp('json'))
 
   if (
     isObject(data) &&

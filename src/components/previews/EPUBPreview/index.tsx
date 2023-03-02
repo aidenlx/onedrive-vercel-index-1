@@ -6,7 +6,7 @@ import Viewer from './lazy'
 import { useTranslations } from 'next-intl'
 
 export default function EPUBPreview({ path }: { file: DriveItem; path: string }) {
-  const t = useTranslations('file.epub')
+  const t = useTranslations('file')
   return (
     <div>
       <div

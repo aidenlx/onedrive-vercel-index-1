@@ -1,5 +1,7 @@
 /// <reference lib="webworker" />
 
+console.log('worker started')
+
 export declare const self: ServiceWorkerGlobalScope
 
 // @ts-expect-error - slience dev log

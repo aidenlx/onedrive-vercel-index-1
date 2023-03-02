@@ -1,34 +1,22 @@
 {
   "fof": {
     "Oops, that's a <1>four-oh-four</1>": "Oops, that's a <fof>four-oh-four</fof>.",
-    "Press <2>F12</2> and open devtools for more details, or seek help at <6>onedrive-vercel-index discussions</6>": "Press <kbd>F12</kbd> and open devtools for more details, or seek help at <link>onedrive-vercel-index discussions</link>."
+    "Press <2>F12</2> and open devtools for more details, or seek help at <6>onedrive-vercel-index discussions</6>": "Press <kbd>F12</kbd> and open devtools for more details, or seek help at <link>onedrive-vercel-index discussions</link>.",
+    "Cannot preview {{path}}": "Cannot preview {path}",
+    "File {name} is empty": "File {name} is empty."
   },
   "file": {
-    "fallback": {
-      "Cannot preview {{path}}": "Cannot preview {path}",
-      "Last modified": "Last modified",
-      "File size": "File size",
-      "MIME type": "MIME type",
-      "Unavailable": "Unavailable",
-      "Hashes": "Hashes"
-    },
-    "text": {
-      "Loading file content": "Loading file content...",
-      "File is empty": "File is empty."
-    },
-    "url": {
-      "Open URL": "Open URL",
-      "Open URL{{url}}": "Open URL {url}"
-    },
-    "video": {
-      "Loading FLV extension": "Loading FLV extension..."
-    },
-    "audio": {
-      "Last modified: ": "Last modified: {datetime}"
-    },
-    "epub": {
-      "Loading EPUB": "Loading EPUB ..."
-    }
+    "Last modified": "Last modified",
+    "File size": "File size",
+    "MIME type": "MIME type",
+    "Unavailable": "Unavailable",
+    "Hashes": "Hashes",
+    "Loading file content": "Loading file content...",
+    "Open URL": "Open URL",
+    "Open URL{{url}}": "Open URL {url}",
+    "Loading FLV extension": "Loading FLV extension...",
+    "Last modified: ": "Last modified: {datetime}",
+    "Loading EPUB": "Loading EPUB ..."
   },
   "customLink": {
     "Customised": "Customised",

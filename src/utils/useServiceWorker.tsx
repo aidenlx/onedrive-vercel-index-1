@@ -28,7 +28,7 @@ export function useServiceWorker() {
         setSWRegistered()
         console.log('batch download service worker registered')
       })
-      .catch(console.error)
+      .catch(err => console.error('error while register sw', err))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }

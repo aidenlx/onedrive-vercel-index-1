@@ -1,4 +1,3 @@
-import FourOhFour from '@/components/FourOhFour'
 import Loading from '@/components/Loading'
 import DownloadButtonGroup from '@/components/DownloadBtnGtoup'
 import { DownloadBtnContainer, PreviewContainer } from '../Containers'
@@ -6,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { ReactNode, Suspense } from 'react'
 import { getDownloadLink } from '@/utils/od-api/getDownloadLink'
 import { fetchWithAuth } from '@/utils/od-api/fetchWithAuth'
+import { EmptyFileError } from '@/components/Error'
 
 export interface TextPreviewContentProps {
   path: string
@@ -13,29 +13,17 @@ export interface TextPreviewContentProps {
 }
 
 async function TextPreviewContent({ path, children: renderContent }: TextPreviewContentProps) {
-  try {
-    const [downloadLink] = await getDownloadLink(path, false)
-    const content = await fetchWithAuth(downloadLink).then(res => res.text())
-    if (!content) {
-      return <EmptyTextFile />
-    }
-    return renderContent(content)
-  } catch (error) {
-    console.error(error)
-    return <FourOhFour>{error instanceof Error ? error.message : JSON.stringify(error)}</FourOhFour>
-  }
-}
-
-export function EmptyTextFile() {
-  const t = useTranslations('file.text')
-  return <FourOhFour>{t('File is empty')}</FourOhFour>
+  const [downloadLink] = await getDownloadLink(path, false)
+  const content = await fetchWithAuth(downloadLink).then(res => res.text())
+  if (!content) return <EmptyFileError path={path} />
+  return renderContent(content)
 }
 
 export default function TextPreviewBase({
   standalone = true,
   ...props
 }: TextPreviewContentProps & { standalone?: boolean }) {
-  const t = useTranslations('file.text')
+  const t = useTranslations('file')
   return (
     <>
       <PreviewContainer>
