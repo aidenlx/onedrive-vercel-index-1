@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
     pathname = new URL(resp.headers.get('Location')!).pathname
   }
   const [, locale, ...realPaths] = pathname.split('/')
-  const realPath = queryToPath(realPaths)
+  const realPath = getPathFromSegments(realPaths)
 
   const route = matchProtectedRoute(realPath)
   if (!route) return resp
@@ -33,8 +33,8 @@ import createIntlMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './locale'
 import { getSessionData, isAuthed } from './utils/auth/session'
 import { matchProtectedRoute } from './utils/auth/utils'
-import { queryToPath } from './components/page/utils'
 import { authRoute } from './utils/auth/const'
+import { getPathFromSegments } from './components/page/utils'
 
 const intl = createIntlMiddleware({
   locales: locales as unknown as string[],

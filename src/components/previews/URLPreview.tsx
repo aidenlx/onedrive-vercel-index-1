@@ -16,7 +16,7 @@ const parseDotUrl = (content: string): string | undefined => {
 }
 
 async function URLPreviewContent({ path }: { path: string }) {
-  const [downloadLink] = await getDownloadLink(path, false)
+  const [downloadLink] = await getDownloadLink(path)
   const content = await fetchWithAuth(downloadLink).then(res => res.text())
   if (!content) return <EmptyFileError path={path} />
 

@@ -1,7 +1,6 @@
 import { ResponseCompat, handleResponseError, setCaching } from '@/utils/api/common'
 import { maxItems } from '@cfg/site.config'
 import { NextRequest } from 'next/server'
-import { getAccessToken } from '../oauth/get-at'
 import { fetchWithAuth } from '../od-api/fetchWithAuth'
 import { getRequsetURL } from '../od-api/odRequest'
 
@@ -36,7 +35,7 @@ export default async function handler(req: NextRequest) {
   if (typeof searchQuery !== 'string') return ResponseCompat.json([], { status: 200, headers })
 
   // Construct Microsoft Graph Search API URL, and perform search only under the base directory
-  const searchApi = getRequsetURL('/', true, `search(q='${sanitiseQuery(searchQuery)}')`)
+  const searchApi = getRequsetURL('/', `search(q='${sanitiseQuery(searchQuery)}')`)
 
   searchApi.searchParams.set('select', 'id,name,file,folder,parentReference')
   searchApi.searchParams.set('top', maxItems.toString())

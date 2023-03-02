@@ -1,13 +1,13 @@
 import { redirect } from 'next-intl/server'
 import { getPageData } from './fetch'
-import { queryToPath } from '@/components/page/utils'
+import { getPathFromSegments } from '@/components/page/utils'
 import FolderView from '@/components/page/folder/FolderView'
 import FilePreview from '@/components/page/FilePreview'
 import { NoAccessTokenError } from '@/utils/oauth/get-at'
 import { NoItemHandlerError } from '@/components/Error'
 
 export default async function Page({ params }: { params: { paths?: string[] } }) {
-  const path = queryToPath(params.paths)
+  const path = getPathFromSegments(params.paths)
 
   const data = await getPageData(path).catch(error => ({ type: 'error', error } as const))
 

@@ -1,17 +1,12 @@
 import { DriveItem } from '@/utils/api/type'
+import { join, resolveRoot } from '@/utils/path'
 import emojiRegex from 'emoji-regex'
 
 /**
- * Convert url query into path string
- *
- * @param query Url query property
- * @returns Path string
+ * @returns absolute path `/` or `/path/to/file`
  */
-export const queryToPath = (paths?: string[]) => {
-  // already url-encoded in page.js props
-  if (!paths) return '/'
-  if (typeof paths === 'string') return `/${paths}`
-  return `/${paths.join('/')}`
+export function getPathFromSegments(paths: string[] = []) {
+  return '/' + paths.map(decodeURIComponent).join('/')
 }
 
 export const emojiPattern = emojiRegex()
@@ -21,11 +16,9 @@ export const renderEmoji = (name: string) => {
   return { render: emoji && !emoji.index, emoji }
 }
 
-export const itemPathGetter = (path: string) =>
+export const itemPathGetter = (parent: string) =>
   function getItemPath(name: string) {
-    return `${path === '/' ? '' : path}/${encodeURIComponent(name)}`
+    return resolveRoot(join(parent, name))
   }
 
 export const getFiles = (folderChildren: DriveItem[]) => folderChildren.filter(c => !c.folder && c.name !== '.password')
-
-

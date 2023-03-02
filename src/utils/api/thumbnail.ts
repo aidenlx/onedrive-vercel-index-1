@@ -41,7 +41,7 @@ export default async function handler(req: NextRequest) {
   noCacheForProtectedPath(headers, message)
 
   // Handle response from OneDrive API
-  const requestUrl = getRequsetURL(cleanPath, true, 'thumbnails')
+  const requestUrl = getRequsetURL(cleanPath, 'thumbnails')
   try {
     const data = await fetchWithAuth(requestUrl).then(res => res.json())
 

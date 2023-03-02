@@ -1,16 +1,35 @@
-import { driveApi } from '@/../config/api.config'
-import { encodePath } from '../api/common'
+import { driveApi } from '@cfg/api.config'
 
-export function getRequsetURL(cleanPath: string, urlEncodePath: boolean, entry: string[] | string = '') {
-  const requestPath = encodePath(cleanPath, urlEncodePath)
-  if (Array.isArray(entry)) {
-    entry = entry.join('/')
+export function getRequsetURL(path: string, apiEntry: string[] | string = '') {
+  const requestPath = encodePath(path)
+  if (Array.isArray(apiEntry)) {
+    apiEntry = apiEntry.join('/')
   }
-  const isRoot = requestPath === ''
-  const entrypoint = entry ? `${isRoot ? '' : ':'}/${entry}` : '',
-    requestUrl = `${driveApi}/root${requestPath}${entrypoint}`
+  apiEntry = resolveRoot(apiEntry)
+  apiEntry = encodeURI(apiEntry)
 
-  return new URL(requestUrl)
+  if (requestPath === '') {
+    return new URL(`${driveApi}/root${apiEntry}`)
+  } else {
+    return new URL(`${driveApi}/root${requestPath}:${apiEntry}`)
+  }
 }
 
+import { baseDirectory } from '@cfg/site.config'
+import { join, resolveRoot } from '@/utils/path'
 
+const basePath = resolveRoot(baseDirectory)
+
+/**
+ * Encode the path of the file relative to the base directory
+ *
+ * @param path Relative path of the file to the base directory
+ * @returns Absolute path of the file inside OneDrive
+ */
+
+function encodePath(path: string): string {
+  path = join(basePath, path)
+  if (path === '/') return ''
+  path = path.replace(/\/$/, '')
+  return `:${encodeURI(path)}`
+}

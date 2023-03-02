@@ -12,7 +12,7 @@ export async function getPassword(cleanPath: string): Promise<string | null> {
   if (authTokenPath === '') return null
 
   try {
-    const [downloadUrl] = await getDownloadLink(authTokenPath, true)
+    const [downloadUrl] = await getDownloadLink(authTokenPath)
 
     const odProtectedToken = (await fetch(downloadUrl).then(readResp('text'))).trim()
     return odProtectedToken ? odProtectedToken : null

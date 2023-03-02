@@ -1,28 +1,9 @@
 import { cacheControlHeader } from '@cfg/api.config'
-import { baseDirectory } from '@cfg/site.config'
 
 import { NextRequest, NextResponse } from 'next/server'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Response as NodeResponse } from 'node-fetch'
-import { join, resolveRoot } from '@/utils/path'
 import { NoAccessTokenError } from '@/utils/oauth/get-at'
-
-const basePath = resolveRoot(baseDirectory)
-
-/**
- * Encode the path of the file relative to the base directory
- *
- * @param path Relative path of the file to the base directory
- * @returns Absolute path of the file inside OneDrive
- */
-export function encodePath(path: string, urlEncode: boolean): string {
-  let encodedPath = join(basePath, path)
-  if (encodedPath === '/' || encodedPath === '') {
-    return ''
-  }
-  encodedPath = encodedPath.replace(/\/$/, '')
-  return `:${urlEncode ? encodeURIComponent(encodedPath) : encodedPath}`
-}
 
 /**
  * Set edge function caching for faster load times

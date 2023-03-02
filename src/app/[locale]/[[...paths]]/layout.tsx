@@ -1,7 +1,6 @@
 import Breadcrumb from '@/components/layout/Breadcrumb'
 import SwitchLayout from '@/components/layout/SwitchLayout'
 import { Auth } from '@/components/Auth'
-import { queryToPath } from '@/components/page/utils'
 import { PreviewContainer } from '@/components/previews/Containers'
 import { authRoute } from '@/utils/auth/const'
 import { useTranslations } from 'next-intl'
@@ -10,6 +9,7 @@ import Loading from '@/components/Loading'
 import { traverseFolder } from '@/utils/od-api/traverseFolder'
 import { arrayAsyncFrom } from '@/utils/arrayAsyncFrom'
 import { title } from '@cfg/site.config'
+import { getPathFromSegments } from '@/components/page/utils'
 
 interface Params {
   paths?: string[]
@@ -18,7 +18,7 @@ interface Params {
 export async function generateStaticParams(): Promise<Params[]> {
   if (process.env.NODE_ENV !== 'production') return []
   const files = await traverseFolder('/', Infinity)
-  return (await arrayAsyncFrom(files)).map(({ paths }) => ({ paths: paths.map(decodeURIComponent) }))
+  return await arrayAsyncFrom(files)
 }
 
 export const revalidate = 43200 // 12 hours
@@ -39,7 +39,7 @@ export default function Layout({ children, params }: { children: React.ReactNode
     paths.shift()
     children = (
       <PreviewContainer>
-        <AuthWarpper redirect={queryToPath(paths)} />
+        <AuthWarpper redirect={getPathFromSegments(params.paths)} />
       </PreviewContainer>
     )
   }

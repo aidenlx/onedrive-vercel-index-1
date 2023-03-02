@@ -13,7 +13,7 @@ export interface TextPreviewContentProps {
 }
 
 async function TextPreviewContent({ path, children: renderContent }: TextPreviewContentProps) {
-  const [downloadLink] = await getDownloadLink(path, false)
+  const [downloadLink] = await getDownloadLink(path)
   const content = await fetchWithAuth(downloadLink).then(res => res.text())
   if (!content) return <EmptyFileError path={path} />
   return renderContent(content)

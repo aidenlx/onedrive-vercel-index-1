@@ -15,7 +15,14 @@ const HomeCrumb = () => {
   )
 }
 
-const Breadcrumb = ({ paths }: { paths: string[] }) => {
+
+
+interface BreadcrumbProps {
+  /** url encoded paths */
+  paths: string[]
+}
+
+const Breadcrumb = ({ paths }: BreadcrumbProps) => {
   if (!paths.length)
     return (
       <div className="text-sm text-gray-600 transition-all duration-75 hover:opacity-80 dark:text-gray-300">

@@ -1,14 +1,11 @@
 import 'server-only'
 
-import { resolveRoot } from '@/utils/path'
 import { FileData, FolderData, select, DriveItem } from '@/utils/api/type'
 import { getRequsetURL } from '@/utils/od-api/odRequest'
 import { fetchWithAuth } from '@/utils/od-api/fetchWithAuth'
 import { getChildren } from '@/utils/od-api/getChildren'
 
-export async function getPageData(path = '', opts: Partial<{ sort: string }> = {}): Promise<FileData | FolderData> {
-  path = resolveRoot(path)
-
+export async function getPageData(path: string, opts: Partial<{ sort: string }> = {}): Promise<FileData | FolderData> {
   async function get(url: URL | string) {
     if (url instanceof URL) {
       url.searchParams.set('select', select.join(','))
@@ -17,7 +14,7 @@ export async function getPageData(path = '', opts: Partial<{ sort: string }> = {
     return await fetchWithAuth(url).then(res => res.json())
   }
 
-  const identityURL = getRequsetURL(path, false)
+  const identityURL = getRequsetURL(path)
   // Querying current path identity (file or folder) and follow up query childrens in folder
   const identityData: DriveItem = await get(identityURL)
 

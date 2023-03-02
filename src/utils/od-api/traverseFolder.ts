@@ -33,11 +33,11 @@ export async function traverseFolder(path = '/', level = 0) {
     const files = directChildren.filter(child => !child.folder)
     const folders = directChildren.filter(child => child.folder)
     for (const child of files) {
-      yield { paths: [...paths, encodeURI(child.name)], folder: false, size: child.size }
+      yield { paths: [...paths, child.name], folder: false, size: child.size }
     }
     if (myLevel >= level) return
     for (const child of folders) {
-      yield* traverse([...paths, encodeURI(child.name)], myLevel + 1)
+      yield* traverse([...paths, child.name], myLevel + 1)
     }
   }
   return traverse(path.split('/').filter(Boolean), 0)

@@ -37,7 +37,7 @@ export default async function handler(req: NextRequest) {
 export async function handleRaw(ctx: { headers?: Headers; cleanPath: string }, proxy = false) {
   const init = { headers: ctx.headers ?? new Headers(), cors: true }
   try {
-    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath, true)
+    const [downloadUrl, size] = await getDownloadLink(ctx.cleanPath)
 
     if (!downloadUrl) {
       // CDN Cache for 1 hour

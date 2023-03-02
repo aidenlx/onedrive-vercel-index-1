@@ -24,7 +24,7 @@ export default async function handler(req: NextRequest) {
   // If method is GET, then the API is a normal request to the OneDrive API for files or folders
   const search = req.nextUrl.searchParams
 
-  const path = search.get('path') ?? '/',
+  const path = search.get('path') ?? '',
     raw = search.has('raw')
 
   const headers = new Headers()

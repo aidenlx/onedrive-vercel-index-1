@@ -13,9 +13,9 @@ export default function handler(req: NextRequest) {
 
   const readable = new ReadableStream({
     async start(controller) {
-      for await (const item of await traverseFolder(encodeURIComponent(folder), Infinity)) {
+      for await (const item of await traverseFolder(folder, Infinity)) {
         controller.enqueue(
-          encoder.encode(`/${item.paths.map(decodeURIComponent).join('/')},${+item.folder},${item.size}\n`)
+          encoder.encode(`/${item.paths.join('/')},${+item.folder},${item.size}\n`)
         )
       }
       controller.close()

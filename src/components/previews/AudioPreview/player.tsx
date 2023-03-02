@@ -81,7 +81,7 @@ function Thumbnail({ src, alt, status }: { src: string; alt?: string; status: Pl
   }
   return (
     <div className="absolute m-4 aspect-square rounded-full shadow-lg">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* eslint-disable-next-line next/next/no-img-element */}
       <img
         className={`h-full w-full rounded-full object-cover object-top ${
           status === PlayerState.Playing ? 'animate-spin-slow' : ''

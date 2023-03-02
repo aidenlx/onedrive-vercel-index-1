@@ -43,7 +43,7 @@ export default function MarkdownViewer({ path, standalone = true, content }: Pro
       style?: CSSProperties
     }) => {
       return (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line next/next/no-img-element
         <img
           alt={alt}
           src={isUrlAbsolute(src as string) ? src : `/api/?path=${parentPath}/${src}&raw=true`}

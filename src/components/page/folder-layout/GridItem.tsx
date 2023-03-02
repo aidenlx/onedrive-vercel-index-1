@@ -22,7 +22,7 @@ export default function GridItem({ c, path }: { c: DriveItem; path: string }) {
     <div className="space-y-2">
       <div className="h-32 overflow-hidden rounded border border-gray-900/10 dark:border-gray-500/30">
         {thumbnailUrl && !brokenThumbnail ? (
-          // eslint-disable-next-line @next/next/no-img-element
+          // eslint-disable-next-line next/next/no-img-element
           <img
             className="h-full w-full object-cover object-top"
             src={thumbnailUrl}
