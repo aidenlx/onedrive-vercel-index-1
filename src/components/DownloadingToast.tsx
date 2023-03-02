@@ -20,7 +20,7 @@ export function DownloadingToast({ progress, label }: { progress?: string; label
   return (
     <div className="flex items-center space-x-2">
       <div className="w-56">
-        <span>{label.dlProgress}</span>
+        <span>{`${label.dlProgress} ${progress}%`}</span>
 
         <div className="relative mt-2">
           <div className="flex h-1 overflow-hidden rounded bg-gray-100">

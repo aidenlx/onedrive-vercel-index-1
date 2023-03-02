@@ -1,20 +1,25 @@
 import FileListItem from './FileListItem'
 import { DriveItem } from '@/utils/api/type'
 import { useTranslations, Link } from 'next-intl'
-import { ActionLabels, BatchAction, FileAction, FolderAction, ItemSelectionList } from './Actions'
+import { ItemSelectionList } from './actions/ItemSelection'
+import { FileAction } from './actions/FileAction'
+import { FolderAction } from './actions/FolderAction'
+import { BatchAction } from './actions/BatchAction'
 import { itemPathGetter } from '../utils'
+import {
+  useBatchActionLabels,
+  useFileActionLabels,
+  useFolderActionLabels,
+  useItemSelectionLabels,
+} from './actions/use-actions'
 
-export default function FolderListLayout({
-  path,
-  folderChildren,
-  label,
-}: {
-  path: string
-  folderChildren: DriveItem[]
-  label: ActionLabels
-}) {
+export default function FolderListLayout({ path, folderChildren }: { path: string; folderChildren: DriveItem[] }) {
   const t = useTranslations('folder.list')
   const getItemPath = itemPathGetter(path)
+
+  const lFolder = useFolderActionLabels()
+  const lFile = useFileActionLabels()
+  const lSelect = useItemSelectionLabels()
   return (
     <div className="rounded bg-white shadow-sm dark:bg-gray-900 dark:text-gray-100">
       <div className="grid grid-cols-12 items-center space-x-2 border-b border-gray-900/10 px-3 dark:border-gray-500/30">
@@ -32,7 +37,7 @@ export default function FolderListLayout({
         </div>
         <div className="hidden text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:block">
           <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
-            <BatchAction folderChildren={folderChildren} path={path} label={label} />
+            <BatchAction folderChildren={folderChildren} path={path} label={useBatchActionLabels()} />
           </div>
         </div>
       </div>
@@ -47,12 +52,12 @@ export default function FolderListLayout({
           </Link>
           <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
             {c.folder ? (
-              <FolderAction c={c} path={path} label={label} />
+              <FolderAction c={c} path={path} label={lFolder} />
             ) : (
-              <FileAction c={c} path={path} label={label} />
+              <FileAction c={c} path={path} label={lFile} />
             )}
           </div>
-          <ItemSelectionList c={c} label={label} />
+          <ItemSelectionList c={c} label={lSelect} />
         </div>
       ))}
     </div>

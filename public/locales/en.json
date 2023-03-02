@@ -36,6 +36,17 @@
     "Copy the permalink to the file to the clipboard": "Copy the permalink to the file to the clipboard",
     "Customise link": "Customise link"
   },
+  "downloadToast": {
+    "Downloading": "Downloading",
+    "Downloading selected files": "Downloading selected files...",
+    "Downloading selected folder": "Downloading selected folder...",
+    "Cancel": "Cancel",
+    "Failed to download folder": "Failed to download folder.",
+    "Failed to download selected files": "Failed to download selected files.",
+    "Finished downloading folder": "Finished downloading folder.",
+    "Finished downloading selected files": "Finished downloading selected files.",
+  
+  },
   "folder": {
     "loadMore": {
       "- showing {size} page(s) of {total} file(s) -": "- showing {size, plural, one {# page} other {# pages}} of {total, plural, =-1 {...} one {# file} other {# files} } -",

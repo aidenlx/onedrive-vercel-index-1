@@ -1,13 +1,9 @@
 import { FolderData } from '@/utils/api/type'
-// import LoadMore from './LoadMore'
-import { useTranslations } from 'next-intl'
 import MarkdownPreview from '@/components/previews/TextPreviews/Markdown'
 import FolderLayout from './FolderLayout'
 import FolderListLayout from '../folder-layout/FolderListLayout'
 import FolderGridLayout from '../folder-layout/FolderGridLayout'
-import { ActionLabels } from '../folder-layout/Actions'
 import { join } from '@/utils/path'
-import { Suspense } from 'react'
 
 export default function FolderView({ value: folderChildren, path }: FolderData & { path: string }) {
   // const onlyOnePage = size === 0 && !canLoadMore
@@ -15,29 +11,11 @@ export default function FolderView({ value: folderChildren, path }: FolderData &
   // Find README.md file to render
   const readmeFile = folderChildren.find(c => c.name.toLowerCase() === 'readme.md')
 
-  const t = useTranslations('folder.actions')
-
-  const actionLabels: ActionLabels = {
-    copyFile: t('Copied raw file permalink'),
-    copyFolder: t('Copy folder permalink'),
-    copySelected: t('Copy selected files permalink'),
-    cpFileDone: t('Copied raw file permalink'),
-    cpFolderDone: t('Copied folder permalink'),
-    cpSelectedDone: t('Copied selected files permalink'),
-    downloadFile: t('Download file'),
-    downloadFolder: t('Download folder'),
-    downloadSelected: t('Download selected files'),
-    dlFolderPending: t('Downloading folder, refresh page to cancel'),
-    dlSelectedPending: t('Downloading selected files, refresh page to cancel'),
-    selectAll: t('Select files'),
-    selectFile: t('Select file'),
-  }
-
   return (
     <>
       <FolderLayout
-        list={<FolderListLayout folderChildren={folderChildren} path={path} label={actionLabels} />}
-        grid={<FolderGridLayout folderChildren={folderChildren} path={path} label={actionLabels} />}
+        list={<FolderListLayout folderChildren={folderChildren} path={path} />}
+        grid={<FolderGridLayout folderChildren={folderChildren} path={path} />}
       />
       {/* {!onlyOnePage && <LoadMoreWarpper canLoadMore={canLoadMore} size={size} total={folderChildren.length} />} */}
       {readmeFile && (
