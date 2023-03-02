@@ -1,8 +1,10 @@
 import { genAccessToken } from './gen-at'
 import { accessToken, refreshToken, saveAuthToken } from './store'
 
-let cache: { accessToken: string; expiry: number } | null = null
-let rtCache: string | null = null
+declare global {
+  var cache: { accessToken: string; expiry: number } | undefined
+  var rtCache: string | undefined
+}
 
 export class NoAccessTokenError extends Error {
   constructor() {
@@ -11,23 +13,23 @@ export class NoAccessTokenError extends Error {
 }
 
 export async function getAccessToken(): Promise<string> {
-  if (cache !== null && Date.now() < cache.expiry) {
-    return cache.accessToken
+  if (globalThis.cache && Date.now() < globalThis.cache.expiry) {
+    return globalThis.cache.accessToken
   }
   const [at, expiry] = await accessToken()
   if (at && expiry && Date.now() < expiry) {
-    cache = { accessToken: at, expiry }
+    globalThis.cache = { accessToken: at, expiry }
     return at
   }
-  const rt = rtCache ?? (await refreshToken())
+  const rt = globalThis.rtCache ?? (await refreshToken())
   if (!rt) throw new NoAccessTokenError()
-  rtCache = rt
+  globalThis.rtCache = rt
 
   const result = await genAccessToken(rt)
   if (!result) throw new NoAccessTokenError()
 
   const [newAt, newExpiry] = result
-  cache = { accessToken: newAt, expiry: newExpiry }
-  await saveAuthToken(cache)
+  globalThis.cache = { accessToken: newAt, expiry: newExpiry }
+  await saveAuthToken(globalThis.cache)
   return newAt
 }

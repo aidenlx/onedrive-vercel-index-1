@@ -2,9 +2,17 @@
 
 import { create } from 'zustand'
 
+export enum BatchDownload {
+  Blob,
+  /** Service Worker + <form> sumbit */
+  SW,
+  /** File System Access API */
+  FS
+}
+
 interface BearState {
-  swRegistered: boolean
-  setSWRegistered: () => void
+  batchDownload: BatchDownload
+  setBatchDownloadMode: (mode: BatchDownload) => void
   selected: Map<string, boolean>
   updateItems(items: string[]): void
   toggleSelected(id: string): void
@@ -39,8 +47,8 @@ export const totalSelectState = (state: BearState) => {
 }
 
 export const useStore = create<BearState>(set => ({
-  swRegistered: false,
-  setSWRegistered: () => set({ swRegistered: true }),
+  batchDownload: BatchDownload.Blob,
+  setBatchDownloadMode: (mode: BatchDownload) => set({ batchDownload: mode }),
   selected: new Map(),
   updateItems(items: string[]) {
     set(state => {

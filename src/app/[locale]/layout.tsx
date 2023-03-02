@@ -5,7 +5,7 @@ import '../../styles/markdown-github.css'
 
 import { useLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
-import { Inter as Sans, Fira_Mono as Mono } from '@next/font/google'
+import { Inter as Sans, Fira_Mono as Mono } from 'next/font/google'
 
 import type { Metadata } from 'next'
 import { title } from '@cfg/site.config'

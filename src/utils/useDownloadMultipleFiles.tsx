@@ -4,10 +4,9 @@ import toast from 'react-hot-toast'
 
 import { useMemo } from 'react'
 import { DownloadingToast, DownloadingToastLabels } from '@/components/DownloadingToast'
-import { useStore } from '@/components/page/store'
+import { BatchDownload, useStore } from '@/components/page/store'
 
-// Blob download helper
-function downloadFilesWithForm(name: string, paths: string[], rootFolder?: string, size?: number | bigint) {
+function batchDownloadWithForm(name: string, paths: string[], rootFolder?: string, size?: number | bigint) {
   const el = document.createElement('form')
   el.style.display = 'none'
 
@@ -89,33 +88,59 @@ function respWithProgress(resp: Response, onProgress: (loaded: number, total: nu
 
 export function useDownloadMultipleFiles(
   label: DownloadingToastLabels
-): (zipName: string, files: string[], rootFolder?: string, size?: number | bigint) => Promise<void> {
-  const sw = useStore(s => s.swRegistered)
+): (zipFile: string, files: string[], rootFolder?: string, size?: number | bigint) => Promise<void> | void {
+  const mode = useStore(s => s.batchDownload)
   return useMemo(() => {
-    if (sw) {
-      return async function downloadMultipleFiles(zipFile, files, rootFolder = 'download.zip', size) {
-        downloadFilesWithForm(zipFile, files, rootFolder, size)
-      }
-    }
-    return async function downloadMultipleFiles(zipFile, files, rootFolder = 'download.zip', size) {
-      const { downloadMultiple } = await import('@/utils/download')
-      const toastId = toast.loading(<DownloadingToast label={label} />)
+    if (mode === BatchDownload.SW) {
+      return batchDownloadWithForm
+    } else if (mode === BatchDownload.Blob) {
+      return async function batchDownloadWithBlob(zipFile, files, rootFolder, size) {
+        const { downloadMultiple } = await import('@/utils/download')
+        const toastId = toast.loading(<DownloadingToast label={label} />)
 
-      try {
-        const resp = downloadMultiple(zipFile, files, rootFolder, size).then(resp =>
-          respWithProgress(resp, (loaded: number, total: number) =>
-            toast.loading(<DownloadingToast progress={((loaded / total) * 100).toFixed(2)} label={label} />, {
-              id: toastId,
-            })
+        try {
+          const resp = downloadMultiple(zipFile, files, rootFolder, size).then(resp =>
+            respWithProgress(resp, (loaded: number, total: number) =>
+              toast.loading(<DownloadingToast progress={((loaded / total) * 100).toFixed(2)} label={label} />, {
+                id: toastId,
+              })
+            )
           )
-        )
-        const [{ saveAs }, blob] = await Promise.all([import('file-saver'), resp.then(r => r.blob())])
-        saveAs(blob, zipFile)
-        toast.success(label.dlDone, { id: toastId })
-      } catch (error) {
-        toast.error(label.dlFailed, { id: toastId })
+          const [{ saveAs }, blob] = await Promise.all([import('file-saver'), resp.then(r => r.blob())])
+          saveAs(blob, zipFile)
+          toast.success(label.dlDone, { id: toastId })
+        } catch (error) {
+          toast.error(label.dlFailed, { id: toastId })
+        }
+      }
+    } else if (mode === BatchDownload.FS) {
+      return async function batchDownloadWithFS(zipFile, files, rootFolder, size) {
+        const { downloadMultiple } = await import('@/utils/download')
+        const toastId = toast.loading(<DownloadingToast label={label} />)
+        try {
+          const fs = await showSaveFilePicker({
+            suggestedName: zipFile,
+            types: [{ accept: { 'application/zip': ['.zip'] } }],
+          })
+
+          const resp = downloadMultiple(zipFile, files, rootFolder, size).then(resp =>
+            respWithProgress(resp, (loaded: number, total: number) =>
+              toast.loading(<DownloadingToast progress={((loaded / total) * 100).toFixed(2)} label={label} />, {
+                id: toastId,
+              })
+            )
+          )
+          const writer = await fs.createWritable({ keepExistingData: false })
+          const [to, from] = await Promise.all([writer, resp.then(r => r.body)])
+          await from?.pipeTo(to)
+          toast.success(label.dlDone, { id: toastId })
+        } catch (error) {
+          toast.error(label.dlFailed, { id: toastId })
+        }
       }
     }
+    return () => void 0
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sw])
+  }, [mode])
 }

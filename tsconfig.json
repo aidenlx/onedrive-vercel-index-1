@@ -24,7 +24,7 @@
       "@players/*": ["../public/players/*"]
     },
     "plugins": [{ "name": "next" }],
-    "types": ["@ducanh2912/next-pwa/workbox"]
+    "types": ["@ducanh2912/next-pwa/workbox", "@types/wicg-file-system-access"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

@@ -22,7 +22,7 @@
     - https://github.com/vvo/iron-session#nextjs-middlewares-usage
     - https://iron-session-example.vercel.app/
     - https://github.com/vercel/next.js/blob/canary/examples/with-iron-session/pages/index.tsx
-- transverse时自动检测.password是否存在，保存在config中？
+- traverse时自动检测.password是否存在，保存在config中？
 
 external link support for protected route via <https://github.com/vvo/iron-session#magic-links>
 
@@ -41,3 +41,5 @@ external link support for protected route via <https://github.com/vvo/iron-sessi
     - rewrite header to disable compression: [Accept-Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)
     - https://github.com/complexdatacollective/Interviewer/issues/881
     - https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-multiple-files.html
+
+## Label翻译、OAuth流程、整理urlencode的问题（大家统一一下...）

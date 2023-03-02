@@ -44,8 +44,7 @@
     "Failed to download folder": "Failed to download folder.",
     "Failed to download selected files": "Failed to download selected files.",
     "Finished downloading folder": "Finished downloading folder.",
-    "Finished downloading selected files": "Finished downloading selected files.",
-  
+    "Finished downloading selected files": "Finished downloading selected files."
   },
   "folder": {
     "loadMore": {
