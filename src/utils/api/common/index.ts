@@ -15,6 +15,15 @@ export function setCaching(header: Headers) {
 }
 
 /**
+ * CDN Cache for 1 hour
+   @see https://learn.microsoft.com/en-us/graph/api/resources/driveitem?view=graph-rest-1.0#instance-attributes
+ */
+export function setRawUrlCaching(headers: Headers) {
+  headers.set('Cache-Control', 'public, max-age=0, s-maxage=3600, immutable')
+  return headers
+}
+
+/**
  * If message is empty, then the path is not protected.
  * Conversely, protected routes are not allowed to serve from cache.
  */
