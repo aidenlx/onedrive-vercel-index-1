@@ -24,9 +24,7 @@ export async function middleware(request: NextRequest) {
   const session = await getSessionData(request)
   if (session && (await isAuthed(session, route)) === true) return resp
 
-  const query = new URLSearchParams()
-  query.set('route', route)
-  return NextResponse.redirect(new URL(`/${locale}/${authRoute}${realPath}?${query}`, request.url))
+  return NextResponse.redirect(new URL(`/${locale}/${authRoute}${realPath}`, request.url))
 }
 
 import createIntlMiddleware from 'next-intl/middleware'

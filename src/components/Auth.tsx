@@ -21,14 +21,14 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   const router = useRouter()
   const { mutate } = useAuth()
 
-  const protectedRoute = useSearchParams()?.get('route')
+  const protectedRoute = matchProtectedRoute(redirect)
   const [isPending, startTransition] = useTransition()
 
   const [token, setToken] = useState('')
 
   const setPersistedToken = async (token: string) => {
     if (!protectedRoute) {
-      toast('No route to unlock', { icon: '🤔' })
+      toast('Route is not protected, redirecting back...', { icon: '🤔' })
       return
     }
     await fetch('/api/auth', { method: 'POST', body: JSON.stringify({ [protectedRoute]: token }) })
@@ -49,14 +49,7 @@ export function Auth({ redirect, label }: { label: AuthLabels; redirect: string 
   return (
     <div className="mx-auto flex max-w-sm flex-col space-y-4 md:my-10">
       <div className="mx-auto w-3/4 md:w-5/6">
-        <Image
-          src={AuthImage}
-          alt="authenticate"
-          width={912}
-          height={912}
-          priority
-          placeholder="blur"
-        />
+        <Image src={AuthImage} alt="authenticate" width={912} height={912} priority placeholder="blur" />
       </div>
       <div className="text-lg font-bold text-gray-900 dark:text-gray-100">{label['Enter Password']}</div>
 
@@ -97,6 +90,7 @@ import { protectedRoutes } from '@cfg/site.config'
 import { faKey, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import Loading from './Loading'
+import { matchProtectedRoute } from '@/utils/auth/utils'
 
 type TokenLabels = Record<keyof IntlMessages['layout']['token'], string>
 
