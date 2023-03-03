@@ -68,7 +68,7 @@ export const DownloadButton = ({
           width={20}
           height={20}
           priority
-          placeholder={typeof btnImage === 'string' ? undefined : 'blur'}
+          // placeholder={typeof btnImage === 'string' ? undefined : 'blur'}
         />
       )}
       <span>{btnText}</span>

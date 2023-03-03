@@ -9,7 +9,7 @@ function FourOhFour({ children }: { children: ReactNode }) {
   return (
     <div className="my-12">
       <div className="mx-auto w-1/3">
-        <Image src={ErrorImage} alt="404" width={912} height={912} priority placeholder="blur" />
+        <Image src={ErrorImage} alt="404" width={912} height={912} priority />
       </div>
       <div className="mx-auto mt-6 max-w-xl text-gray-500">
         <div className="mb-8 text-xl font-bold">
