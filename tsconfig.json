@@ -20,8 +20,8 @@
       "@/*": ["./*"],
       "@i18n": ["./i18n.ts"],
       "@cfg/*": ["../config/*"],
-      "@img/*": ["../public/images/*"],
-      "@players/*": ["../public/players/*"]
+      "@img/*": ["../public/assets/images/*"],
+      "@players/*": ["../public/assets/players/*"]
     },
     "plugins": [{ "name": "next" }],
     "types": ["@ducanh2912/next-pwa/workbox", "@types/wicg-file-system-access"]

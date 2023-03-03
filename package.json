@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dl-static": "curl -sL https://github.com/mozilla/pdf.js/releases/download/v3.4.120/pdfjs-3.4.120-dist.zip --output pdfjs.zip && mkdir -p public/assets && unzip -q pdfjs.zip -d public/assets/pdfjs && rm pdfjs.zip",
-    "sw": "esbuild worker/index.ts --bundle --minify --sourcemap --outfile=public/sw.js",
-    "sw-dev": "esbuild worker/index.ts --watch --bundle --minify --sourcemap --outfile=public/sw.js",
+    "sw": "esbuild worker/index.ts --bundle --minify --sourcemap --outfile=public/api/sw.js",
+    "sw-dev": "esbuild worker/index.ts --watch --bundle --minify --sourcemap --outfile=public/api/sw.js",
     "dev": "next dev",
     "build": "pnpm dl-static && pnpm sw & next build",
     "build-fast": "pnpm sw && next build",

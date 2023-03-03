@@ -25,7 +25,7 @@ export function useServiceWorker() {
     if (isSafari && safariVersion < 15.4) return
     swRequested.current = true
     navigator.serviceWorker
-      .register('/sw.js', { scope: '/api/batch/' })
+      .register('/api/sw.js', { scope: '/api/batch/' })
       .then(() => {
         setMode(BatchDownload.SW)
         console.log('batch download service worker registered')

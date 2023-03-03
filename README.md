@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./public/header.png" alt="onedrive-vercel-index" />
+  <img src="./assets/header.png" alt="onedrive-vercel-index" />
   <h3><a href="https://drive.swo.moe">onedrive-vercel-index</a></h3>
   <p><a href="https://ovi.swo.moe/docs/getting-started">Get started</a> · <a href="https://ovi.swo.moe/blog/whats-new">What's new?</a> · <a href="https://ovi.swo.moe/sponsor/ways">Sponsoring</a></p>
   <p><em>OneDrive public directory listing, powered by Vercel and Next.js</em></p>
@@ -38,7 +38,7 @@ Please go to our [discussion forum](https://github.com/spencerwooo/onedrive-verc
 
 Live demo at [Spencer's OneDrive](https://drive.swo.moe).
 
-![demo](./public/demo.png)
+![demo](./assets/demo.png)
 
 ## Features
 
@@ -143,6 +143,6 @@ Open-source is hard! If you happen to like this project and want me to keep goin
 [MIT](LICENSE)
 
 <div align="center">
-  <img src="./public/footer.png" />
+  <img src="./assets/footer.png" />
   <em>made with ❤️ by <a href="https://spencerwoo.com">spencer woo</a></em>
 </div>

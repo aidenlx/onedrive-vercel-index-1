@@ -39,6 +39,13 @@ export default function RootLayout({ children, params }: { children: React.React
   }
   return (
     <html lang={locale} className={`${sans.variable} ${mono.variable}`}>
+      <head>
+        <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"></link>
+        <link rel="shortcut icon" href="/assets/favicon.ico"></link>
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"></link>
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"></link>
+        <link rel="manifest" href="/assets/manifest.json"></link>
+      </head>
       <body>
         <PWA />
         <Layout>{children}</Layout>
