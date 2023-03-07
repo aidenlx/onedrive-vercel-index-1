@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "site-cfg": "json2ts ../../site.json -o site.type.ts",
-    "dev": "pnpm site-cfg && rm -rf dist/* && tsc -w",
-    "build": "pnpm site-cfg && rm -rf dist/* && tsc"
+    "cfg": "json2ts ../../json/site.json -o site.type.ts && json2ts ../../json/api.json -o api.type.ts",
+    "dev": "pnpm cfg && rm -rf dist/* && tsc -w",
+    "build": "pnpm cfg && rm -rf dist/* && tsc"
   },
   "exports": {
     "./*": "./dist/packages/config/*.js"

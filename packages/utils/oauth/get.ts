@@ -1,9 +1,11 @@
 /// <reference types="next" />
 
-import { accessKey, authHeader } from '@od/cfg/auth'
-import { helperApi } from '@od/cfg/api'
+import { accessKey, authHeader, helperApi } from '@od/cfg/api'
 
 export async function getAccessToken(): Promise<string> {
+  if (!accessKey) {
+    throw new Error('Access key not configured')
+  }
   const resp = await fetch(new URL('/api/access', helperApi), {
     method: 'GET',
     headers: { [authHeader]: accessKey },

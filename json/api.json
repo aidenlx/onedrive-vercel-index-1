@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "api-config",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "helperApi",
+    "userPrincipalName",
+    "baseDirectory",
+    "encryptKey",
+    "accessKey"
+  ],
+  "properties": {
+    "clientId": {
+      "type": "string",
+      "description": "The clientId is used to authenticate the user with Microsoft Graph API using OAuth. You would not need to change anything here if you can authenticate with your personal Microsoft account with OneDrive International."
+    },
+    "clientSecret": {
+      "type": "string",
+      "description": "The clientSecret is used to authenticate the user with Microsoft Graph API using OAuth. You would not need to change anything here if you can authenticate with your personal Microsoft account with OneDrive International."
+    },
+    "redirectUri": {
+      "type": "string",
+      "description": "The redirectUri is the URL that the user will be redirected to after they have authenticated with Microsoft Graph API. You would not need to change anything here if you can authenticate with your personal Microsoft account with OneDrive International."
+    },
+    "authApi": {
+      "type": "string",
+      "description": "The URL of the OneDrive API endpoint for authentication. You would not need to change anything here if you are using OneDrive International or E5 Subscription OneDrive for Business. You may need to change these if you are using OneDrive 世纪互联."
+    },
+    "driveApi": {
+      "type": "string",
+      "description": "The URL of the OneDrive API endpoint for accessing the user's OneDrive drive. You would not need to change anything here if you are using OneDrive International or E5 Subscription OneDrive for Business. You may need to change these if you are using OneDrive 世纪互联."
+    },
+    "scope": {
+      "type": "string",
+      "description": "The scope we require are listed here, in most cases you would not need to change this."
+    },
+    "userPrincipalName": {
+      "type": "string",
+      "description": "This is what we use to identify who you are when you are initialising the website for the first time. Make sure this is exactly the same as the email address you use to sign into your Microsoft account."
+    },
+    "protectedRoutes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "This is where you specify the folders that are password protected. It is an array of paths pointing to all the directories in which you have .password set. Check the documentation for details."
+    },
+    "baseDirectory": {
+      "type": "string",
+      "description": "The folder that the user wants to share publicly with onedrive-vercel-index."
+    },
+    "cacheControlHeader": {
+      "type": "string",
+      "description": "The Cache-Control header settings for the site. https://vercel.com/docs/concepts/edge-network/caching",
+      "default": "max-age=0, s-maxage=60, stale-while-revalidate"
+    },
+    "maxItems": {
+      "type": "integer",
+      "description": "The maximum number of items that the search result shows."
+    },
+    "protectedMagiclinkExpire": {
+      "type": "integer",
+      "description": "The duration in seconds for which the permlink for protected route is valid.",
+      "default": 7200
+    },
+    "helperApi": {
+      "type": "string",
+      "description": "The URL of the helper API endpoint to serve access token and site config."
+    },
+    "encryptKey": {
+      "type": "string",
+      "description": "The password is used to encrypt login info, it has to be at least 32 characters long. You can use https://1password.com/password-generator/ to generate strong passwords."
+    },
+    "accessKey": {
+      "type": "string",
+      "description": "It's used by server to get access token from access api * Make sure you've set it both in main app and configuration app"
+    },
+    "refreshToken": {
+      "type": "string",
+      "description": "The refresh token is used to get a new access token when the current one expires. "
+    }
+  }
+}

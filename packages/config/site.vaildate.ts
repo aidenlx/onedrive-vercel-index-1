@@ -2,7 +2,7 @@ import type { SiteConfig } from './site.type'
 
 import Ajv from 'ajv'
 import addFormat from 'ajv-formats'
-import schema from '../../site.json'
+import schema from '../../json/site.json'
 
 const ajv = new Ajv()
 addFormat(ajv)

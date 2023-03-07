@@ -1,5 +1,4 @@
-import { helperApi } from './api'
-import { authHeader, accessKey } from './auth'
+import { helperApi, authHeader, accessKey } from './api'
 import { SiteConfig } from './site.type'
 import { isSiteConfigs } from './site.vaildate'
 
@@ -29,6 +28,9 @@ export default async function getConfig(): Promise<ConfigResult> {
 
 async function _getConfig() {
   try {
+    if (!accessKey) {
+      throw new Error('Access key not configured')
+    }
     const resp = await fetch(new URL('/api/site.config.json', helperApi), {
       headers: {
         [authHeader]: accessKey,

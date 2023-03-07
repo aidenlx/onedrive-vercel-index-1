@@ -1,4 +1,4 @@
-import { authHeader, accessKey } from '@od/cfg/auth'
+import { authHeader, accessKey } from '@od/cfg/api'
 import { cors } from '@od/util/cors.web'
 import { handleRaw, handleResponseError } from '@od/util/resp-handler'
 import { NextResponse } from 'next/server'
@@ -7,6 +7,9 @@ export const config = { runtime: 'edge' }
 
 // serve access token via CDN cache to reduce API calls
 async function GET(req: Request) {
+  if (!accessKey) {
+    return NextResponse.json({ error: 'Access key not configured' }, { status: 500 })
+  }
   if (accessKey !== req.headers.get(authHeader)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

@@ -6,7 +6,7 @@ node_modules
 app/public/assets/pdfjs
 app/public/api/sw.js*
 
-packages/config/site.type.ts
+packages/config/*.type.ts
 
 *.tsbuildinfo
 .turbo

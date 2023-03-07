@@ -1,4 +1,4 @@
-import { authHeader, accessKey, refreshToken } from '@od/cfg/auth'
+import { authHeader, accessKey, refreshToken } from '@od/cfg/api'
 import { reqAccessToken } from '@od/util/oauth'
 import { handleResponseError } from '@od/util/resp-handler'
 import { NextResponse } from 'next/server'
