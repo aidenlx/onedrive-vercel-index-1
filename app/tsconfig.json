@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "noImplicitAny": false,
+    "incremental": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"],
+      "@ui/*": ["./components/*"],
+      "@cfg/*": ["./config/*"],
+      "@util/*": ["./utils/*"],
+      "@icon": ["../icon.mjs"],
+      "@img/*": ["./components/assets/images/*"],
+      "@players/*": ["./components/assets/players/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": ["@types/wicg-file-system-access"],
+    "resolveJsonModule": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "icon.js", "../shared/resp-handler.ts", "../packages/utils/resp-handler.ts"],
+  "exclude": ["node_modules"]
+}

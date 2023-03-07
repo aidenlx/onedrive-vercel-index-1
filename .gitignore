@@ -1,22 +1,26 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+node_modules
 
-/public/assets/pdfjs
-/public/api/sw.js*
+app/public/assets/pdfjs
+app/public/api/sw.js*
+
+packages/config/site.type.ts
+
+*.tsbuildinfo
+.turbo
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
+dist
 
 # misc
 .DS_Store
@@ -67,7 +71,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-.vscode/*
+.vscode
 !.vscode/launch.json
 
 # Local History for Visual Studio Code

@@ -1,0 +1,24 @@
+import { NextRequest } from 'next/server'
+import { traverseFolder } from '@od/util/graph-api'
+
+export default function GET(req: NextRequest) {
+  const folder = req.nextUrl.searchParams.get('path')
+  if (!folder) return new Response('No path specified', { status: 400 })
+
+  const encoder = new TextEncoder()
+
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const item of await traverseFolder(folder, Infinity)) {
+        controller.enqueue(
+          encoder.encode(`/${item.paths.join('/')},${+item.folder},${item.size}\n`)
+        )
+      }
+      controller.close()
+    },
+  })
+
+  return new Response(readable, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  })
+}

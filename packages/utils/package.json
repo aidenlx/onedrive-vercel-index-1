@@ -1,0 +1,54 @@
+{
+  "name": "@od/util",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "rm -rf dist/* && tsc -w",
+    "build": "rm -rf dist/* && tsc"
+  },
+  "exports": {
+    "./*": [
+      "./dist/*.js",
+      "./dist/*/index.js"
+    ],
+    "./*/*": [
+      "./dist/*/*.js",
+      "./dist/*/*/index.js"
+    ]
+  },
+  "dependencies": {
+    "@od/cfg": "workspace:*",
+    "client-zip": "^2.3.0",
+    "file-saver": "^2.0.5",
+    "iron-session": "^6.3.1",
+    "p-limit": "^4.0.0"
+  },
+  "devDependencies": {
+    "@microsoft/microsoft-graph-types": "^2.26.0",
+    "@types/react": "18.0.28",
+    "@types/wicg-file-system-access": "^2020.9.5",
+    "eslint": "8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "next": "13.2.3",
+    "prettier": "^2.8.3",
+    "react": "^18.2.0",
+    "swr": "^2.0.3",
+    "typescript": "5.0.1-rc"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "swr": "^2.0.3"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "semi": false
+  },
+  "eslintConfig": {
+    "extends": [
+      "next",
+      "prettier"
+    ]
+  }
+}

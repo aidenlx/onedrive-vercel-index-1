@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "site-config",
+  "additionalProperties": false,
+  "definitions": {
+    "link": {
+      "additionalProperties": false,
+      "properties": {
+        "icon": {
+          "type": "string",
+          "examples": ["fa-github", "fa-twitter"],
+          "pattern": "^fa-[a-z-]+$",
+          "description": "This is the icon you want to use. You can find the icon names at https://fontawesome.com/search?o=r&f=brands. Note: specify the icons you use in the \"OVI_ICONS\" environment variable to get the best performance."
+        },
+        "link": {
+          "type": "string",
+          "format": "uri",
+          "examples": ["https://github.com/spencerwooo"],
+          "description": "This is the link url you want to use."
+        },
+        "name": {
+          "type": "string",
+          "examples": ["GitHub", "Twitter"],
+          "description": "This is the name of link you want to show in the navigation bar."
+        }
+      },
+      "required": ["name", "icon", "link"],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "$schema": {
+      "description": "This is the JSON schema for the site configuration file. You can use this to validate your site configuration file.",
+      "type": "string"
+    },
+    "datetimeFormat": {
+      "description": "This is a day.js-style datetime format string to format datetimes in the app. Ref to https://day.js.org/docs/en/display/format for detailed specification. The default value is ISO 8601 full datetime without timezone and replacing T with space.",
+      "default": "YYYY-MM-DD HH:mm:ss",
+      "type": "string"
+    },
+    "email": {
+      "description": "Email address in the nav bar.",
+      "type": "string",
+      "format": "email"
+    },
+    "footer": {
+      "type": "string",
+      "description": "The footer component of your website. You can write HTML here, but you need to escape double quotes - changing \" to \\\". You can write anything here, and if you like badges, generate some with https://shields.io",
+      "default": "Powered by <a href=\"https://github.com/spencerwooo/onedrive-vercel-index\" target=\"_blank\" rel=\"noopener noreferrer\">onedrive-vercel-index</a>. Made with ❤ by SpencerWoo."
+    },
+    "icon": {
+      "type": "string",
+      "pattern": "^/.*",
+      "description": "This is the website icon to the left of the title inside the navigation bar. It should be placed under the /public directory of your GitHub project (not your OneDrive folder!), and referenced here by its relative path to /public."
+    },
+    "links": {
+      "description": "This is an array of names and links for setting your social information and links. In the latest update, you need to import the icon you want to use from @fortawesome/free-brands-svg-icons and pass it to the icon property for better performance. You can find the icon names at https://fontawesome.com/icons?d=gallery&s=brands.",
+      "items": {
+        "$ref": "#/definitions/link"
+      },
+      "type": "array"
+    },
+    "title": {
+      "description": "The name of your website. Present alongside your icon.",
+      "type": "string"
+    }
+  },
+  "type": "object"
+}

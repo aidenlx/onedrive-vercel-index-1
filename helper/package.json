@@ -1,0 +1,35 @@
+{
+  "name": "@od/helper",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "format": "prettier 'src/**/*.{js,ts,jsx,tsx}' --write"
+  },
+  "dependencies": {
+    "@od/cfg": "workspace:*",
+    "@od/util": "workspace:*"
+  },
+  "devDependencies": {
+    "next": "13.2.3",
+    "eslint": "8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^2.8.3",
+    "typescript": "5.0.1-rc"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "semi": false
+  },
+  "eslintConfig": {
+    "extends": [
+      "next",
+      "prettier"
+    ]
+  }
+}
